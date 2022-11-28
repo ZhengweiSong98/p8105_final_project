@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>index.knit</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Sections
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="index.html">Home</a>
+    </li>
+    <li>
+      <a href="data_cleaning_and_merging.html">Data Pre-Processing</a>
+    </li>
+    <li>
+      <a href="exploratory_analysis.html">Exploratory Analysis</a>
+    </li>
+    <li>
+      <a href="statistical_analysis.html">Statistical Analysis</a>
+    </li>
+    <li>
+      <a href="additional_prediction.html">Additional Prediction</a>
+    </li>
+    <li>
+      <a href="https://datasciencetk.shinyapps.io/COVID19-NYC-trends/">Interactive Map</a>
+    </li>
+    <li>
+      <a href="dashboard.html">Trend Over Time (Dashboard)</a>
+    </li>
+    <li>
+      <a href="project_report.html">Full Report</a>
+    </li>
+    <li>
+      <a href="ProjectCode.html">Contact Us</a>
+    </li>
+    <li>
+      <a href="https://github.com/jimmymkelliher/p8105_final">
+        <span class="fa fa-github fa-lg"></span>
+         
+      </a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+
+</div>
+
+
+<p>&lt;!DOCTYPE html&gt;</p>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>
+Data Science
+</title>
+<link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+<!-- Font Awesome icons (free version)-->
+<script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+<!-- Google fonts-->
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+<!-- Core theme CSS (includes Bootstrap)-->
+<link href="css/styles.css" rel="stylesheet" />
+</head>
+<body id="page-top">
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+<div class="container">
+
+<pre><code>            &lt;button class=&quot;navbar-toggler&quot; type=&quot;button&quot; data-bs-toggle=&quot;collapse&quot; data-bs-target=&quot;#navbarResponsive&quot; aria-controls=&quot;navbarResponsive&quot; aria-expanded=&quot;false&quot; aria-label=&quot;Toggle navigation&quot;&gt;
+                Menu
+                &lt;i class=&quot;fas fa-bars ms-1&quot;&gt;&lt;/i&gt;
+            &lt;/button&gt;
+            &lt;div class=&quot;collapse navbar-collapse&quot; id=&quot;navbarResponsive&quot;&gt;
+                &lt;ul class=&quot;navbar-nav text-uppercase ms-auto py-4 py-lg-0&quot;&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;index.html&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;data_cleaning_and_merging.html&quot;&gt;Data Pre-Processing&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;exploratory_analysis.html&quot;&gt;Exploratory Analysis&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;statistical_analysis.html&quot;&gt;Statistical Analysis&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;additional_prediction.html&quot;&gt;Additional Prediction&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;dashboard.html&quot;&gt;Trend Over Time (Dashboard)&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;project_report.html&quot;&gt;Project Report&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;https://datasciencetk.shinyapps.io/COVID19-NYC-trends/&quot;&gt;Interactive Map&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class=&quot;nav-item&quot;&gt;&lt;a class=&quot;nav-link&quot; href=&quot;ProjectCode.html&quot;&gt;Contact Us&lt;/a&gt;&lt;/li&gt;
+                    &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://www.youtube.com/watch?v=pP1wsvWfNp4&quot;&gt;&lt;i class=&quot;fab fa-youtube&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                    &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://github.com/jimmymkelliher/p8105_final&quot;&gt;&lt;i class=&quot;fab fa-github&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                &lt;/ul&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+    
+    
+    &lt;!-- Masthead--&gt;
+    &lt;header class=&quot;masthead&quot;&gt;
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;div class=&quot;masthead-subheading&quot;&gt;Welcome To Our Project for P8105!&lt;/div&gt;
+            &lt;div class=&quot;masthead-heading text-uppercase&quot;&gt;New York City Covid Trends&lt;/div&gt;
+            &lt;a class=&quot;btn btn-primary btn-xl text-uppercase&quot; href=&quot;#portfolio&quot;&gt;Find Out More&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+  
+    
+    
+    &lt;!-- Project Information Grid--&gt;
+    &lt;section class=&quot;page-section bg-light&quot; id=&quot;portfolio&quot;&gt;
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;div class=&quot;text-center&quot;&gt;
+                &lt;h2 class=&quot;section-heading text-uppercase&quot;&gt;PROJECT INFORMATION&lt;/h2&gt;
+                &lt;h3 class=&quot;section-subheading text-muted&quot;&gt;&lt;/h3&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;row&quot;&gt;
+                &lt;div class=&quot;col-lg-4 col-sm-6 mb-4&quot;&gt;
+                    &lt;!-- Project: Background--&gt;
+                    &lt;div class=&quot;portfolio-item&quot;&gt;
+                        &lt;a class=&quot;portfolio-link&quot; data-bs-toggle=&quot;modal&quot; href=&quot;#portfolioModal1&quot;&gt;
+                            &lt;div class=&quot;portfolio-hover&quot;&gt;
+                                &lt;div class=&quot;portfolio-hover-content&quot;&gt;&lt;i class=&quot;fas fa-plus fa-3x&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;img class=&quot;img-fluid&quot; src=&quot;assets/img/portfolio/1.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;/a&gt;
+                        &lt;div class=&quot;portfolio-caption&quot;&gt;
+                            &lt;div class=&quot;portfolio-caption-heading&quot;&gt;Background&lt;/div&gt;
+                            &lt;div class=&quot;portfolio-caption-subheading text-muted&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4 col-sm-6 mb-4&quot;&gt;
+                  
+                  
+                    &lt;!-- Project: Explore--&gt;
+                    &lt;div class=&quot;portfolio-item&quot;&gt;
+                        &lt;a class=&quot;portfolio-link&quot; data-bs-toggle=&quot;modal&quot; href=&quot;#portfolioModal2&quot;&gt;
+                            &lt;div class=&quot;portfolio-hover&quot;&gt;
+                                &lt;div class=&quot;portfolio-hover-content&quot;&gt;&lt;i class=&quot;fas fa-plus fa-3x&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;img class=&quot;img-fluid&quot; src=&quot;assets/img/portfolio/2.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;/a&gt;
+                        &lt;div class=&quot;portfolio-caption&quot;&gt;
+                            &lt;div class=&quot;portfolio-caption-heading&quot;&gt;Explore&lt;/div&gt;
+                            &lt;div class=&quot;portfolio-caption-subheading text-muted&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4 col-sm-6 mb-4&quot;&gt;
+                  
+                    &lt;!-- Project: Focus--&gt;
+                    &lt;div class=&quot;portfolio-item&quot;&gt;
+                        &lt;a class=&quot;portfolio-link&quot; data-bs-toggle=&quot;modal&quot; href=&quot;#portfolioModal3&quot;&gt;
+                            &lt;div class=&quot;portfolio-hover&quot;&gt;
+                                &lt;div class=&quot;portfolio-hover-content&quot;&gt;&lt;i class=&quot;fas fa-plus fa-3x&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;img class=&quot;img-fluid&quot; src=&quot;assets/img/portfolio/3.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;/a&gt;
+                        &lt;div class=&quot;portfolio-caption&quot;&gt;
+                            &lt;div class=&quot;portfolio-caption-heading&quot;&gt;Focus of our Project&lt;/div&gt;
+                            &lt;div class=&quot;portfolio-caption-subheading text-muted&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4 col-sm-6 mb-4 mb-lg-0&quot;&gt;
+                  
+                  
+                    &lt;!-- Project: Main Questions--&gt;
+                    &lt;div class=&quot;portfolio-item&quot;&gt;
+                        &lt;a class=&quot;portfolio-link&quot; data-bs-toggle=&quot;modal&quot; href=&quot;#portfolioModal4&quot;&gt;
+                            &lt;div class=&quot;portfolio-hover&quot;&gt;
+                                &lt;div class=&quot;portfolio-hover-content&quot;&gt;&lt;i class=&quot;fas fa-plus fa-3x&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;img class=&quot;img-fluid&quot; src=&quot;assets/img/portfolio/4.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;/a&gt;
+                        &lt;div class=&quot;portfolio-caption&quot;&gt;
+                            &lt;div class=&quot;portfolio-caption-heading&quot;&gt;Main Questions&lt;/div&gt;
+                            &lt;div class=&quot;portfolio-caption-subheading text-muted&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4 col-sm-6 mb-4 mb-sm-0&quot;&gt;
+                  
+                  
+                  
+                    &lt;!-- Project: Take Aways--&gt;
+                    &lt;div class=&quot;portfolio-item&quot;&gt;
+                        &lt;a class=&quot;portfolio-link&quot; data-bs-toggle=&quot;modal&quot; href=&quot;#portfolioModal5&quot;&gt;
+                            &lt;div class=&quot;portfolio-hover&quot;&gt;
+                                &lt;div class=&quot;portfolio-hover-content&quot;&gt;&lt;i class=&quot;fas fa-plus fa-3x&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;img class=&quot;img-fluid&quot; src=&quot;assets/img/portfolio/5.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;/a&gt;
+                        &lt;div class=&quot;portfolio-caption&quot;&gt;
+                            &lt;div class=&quot;portfolio-caption-heading&quot;&gt;Take Aways&lt;/div&gt;
+                            &lt;div class=&quot;portfolio-caption-subheading text-muted&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                 &lt;div class=&quot;col-lg-4 col-sm-6 mb-4 mb-sm-0&quot;&gt;
+              
+                    &lt;!-- Project: Data Source--&gt;
+                    &lt;div class=&quot;portfolio-item&quot;&gt;
+                        &lt;a class=&quot;portfolio-link&quot; data-bs-toggle=&quot;modal&quot; href=&quot;#portfolioModal6&quot;&gt;
+                            &lt;div class=&quot;portfolio-hover&quot;&gt;
+                                &lt;div class=&quot;portfolio-hover-content&quot;&gt;&lt;i class=&quot;fas fa-plus fa-3x&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;img class=&quot;img-fluid&quot; src=&quot;assets/img/portfolio/6.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;/a&gt;
+                        &lt;div class=&quot;portfolio-caption&quot;&gt;
+                            &lt;div class=&quot;portfolio-caption-heading&quot;&gt;Data&lt;/div&gt;
+                            &lt;div class=&quot;portfolio-caption-subheading text-muted&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/section&gt;
+    
+    
+    &lt;!-- Timeline: Covid Milestones in NYC--&gt;
+    &lt;section class=&quot;page-section&quot; id=&quot;about&quot;&gt;
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;div class=&quot;text-center&quot;&gt;
+                &lt;h2 class=&quot;section-heading text-uppercase&quot;&gt;COVID Timeline in New York&lt;/h2&gt;
+                &lt;h3 class=&quot;section-subheading text-muted&quot;&gt;&lt;/h3&gt;
+            &lt;/div&gt;
+            &lt;ul class=&quot;timeline&quot;&gt;
+                &lt;li&gt;
+                    &lt;div class=&quot;timeline-image&quot;&gt;&lt;img class=&quot;rounded-circle img-fluid&quot; src=&quot;assets/img/about/1.jpg&quot; alt=&quot;...&quot; /&gt;&lt;/div&gt;
+                    &lt;div class=&quot;timeline-panel&quot;&gt;
+                        &lt;div class=&quot;timeline-heading&quot;&gt;
+                            &lt;h4&gt;March 1st, 2020&lt;/h4&gt;
+                            &lt;h4 class=&quot;subheading&quot;&gt;&lt;a href=&quot;https://www.nbcnewyork.com/news/coronavirus/person-in-nyc-tests-positive-for-covid-19-officials/2308155/&quot;&gt;First COVID-19 confirmed case was diagnosed in New York&lt;/a&gt;&lt;/h4&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;timeline-body&quot;&gt;&lt;p class=&quot;text-muted&quot;&gt;The first case of COVID-19 was confirmed in New York State on March 1, 2020, in a 39-year-old health care worker who had returned home to Manhattan from Iran on February 25.!&lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/li&gt;
+                &lt;li class=&quot;timeline-inverted&quot;&gt;
+                    &lt;div class=&quot;timeline-image&quot;&gt;&lt;img class=&quot;rounded-circle img-fluid&quot; src=&quot;assets/img/about/2.jpg&quot; alt=&quot;...&quot; /&gt;&lt;/div&gt;
+                    &lt;div class=&quot;timeline-panel&quot;&gt;
+                        &lt;div class=&quot;timeline-heading&quot;&gt;
+                            &lt;h4&gt;October 28th, 2020&lt;/h4&gt;
+                            &lt;h4 class=&quot;subheading&quot;&gt;&lt;a href=&quot;https://www.nbcnewyork.com/news/coronavirus/new-york-nears-a-half-million-confirmed-covid-cases-as-cluster-battle-continues/2691260/&quot;&gt;500,000+ Confirmed COVID-19 Cases in New York&lt;/a&gt;&lt;/h4&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;timeline-body&quot;&gt;&lt;p class=&quot;text-muted&quot;&gt;It was reported in October of 2020 that New York&#39;s total number of confirmed coronavirus cases was 500,677. Officials acknowledge the actual number of cases could be 10 times higher -- or more -- given testing and societal constraints!&lt;/p&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/li&gt;
+                &lt;li&gt;
+                    &lt;div class=&quot;timeline-image&quot;&gt;&lt;img class=&quot;rounded-circle img-fluid&quot; src=&quot;assets/img/about/3.jpg&quot; alt=&quot;...&quot; /&gt;&lt;/div&gt;
+                    &lt;div class=&quot;timeline-panel&quot;&gt;
+                        &lt;div class=&quot;timeline-heading&quot;&gt;
+                            &lt;h4&gt;December 14th, 2020&lt;/h4&gt;
+                            &lt;h4 class=&quot;subheading&quot;&gt;&lt;a href=&quot;https://abc7ny.com/covid-vaccine-coronavirus-pfizer-ny/8763858/&quot;&gt; 1st Vaccination in U.S. Is Given in New York, Hard Hit in Outbreak’s First Days.&lt;/a&gt;&lt;/h4&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;timeline-body&quot;&gt;&lt;p class=&quot;text-muted&quot;&gt;The first coronavirus vaccination in the United States took place on Monday morning in Queens, state officials said, signaling a turning point in the battle against a pandemic that has profoundly scarred New York, killing more than 35,000 people and severely weakening the economy.&lt;/p&gt;&lt;/div&gt;
+                        
+                        
+                    &lt;/div&gt;
+                &lt;/li&gt;
+                &lt;li class=&quot;timeline-inverted&quot;&gt;
+                    &lt;div class=&quot;timeline-image&quot;&gt;&lt;img class=&quot;rounded-circle img-fluid&quot; src=&quot;assets/img/about/4.jpg&quot; alt=&quot;...&quot; /&gt;&lt;/div&gt;
+                    &lt;div class=&quot;timeline-panel&quot;&gt;
+                        &lt;div class=&quot;timeline-heading&quot;&gt;
+                            &lt;h4&gt;August 14th, 2021&lt;/h4&gt;
+                            &lt;h4 class=&quot;subheading&quot;&gt;&lt;a href=&quot;https://www.nbcnewyork.com/news/local/nyc-passes-1-million-covid-19-cases-since-start-of-pandemic/3223757/&quot;&gt;New York City has crossed one million confirmed and probable COVID-19 cases, according to city data.&lt;/a&gt;&lt;/h4&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;timeline-body&quot;&gt;&lt;p class=&quot;text-muted&quot;&gt;The latest numbers come at a time when New Yorkers will have to start carrying their COVID-19 vaccine card or a digital copy to get into restaurants, bars, nightclubs and outdoor music festivals as the city, and country, begin to grapple with an increase of COVID-19 cases brought on by the delta variant.&lt;/p&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/li&gt;
+                &lt;li class=&quot;timeline-inverted&quot;&gt;
+                    &lt;div class=&quot;timeline-image&quot;&gt;
+                        &lt;h4&gt;
+                            &lt;br /&gt;
+                            ?
+                            &lt;br /&gt;
+                        &lt;/h4&gt;
+                    &lt;/div&gt;
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/section&gt;
+
+
+
+
+
+
+
+
+    &lt;!-- Team Member Information --&gt;
+    &lt;section class=&quot;page-section bg-light&quot; id=&quot;team&quot;&gt;
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;div class=&quot;text-center&quot;&gt;
+                &lt;h2 class=&quot;section-heading text-uppercase&quot;&gt;Our Amazing Team&lt;/h2&gt;
+
+
+
+                &lt;!--Enter Subheading here if we need a subheading--&gt;
+                &lt;h3 class=&quot;section-subheading text-muted&quot;&gt;&lt;/h3&gt;
+            &lt;/div&gt;
+            
+            
+            &lt;div class=&quot;row&quot;&gt;
+                &lt;div class=&quot;col-lg-4&quot;&gt;
+                    &lt;div class=&quot;team-member&quot;&gt;
+                        &lt;img class=&quot;mx-auto rounded-circle&quot; src=&quot;assets/img/team/1.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;h4&gt;Zachary Katz&lt;/h4&gt;
+                        &lt;p class=&quot;text-muted&quot;&gt;East Meadow, NY&lt;/p&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://github.com/zacharykatz1&quot;&gt;&lt;i class=&quot;fab fa-github&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://www.linkedin.com/in/zachary-katz-a741b434/&quot;&gt;&lt;i class=&quot;fab fa-linkedin&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                    &lt;/div&gt;
+                    
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4&quot;&gt;
+                    &lt;div class=&quot;team-member&quot;&gt;
+                        &lt;img class=&quot;mx-auto rounded-circle&quot; src=&quot;assets/img/team/2.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;h4&gt;Jimmy Kelliher&lt;/h4&gt;
+                        &lt;p class=&quot;text-muted&quot;&gt;Springfield, MA&lt;/p&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://github.com/jimmymkelliher&quot;&gt;&lt;i class=&quot;fab fa-github&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://www.linkedin.com/in/jimmymkelliher/&quot;&gt;&lt;i class=&quot;fab fa-linkedin&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                    &lt;/div&gt;
+                    
+                    
+                &lt;/div&gt;
+                    &lt;div class=&quot;col-lg-4&quot;&gt;
+                    &lt;div class=&quot;team-member&quot;&gt;
+                        &lt;img class=&quot;mx-auto rounded-circle&quot; src=&quot;assets/img/team/3.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;h4&gt;Tanvir Khan&lt;/h4&gt;
+                        &lt;p class=&quot;text-muted&quot;&gt;Los Angeles, CA&lt;/p&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://github.com/TanvirK41&quot;&gt;&lt;i class=&quot;fab fa-github&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://www.linkedin.com/in/tanvir-k-559139133/&quot;&gt;&lt;i class=&quot;fab fa-linkedin&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                    &lt;/div&gt;
+                    
+                    
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4&quot;&gt;
+                    &lt;div class=&quot;team-member&quot;&gt;
+                        &lt;img class=&quot;mx-auto rounded-circle&quot; src=&quot;assets/img/team/4.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;h4&gt;Hun Lee&lt;/h4&gt;
+                        &lt;p class=&quot;text-muted&quot;&gt;Busan, South Korea&lt;/p&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://github.com/Huneel7&quot;&gt;&lt;i class=&quot;fab fa-github&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://www.linkedin.com/in/hun-lee-7b5043225/&quot;&gt;&lt;i class=&quot;fab fa-linkedin&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                    &lt;/div&gt;
+                    
+                    
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4&quot;&gt;
+                    &lt;div class=&quot;team-member&quot;&gt;
+                        &lt;img class=&quot;mx-auto rounded-circle&quot; src=&quot;assets/img/team/5.jpg&quot; alt=&quot;...&quot; /&gt;
+                        &lt;h4&gt;Tucker Morgan&lt;/h4&gt;
+                        &lt;p class=&quot;text-muted&quot;&gt;Rocky Face, GA&lt;/p&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://github.com/tucker-l-morgan&quot;&gt;&lt;i class=&quot;fab fa-github&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                        &lt;a class=&quot;btn btn-dark btn-social mx-2&quot; href=&quot;https://www.linkedin.com/in/tuckermo/&quot;&gt;&lt;i class=&quot;fab fa-linkedin&quot;&gt;&lt;/i&gt;&lt;/a&gt;
+                    &lt;/div&gt;
+                
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;row&quot;&gt;
+
+              &lt;!--if we need to add subheading, we may do it here--&gt;
+                &lt;div class=&quot;col-lg-8 mx-auto text-center&quot;&gt;&lt;p class=&quot;large text-muted&quot;&gt;&lt;/p&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/section&gt;
+
+
+
+    &lt;!-- Footer--&gt;
+    &lt;footer class=&quot;footer py-4&quot;&gt;
+        &lt;div class=&quot;container&quot;&gt;
+            &lt;div class=&quot;row align-items-center&quot;&gt;
+                &lt;div class=&quot;col-lg-4 text-lg-start&quot;&gt;Copyright &amp;copy; Your Website 2021&lt;/div&gt;
+                &lt;div class=&quot;col-lg-4 my-3 my-lg-0&quot;&gt;
+                    &lt;a href=&quot;https://www.publichealth.columbia.edu/academics/departments/biostatistics&quot;&gt;&lt;img class=&quot;img-fluid img-brand d-block mx-auto&quot; src=&quot;assets/img/logos/CU.jpg&quot; alt=&quot;...&quot; /&gt;&lt;/a&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;col-lg-4 text-lg-end&quot;&gt;
+                    &lt;a class=&quot;link-dark text-decoration-none me-3&quot; href=&quot;#!&quot;&gt;Privacy Policy&lt;/a&gt;
+                    &lt;a class=&quot;link-dark text-decoration-none&quot; href=&quot;#!&quot;&gt;Terms of Use&lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/footer&gt;
+    
+    
+    
+    
+    &lt;!-- Project Modals--&gt;
+    &lt;!-- Portfolio item 1 Background Popup--&gt;
+    &lt;div class=&quot;portfolio-modal modal fade&quot; id=&quot;portfolioModal1&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;close-modal&quot; data-bs-dismiss=&quot;modal&quot;&gt;&lt;img src=&quot;assets/img/close-icon.svg&quot; alt=&quot;Close modal&quot; /&gt;&lt;/div&gt;
+                &lt;div class=&quot;container&quot;&gt;
+                    &lt;div class=&quot;row justify-content-center&quot;&gt;
+                        &lt;div class=&quot;col-lg-8&quot;&gt;
+                            &lt;div class=&quot;modal-body&quot;&gt;
+                                &lt;!-- Project details--&gt;
+                                &lt;h2 class=&quot;text-uppercase&quot;&gt;Background&lt;/h2&gt;
+                                &lt;p class=&quot;item-intro text-muted&quot;&gt;NYC COVID Trends&lt;/p&gt;
+                                &lt;img class=&quot;img-fluid d-block mx-auto&quot; src=&quot;assets/img/portfolio/1.jpg&quot; alt=&quot;...&quot; /&gt;
+                                &lt;p&gt;It’s difficult to overstate the extent to which the COVID-19 pandemic has tested the world’s public health infrastructure over the past two years. At the same time, the COVID-19 “experience” has manifested unequally -- not just country to country, but city to city, and even borough to borough.&lt;/p&gt;
+                               
+                                &lt;button class=&quot;btn btn-primary btn-xl text-uppercase&quot; data-bs-dismiss=&quot;modal&quot; type=&quot;button&quot;&gt;
+                                    &lt;i class=&quot;fas fa-times me-1&quot;&gt;&lt;/i&gt;
+                                    Close Window
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    
+    
+    &lt;!-- Portfolio item 2 Explore Popup--&gt;
+    &lt;div class=&quot;portfolio-modal modal fade&quot; id=&quot;portfolioModal2&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;close-modal&quot; data-bs-dismiss=&quot;modal&quot;&gt;&lt;img src=&quot;assets/img/close-icon.svg&quot; alt=&quot;Close modal&quot; /&gt;&lt;/div&gt;
+                &lt;div class=&quot;container&quot;&gt;
+                    &lt;div class=&quot;row justify-content-center&quot;&gt;
+                        &lt;div class=&quot;col-lg-8&quot;&gt;
+                            &lt;div class=&quot;modal-body&quot;&gt;
+                                &lt;!-- Project details--&gt;
+                                &lt;h2 class=&quot;text-uppercase&quot;&gt;Explore&lt;/h2&gt;
+                                &lt;p class=&quot;item-intro text-muted&quot;&gt;NYC COVID Trends&lt;/p&gt;
+                                &lt;img class=&quot;img-fluid d-block mx-auto&quot; src=&quot;assets/img/portfolio/2.jpg&quot; alt=&quot;...&quot; /&gt;
+                                &lt;p&gt;As one of the most heterogeneous urban areas in the world, New York City provides a fascinating case study into the ways socioeconomic status may be associated with, or even mediate, disparities in health outcomes.&lt;/p&gt;
+                                &lt;ul class=&quot;list-inline&quot;&gt;
+                                    &lt;li&gt;
+                                        &lt;strong&gt;Use the navbar at the top of this page to see different parts of our project.&lt;/strong&gt;
+                                    &lt;/li&gt;
+                                &lt;/ul&gt;
+                                &lt;button class=&quot;btn btn-primary btn-xl text-uppercase&quot; data-bs-dismiss=&quot;modal&quot; type=&quot;button&quot;&gt;
+                                    &lt;i class=&quot;fas fa-times me-1&quot;&gt;&lt;/i&gt;
+                                    Close Window
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    
+    
+    
+    &lt;!-- Portfolio item 3 Focus of our project popup--&gt;
+    &lt;div class=&quot;portfolio-modal modal fade&quot; id=&quot;portfolioModal3&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;close-modal&quot; data-bs-dismiss=&quot;modal&quot;&gt;&lt;img src=&quot;assets/img/close-icon.svg&quot; alt=&quot;Close modal&quot; /&gt;&lt;/div&gt;
+                &lt;div class=&quot;container&quot;&gt;
+                    &lt;div class=&quot;row justify-content-center&quot;&gt;
+                        &lt;div class=&quot;col-lg-8&quot;&gt;
+                            &lt;div class=&quot;modal-body&quot;&gt;
+                                &lt;!-- Project details--&gt;
+                                &lt;h2 class=&quot;text-uppercase&quot;&gt;Project Focus&lt;/h2&gt;
+                                &lt;p class=&quot;item-intro text-muted&quot;&gt;NYC COVID Trends&lt;/p&gt;
+                                &lt;img class=&quot;img-fluid d-block mx-auto&quot; src=&quot;assets/img/portfolio/3.jpg&quot; alt=&quot;...&quot; /&gt;
+                                &lt;p&gt;Knowing that socioeconomic factors have historically been associated with health outcomes, our aim was to examine relationships between a range of predictors (e.g. race/ethnicity, education, broadband internet access, household income / occupational income score, public vs. private health insurance) and COVID-19 health outcomes -- namely, hospitalizations, deaths, and vaccinations.&lt;/p&gt;
+
+                                &lt;button class=&quot;btn btn-primary btn-xl text-uppercase&quot; data-bs-dismiss=&quot;modal&quot; type=&quot;button&quot;&gt;
+                                    &lt;i class=&quot;fas fa-times me-1&quot;&gt;&lt;/i&gt;
+                                    Close Window
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    
+    
+    &lt;!-- Portfolio item 4 Main Questions popup--&gt;
+    &lt;div class=&quot;portfolio-modal modal fade&quot; id=&quot;portfolioModal4&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;close-modal&quot; data-bs-dismiss=&quot;modal&quot;&gt;&lt;img src=&quot;assets/img/close-icon.svg&quot; alt=&quot;Close modal&quot; /&gt;&lt;/div&gt;
+                &lt;div class=&quot;container&quot;&gt;
+                    &lt;div class=&quot;row justify-content-center&quot;&gt;
+                        &lt;div class=&quot;col-lg-8&quot;&gt;
+                            &lt;div class=&quot;modal-body&quot;&gt;
+                                &lt;!-- Project details--&gt;
+                                &lt;h2 class=&quot;text-uppercase&quot;&gt;Main Questions&lt;/h2&gt;
+                                &lt;p class=&quot;item-intro text-muted&quot;&gt;NYC COVID Trends&lt;/p&gt;
+                                &lt;img class=&quot;img-fluid d-block mx-auto&quot; src=&quot;assets/img/portfolio/4.jpg&quot; alt=&quot;...&quot; /&gt;
+                                &lt;p&gt;Our initial questions were centered on how demographic factors in New York City trend with COVID-19 outcomes. Particularly, what are the key demographic correlates (e.g. race/ethnicity, education) of COVID-19 hospitalizations or vaccinations? Broadly, we aimed to explore the myriad relationships between predictors and COVID-19 outcomes across New York City census tracts and boroughs.&lt;/p&gt;
+
+                                &lt;button class=&quot;btn btn-primary btn-xl text-uppercase&quot; data-bs-dismiss=&quot;modal&quot; type=&quot;button&quot;&gt;
+                                    &lt;i class=&quot;fas fa-times me-1&quot;&gt;&lt;/i&gt;
+                                    Close Window
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    
+    
+    &lt;!-- Portfolio item 5 Take Aways popup--&gt;
+    &lt;div class=&quot;portfolio-modal modal fade&quot; id=&quot;portfolioModal5&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;close-modal&quot; data-bs-dismiss=&quot;modal&quot;&gt;&lt;img src=&quot;assets/img/close-icon.svg&quot; alt=&quot;Close modal&quot; /&gt;&lt;/div&gt;
+                &lt;div class=&quot;container&quot;&gt;
+                    &lt;div class=&quot;row justify-content-center&quot;&gt;
+                        &lt;div class=&quot;col-lg-8&quot;&gt;
+                            &lt;div class=&quot;modal-body&quot;&gt;
+                                &lt;!-- Project details--&gt;
+                                &lt;h2 class=&quot;text-uppercase&quot;&gt;Take Aways&lt;/h2&gt;
+                                &lt;p class=&quot;item-intro text-muted&quot;&gt;NYC COVID Trends&lt;/p&gt;
+                                &lt;img class=&quot;img-fluid d-block mx-auto&quot; src=&quot;assets/img/portfolio/5.jpg&quot; alt=&quot;...&quot; /&gt;
+                                &lt;p&gt;In an analysis of correlations between predictors and outcomes across PUMA geographies, we found income to be strongly associated with COVID-19 hospitalizations (negative association), deaths (negative association), and vaccinations (positive association). We found that many indicators of socioeconomic status – including poverty level, welfare, unemployment, and food stamp utilization – seem highly negatively correlated with vaccination, but not with hospitalization and death.&lt;/p&gt;
+
+                                &lt;button class=&quot;btn btn-primary btn-xl text-uppercase&quot; data-bs-dismiss=&quot;modal&quot; type=&quot;button&quot;&gt;
+                                    &lt;i class=&quot;fas fa-times me-1&quot;&gt;&lt;/i&gt;
+                                    Close Window
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    
+    
+    
+    &lt;!-- Portfolio item 6 Data popup--&gt;
+    &lt;div class=&quot;portfolio-modal modal fade&quot; id=&quot;portfolioModal6&quot; tabindex=&quot;-1&quot; role=&quot;dialog&quot; aria-hidden=&quot;true&quot;&gt;
+        &lt;div class=&quot;modal-dialog&quot;&gt;
+            &lt;div class=&quot;modal-content&quot;&gt;
+                &lt;div class=&quot;close-modal&quot; data-bs-dismiss=&quot;modal&quot;&gt;&lt;img src=&quot;assets/img/close-icon.svg&quot; alt=&quot;Close modal&quot; /&gt;&lt;/div&gt;
+                &lt;div class=&quot;container&quot;&gt;
+                    &lt;div class=&quot;row justify-content-center&quot;&gt;
+                        &lt;div class=&quot;col-lg-8&quot;&gt;
+                            &lt;div class=&quot;modal-body&quot;&gt;
+                                &lt;!-- Project details--&gt;
+                                &lt;h2 class=&quot;text-uppercase&quot;&gt;Data Sources&lt;/h2&gt;
+                                &lt;p class=&quot;item-intro text-muted&quot;&gt;NYC COVID Trends&lt;/p&gt;
+                                &lt;img class=&quot;img-fluid d-block mx-auto&quot; src=&quot;assets/img/portfolio/6.jpg&quot; alt=&quot;...&quot; /&gt;
+                                &lt;p&gt;We obtained census data from the Integrated Public Use Microdata Series (IPUMS USA), COVID-19 outcome data from the New York City Department of Health and Mental Hygiene (NYC DOHMH), and used a crosswalk data set from Baruch College, City University of New York - Geoportal to combine these data.&lt;/p&gt;
+
+                                &lt;button class=&quot;btn btn-primary btn-xl text-uppercase&quot; data-bs-dismiss=&quot;modal&quot; type=&quot;button&quot;&gt;
+                                    &lt;i class=&quot;fas fa-times me-1&quot;&gt;&lt;/i&gt;
+                                    Close Window
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    
+    &lt;!-- Bootstrap core JS--&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- Core theme JS--&gt;
+    &lt;script src=&quot;js/scripts.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdn.startbootstrap.com/sb-forms-latest.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;</code></pre>
+</html>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
