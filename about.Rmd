@@ -8,4 +8,4 @@ output:
 
 # Our final project
 
-This awesome website is made by rmarkdown and other stuff, contributed by Zhengwei Song, Shangsi Lin, Runze Cui, 
+This awesome website is made by rmarkdown and other stuff, contributed by Zhengwei Song, Shangsi Lin, Runze Cui.... 
