@@ -1,5 +1,5 @@
 ---
-title: "DATA INTRODUCTION and FURTHER PROCESSING"
+title: "Data Introduction and Further Processing"
 output: 
   html_document: 
     toc: yes
