@@ -6,6 +6,6 @@ output:
     toc_float: true
 ---
 
-# This is Jeff's awesome website
+# Our final project
 
-This awesome website is made by rmarkdown and other stuff.
+This awesome website is made by rmarkdown and other stuff, contributed by Zhengwei Song, Shangsi Lin, Runze Cui, 

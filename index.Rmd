@@ -1,5 +1,5 @@
 ---
-title: "My awesome website"
+title: "Our awesome website"
 output: 
   html_document:
     toc: true
@@ -8,7 +8,7 @@ output:
 
 # This is final project
 
-I use [google](https://www.google.com/) to do all job.
+We use [google](https://www.google.com/) to do all job.
 
 Here's a direct link to the about page: 
 [about](about.html).
