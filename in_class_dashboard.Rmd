@@ -19,7 +19,7 @@ data("nyc_airbnb")
 
 nyc_airbnb =
   nyc_airbnb %>%
-  mutate(rating = review_scores_location /2) %>%
+  mutate(rating = review_scores_location/2) %>%
   select(
     borough = neighbourhood_group, neighbourhood, price, room_type, lat, long, rating) %>%
   filter(
