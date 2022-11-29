@@ -1,0 +1,26 @@
+---
+title: "Data proprecessing"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include = F}
+library(tidyverse)
+library(tidytext)  
+library(ggplot2)
+library(httr)
+library(rvest)
+library(lubridate)
+library(plotly)
+library(patchwork)
+library(lmtest)
+```
+
+```{r source, r, include = F}
+source("data_proprecessing_backbone.R")
+```
+
