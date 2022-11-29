@@ -1,5 +1,5 @@
 ---
-title: "Data introduction and further processing"
+title: "DATA INTRODUCTION and FURTHER PROCESSING"
 output: 
   html_document: 
     toc: yes
@@ -26,7 +26,7 @@ source("data_preprocessing_backbone.R")
 
 ## General
 
-Begin the data processing procedure by loading all of the interested dataframes from the internet, including `Age.csv`, `Demo.csv`,`16-plus.csv`, `12-plus.csv`, and `Post_stat.csv`.
+Begin the data processing procedure by loading all of the interested dataframes from the internet, including `Age.csv`, `Demo.csv`,`12-plus.csv`,`16-plus.csv`, and `Post_stat.csv`.
 
 ```{r warning = F, message = F}
 age_df = read_csv("data/age.csv")
@@ -38,7 +38,7 @@ post_stat = read_csv("data/post_stat.csv")
 
 ## Age, race and gender datasets
 
-`Age.csv` originally includes COVID-19 data related to multiple demographic groups including age group, race ethnicity, and gender. Thus, we decide to separate it into three distinct data frames, each describing on one demographic group. We also arranged the sequence of the columns by moving the 'date' variable in front of other variables to better match the sequence of other data frames in this study.
+`Age.csv` originally has `r nrow(age_df)` rows and `r ncol(age_df)` variables. It includes COVID-19 data such as total case, percent case, deaths in respect to three different demographic groups including age group, race ethnicity, and gender. Thus, we decide to separate it into three distinct data frames, each describing on one demographic group. We also arranged the sequence of the columns by moving the 'date' variable in front of other variables to better match the sequence of other data frames in this study.
 
 
 ```{r warning = F, message = F}
@@ -88,7 +88,7 @@ gender =
 
 ## Demographic dataset
 
-`Demo.csv` contains COVID-19 data of different demographic areas, mainly the different counties in the state of California, but it also includes COVID-19 data for the whole states. For our purposes, we decide to focus our analysis on comparing the COVID-19 data in different counties. Thus we decide to drop any rows with the area type of state. Then, delete the column `area_type` and rename the column `area` to `county_name`. We also decide to focus our analysis on the cumulative COVID-19 data instead of the changes per day. Thus we delete some columns including `total_test`, `positive_test`, `reported_cases`, `reported_deaths`, and `reported_tests`. Lastly, drop all of the rows containing N/A values.
+`Demo.csv` originally has `r nrow(demo_df)` rows and `r ncol(demo_df)` variables.It contains COVID-19 data belonging to different demographic areas, mainly the different counties in the state of California, but it also includes COVID-19 data for the whole states. For our purposes, we decide to focus our analysis on comparing the COVID-19 data in different counties. Thus we decide to drop any rows with the area type of state. Then, delete the column `area_type` and rename the column `area` to `county_name`. We also decide to focus our analysis on the cumulative COVID-19 data instead of the changes per day. Thus we delete some columns including `total_test`, `positive_test`, `reported_cases`, `reported_deaths`, and `reported_tests`. Lastly, drop all of the rows containing N/A values.The resulted data frame includes data such as the population, the cumulative cases, tests, and reported deaths of the county.
 
 
 ```{r warning = F, message = F}
@@ -109,7 +109,7 @@ demo =
 
 ## Post statistics categorized by age
 
-`12-plus.csv`, `16-plus.csv`, `Post_stat.csv` includes legacy table about COVID-19 status based on previous separation between standard vaccinated and boosted groups, with restriction on the age group above 16, above 12, and no restriction respectively. Since the `AREA` and `AREA_TYP` columns contain the exact information throughout all of these data frames, it is not valuable for our purpose and thus we remove them. We also removed six data rows before the date 02/07/2021 due to missing data in the `12-plus.csv` and `Post_stat.csv`.
+`12-plus.csv`, `16-plus.csv`, `Post_stat.csv` are legacy tables about COVID-19 status based on previous separation between standard vaccinated and boosted groups, with restriction on the age group above 16, above 12, and no restriction respectively. `12-plus.csv` originally has `r nrow(stat_12)` rows and `r ncol(stat_12)` variables. `16-plus.csv` originally has `r nrow(stat_16)` rows and `r ncol(stat_16)` variables. `Post_stat.csv` originally has `r nrow(post_stat)` rows and `r ncol(post_stat)` variables.Since the `AREA` and `AREA_TYP` columns contain the exact information throughout all of these data frames, it is not valuable for our purpose and thus we remove them. We also removed six data rows before the date 02/07/2021 due to missing data in the `12-plus.csv` and `Post_stat.csv`.
 
 ```{r warning = F, message = F}
 ## dataset of post_stat
