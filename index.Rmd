@@ -1,16 +1,139 @@
 ---
-title: "Our awesome website"
+title: "Data introduction and further processing"
 output: 
-  html_document:
-    toc: true
-    toc_float: true
+  html_document: 
+    toc: yes
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
-# This is final project
+```{r include = F}
+library(tidyverse)
+library(tidytext)  
+library(ggplot2)
+library(httr)
+library(rvest)
+library(lubridate)
+library(plotly)
+library(patchwork)
+library(lmtest)
+```
 
-We use [google](https://www.google.com/) to do all job.
+```{r source, r, include = F}
+source("data_preprocessing_backbone.R")
+```
 
-Here's a direct link to the about page: 
-[about](about.html).
+## General
 
-I also made a bonus [extra page](extra_page.html)
+Begin the data processing procedure by loading all of the interested dataframes from the internet, including `Age.csv`, `Demo.csv`,`16-plus.csv`, `12-plus.csv`, and `Post_stat.csv`.
+
+```{r warning = F, message = F}
+age_df = read_csv("data/age.csv")
+demo_df = read_csv("data/demo.csv")
+stat_12 = read_csv("data/12_plus.csv")
+stat_16 = read_csv("data/16_plus.csv")
+post_stat = read_csv("data/post_stat.csv")
+```
+
+## Age, race and gender datasets
+
+`Age.csv` originally includes COVID-19 data related to multiple demographic groups including age group, race ethnicity, and gender. Thus, we decide to separate it into three distinct data frames, each describing on one demographic group. We also arranged the sequence of the columns by moving the 'date' variable in front of other variables to better match the sequence of other data frames in this study.
+
+
+```{r warning = F, message = F}
+## dataset of age_df
+age =
+    age_df %>%
+    janitor::clean_names() %>%
+    filter(demographic_category == "Age Group") %>%
+    select(report_date,
+            demographic_value,
+            total_cases,
+            deaths,
+            percent_deaths,
+            percent_of_ca_population) %>%
+    drop_na() %>%
+    rename("age_group" = demographic_value,
+           "date" = report_date)
+
+race =
+    age_df %>%
+    janitor::clean_names() %>%
+    filter(demographic_category == "Race Ethnicity") %>%
+    select(report_date,
+           demographic_value,
+           total_cases,
+           deaths,
+           percent_deaths,
+           percent_of_ca_population) %>%
+    drop_na() %>%
+    rename("age_group" = demographic_value,
+           "date" = report_date)
+
+gender =
+    age_df %>%
+    janitor::clean_names() %>%
+    filter(demographic_category == "Gender") %>%
+    select(report_date,
+           demographic_value,
+           total_cases,
+           deaths,
+           percent_deaths,
+           percent_of_ca_population) %>%
+    drop_na() %>%
+    rename("age_group" = demographic_value,
+           "date" = report_date)
+```
+
+## Demographic dataset
+
+`Demo.csv` contains COVID-19 data of different demographic areas, mainly the different counties in the state of California, but it also includes COVID-19 data for the whole states. For our purposes, we decide to focus our analysis on comparing the COVID-19 data in different counties. Thus we decide to drop any rows with the area type of state. Then, delete the column `area_type` and rename the column `area` to `county_name`. We also decide to focus our analysis on the cumulative COVID-19 data instead of the changes per day. Thus we delete some columns including `total_test`, `positive_test`, `reported_cases`, `reported_deaths`, and `reported_tests`. Lastly, drop all of the rows containing N/A values.
+
+
+```{r warning = F, message = F}
+## dataset of demo
+demo_df = read_csv("data/demo.csv")
+
+demo =
+    demo_df %>%
+    filter(area_type == "County") %>%
+    select(-c(area_type, 
+              total_tests, 
+              positive_tests, 
+              reported_cases, 
+              reported_deaths, 
+              reported_tests)) %>%
+    rename("county_name" = area)
+```
+
+## Post statistics categorized by age
+
+`12-plus.csv`, `16-plus.csv`, `Post_stat.csv` includes legacy table about COVID-19 status based on previous separation between standard vaccinated and boosted groups, with restriction on the age group above 16, above 12, and no restriction respectively. Since the `AREA` and `AREA_TYP` columns contain the exact information throughout all of these data frames, it is not valuable for our purpose and thus we remove them. We also removed six data rows before the date 02/07/2021 due to missing data in the `12-plus.csv` and `Post_stat.csv`.
+
+```{r warning = F, message = F}
+## dataset of post_stat
+stat_12 = stat_12[-(1:6),]
+stat_12 =
+    stat_12 %>%
+    arrange(date, decreasing = F) %>%
+    select(-c(area_type, area))
+
+
+
+stat_16 = stat_16[-(1:6),]
+stat_16 =
+    stat_16 %>%
+    janitor::clean_names() %>%
+    arrange(date, decreasing = F) %>%
+    select(-c(area_type, area))
+
+post_stat = post_stat[-(1:6),]
+post_stat =
+    post_stat %>%
+    janitor::clean_names() %>%
+    arrange(date, decreasing = F) %>%
+    select(-c(area_type, area))
+
+```
+
