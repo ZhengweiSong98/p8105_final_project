@@ -1,32 +1,35 @@
-name: "Website Settings"
+name: "Our Website Settings"
 output_dir: "."
 navbar:
-  title: "Home"
-  left:
-
+  title: "Home: Data Description"
   right:
-    - text: Sections
+    - text: 'Descriptive analyses'
       menu:
-      - text: "Home"
-        href: index.html
-      - text: "Data Pre-Processing"
-        href: data_cleaning_and_merging.html
-      - text: "Exploratory Analysis"
-        href: exploratory_analysis.html
-      - text: "Statistical Analysis"
-        href: statistical_analysis.html
-      - text: "Additional Prediction"
-        href: additional_prediction.html
-      - text: "Interactive Map"
-        href: https://datasciencetk.shinyapps.io/COVID19-NYC-trends/
-      - text: "Trend Over Time (Dashboard)"
-        href: dashboard.html
-      - text: "Full Report"
-        href: project_report.html
-      - text: "Contact Us"
-        href: ProjectCode.html
-      - icon: fa-github fa-lg
-        href: https://github.com/jimmymkelliher/p8105_final
+      - text: 'Graphs'
+        href: frequencyI.html
+      - text: 't-test'
+        href: timeline-part.html
+    - text: 'Inference analyses'
+      menu:
+      - text: "Linear Model for mortality"
+        href:  statistical-analysis.html
+      - text: "Logistic Model for hospitality"
+        href: violation_covid.html
+      - text: "Lowess Model for vaccination rate"
+        href: violation_covid.html
+    - text: 'Additional prediction'
+      href: hydrant_mapping.html
+    - text: 'Project Report'
+      href: final_report.html
+    - text: 'Video'
+      href: https://youtu.be/QbPegpn8rK4
+    - text: 'References'
+      href: references.html
+    - icon: fa-github fa-lg
+      href: https://github.com/sarahyanwang/parking_violation.github.io
 output:
   html_document:
     theme: journal
+    toc : true
+    toc_float: true
+    code_folding: hide
