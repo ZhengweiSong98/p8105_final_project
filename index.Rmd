@@ -27,7 +27,10 @@ source("data_preprocessing_backbone.R")
 ## Introduction 
 COVID-19 has resulted in many long-term effects on societies all across the world, especially in areas with high population density such as the State of California. The motivation of our project is to investigate the trends of COVID-19 new cases development in the past in relation with factors like vaccine administration and demographic factors. We aim to eventually come up with conclusions that can identify vulnerable groups and areas to COVID-19 and offer suggestions for the protection of people against the disease. We are particularly interested in topics such as the relationship between county population size and COVID-19 prevalence, and the COVID-19 prevalence between different age groups. 
 
-Begin the data processing procedure by loading all of the interested dataframes from the internet, including `Age.csv`, `Demo.csv`,`12-plus.csv`,`16-plus.csv`, and `Post_stat.csv`.
+<img src="picture/index.jpg" style="width:95%">
+
+
+Begin the data processing procedure by loading all of the interested data frames from the internet, including `Age.csv`, `Demo.csv`,`12-plus.csv`,`16-plus.csv`, and `Post_stat.csv`.
 
 ```{r warning = F, message = F}
 age_df = read_csv("data/age.csv")

@@ -408,10 +408,22 @@ Processing</h1>
 </div>
 
 
-<div id="general" class="section level2">
-<h2>General</h2>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>COVID-19 has resulted in many long-term effects on societies all
+across the world, especially in areas with high population density such
+as the State of California. The motivation of our project is to
+investigate the trends of COVID-19 new cases development in the past in
+relation with factors like vaccine administration and demographic
+factors. We aim to eventually come up with conclusions that can identify
+vulnerable groups and areas to COVID-19 and offer suggestions for the
+protection of people against the disease. We are particularly interested
+in topics such as the relationship between county population size and
+COVID-19 prevalence, and the COVID-19 prevalence between different age
+groups.</p>
+<p><img src="picture/index.jpg" style="width:95%"></p>
 <p>Begin the data processing procedure by loading all of the interested
-dataframes from the internet, including <code>Age.csv</code>,
+data frames from the internet, including <code>Age.csv</code>,
 <code>Demo.csv</code>,<code>12-plus.csv</code>,<code>16-plus.csv</code>,
 and <code>Post_stat.csv</code>.</p>
 <pre class="r"><code>age_df = read_csv(&quot;data/age.csv&quot;)
@@ -430,7 +442,7 @@ distinct data frames, each describing on one demographic group. We also
 arranged the sequence of the columns by moving the ‘date’ variable in
 front of other variables to better match the sequence of other data
 frames in this study.</p>
-<pre class="r"><code>## dataset of age_df
+<pre class="r"><code>## datasets of age_df
 age =
     age_df %&gt;%
     janitor::clean_names() %&gt;%
@@ -480,11 +492,11 @@ contains COVID-19 data belonging to different demographic areas, mainly
 the different counties in the state of California, but it also includes
 COVID-19 data for the whole states. For our purposes, we decide to focus
 our analysis on comparing the COVID-19 data in different counties. Thus
-we decide to drop any rows with the area type of state. Then, delete the
-column <code>area_type</code> and rename the column <code>area</code> to
-<code>county_name</code>. We also decide to focus our analysis on the
-cumulative COVID-19 data instead of the changes per day. Thus we delete
-some columns including <code>total_test</code>,
+we decide to drop any rows with the <code>area_type</code> of state.
+Then, delete the column <code>area_type</code> and rename the column
+<code>area</code> to <code>county_name</code>. We also decide to focus
+our analysis on the cumulative COVID-19 data instead of the changes per
+day. Thus we delete some columns including <code>total_test</code>,
 <code>positive_test</code>, <code>reported_cases</code>,
 <code>reported_deaths</code>, and <code>reported_tests</code>. Lastly,
 drop all of the rows containing N/A values.The resulted data frame
@@ -518,7 +530,7 @@ contain the exact information throughout all of these data frames, it is
 not valuable for our purpose and thus we remove them. We also removed
 six data rows before the date 02/07/2021 due to missing data in the
 <code>12-plus.csv</code> and <code>Post_stat.csv</code>.</p>
-<pre class="r"><code>## dataset of post_stat
+<pre class="r"><code>## datasets of post_stat
 stat_12 = stat_12[-(1:6),]
 stat_12 =
     stat_12 %&gt;%
