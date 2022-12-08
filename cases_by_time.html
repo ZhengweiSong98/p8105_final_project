@@ -11,7 +11,7 @@
 
 
 
-<title>Here’s an extra page</title>
+<title>Cases by Time</title>
 
 <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -402,12 +402,109 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Here’s an extra page</h1>
+<h1 class="title toc-ignore">Cases by Time</h1>
 
 </div>
 
 
-<p>Just showing off at this point tbh</p>
+<div id="date-cleaning" class="section level2">
+<h2>date cleaning</h2>
+<pre class="r"><code>source(&quot;data_preprocessing_backbone.R&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+<pre><code>## Rows: 13267 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (2): demographic_category, demographic_value
+## dbl  (5): total_cases, percent_cases, deaths, percent_deaths, percent_of_ca_...
+## date (1): report_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 62647 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 532 Columns: 24
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (21): unvaccinated_cases, vaccinated_cases, boosted_cases, unvaccinated...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 286 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): AREA, AREA_TYPE
+## dbl  (14): UNVACCINATED_CASES, VACCINATED_CASES, UNVACCINATED_HOSP, VACCINAT...
+## date  (1): DATE
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 607 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (14): unvaccinated_cases, vaccinated_cases, unvaccinated_hosp, vaccinat...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 62647 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>logistic_cases = age %&gt;%
+    select(total_cases, date) %&gt;%
+    group_by(date) %&gt;%
+    summarize(total_cases=sum(total_cases)) %&gt;%
+    arrange(date) %&gt;%
+    mutate(day = 1:length(date)) %&gt;%
+    dplyr::select(-date) %&gt;%
+    relocate(total_cases)</code></pre>
+</div>
+<div id="including-plots" class="section level2">
+<h2>Including Plots</h2>
+<p>You can also embed plots, for example:</p>
+<pre><code>## 
+## Call:
+## glm(formula = total_cases ~ day, data = logistic_cases)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -1514896   -639420      7113    551925   2479622  
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1110271.5    70485.4  -15.75   &lt;2e-16 ***
+## day            13306.9      175.7   75.73   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 860119217028)
+## 
+##     Null deviance: 5.5275e+15  on 693  degrees of freedom
+## Residual deviance: 5.9520e+14  on 692  degrees of freedom
+## AIC: 21045
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p><img src="cases_by_time_files/figure-html/pressure-1.png" width="90%" /><img src="cases_by_time_files/figure-html/pressure-2.png" width="90%" /><img src="cases_by_time_files/figure-html/pressure-3.png" width="90%" /><img src="cases_by_time_files/figure-html/pressure-4.png" width="90%" /></p>
+</div>
 
 
 
