@@ -12,12 +12,6 @@ editor_options:
 library(tidyverse)
 library(ggridges)
 library(patchwork)
-library(performance)
-library(see)
-library(ggplot2)
-library(corrplot)
-library(scales)
-
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,
@@ -52,53 +46,45 @@ head(demo_raw)
 
 * The data includes `r nrow(demo_raw)` observations and `r ncol(demo_raw)` variables. Now we are interested on whether the death cases are associated with `area`, `population` and `testing_cases`.
 
-## Data Description
-```{r warning = F, message = F, fig.width = 16, fig.height = 10}
-point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+## Data description
+```{r warning = F, message = F}
 rawplot_death = demo_raw %>%
-    ggplot(aes(x = reported_deaths)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
-    scale_y_continuous(labels = point)
+    ggplot(aes(x=reported_deaths)) +
+    geom_density(fill="#69b3a2", color="#e9ecef", alpha=.8)
 
 rawplot_death_population = demo_raw %>%
-    ggplot(aes(x = population)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
-    scale_y_continuous(labels = point) +
-    scale_x_continuous(labels = point)
+    ggplot(aes(x=population)) +
+    geom_density(fill="#69b3a2", color="#e9ecef", alpha=.8)
 
 rawplot_death_tests = demo_raw %>%
-    ggplot(aes(x = total_tests)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
-    scale_y_continuous(labels = point) +
-    scale_x_continuous(labels = point)
+    ggplot(aes(x=total_tests)) +
+    geom_density(fill="#69b3a2", color="#e9ecef", alpha=.8)
 
 demo_death = demo_raw %>% 
-    mutate(ln_population = log(population + 0.01),
-           ln_total_tests = log(total_tests + 0.01),
-           ln_reported_deaths = log(reported_deaths + 0.01)) %>%
+    mutate(ln_population = log(population+0.01),
+           ln_total_tests = log(total_tests+0.01),
+           ln_reported_deaths = log(reported_deaths+0.01)) %>%
     dplyr::select(-population,-total_tests,-reported_deaths) %>%
     relocate(ln_reported_deaths)
 
 plot_death = demo_death %>%
-    ggplot(aes(x = ln_reported_deaths)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+    ggplot(aes(x=ln_reported_deaths)) +
+    geom_density(fill="#69b3a2", color="#e9ecef", alpha=.8)
 
 plot_death_population = demo_death %>%
-    ggplot(aes(x = ln_population)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+    ggplot(aes(x=ln_population)) +
+    geom_density(fill="#69b3a2", color="#e9ecef", alpha=.8)
 
 plot_death_tests = demo_death %>%
-    ggplot(aes(x = ln_total_tests)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+    ggplot(aes(x=ln_total_tests)) +
+    geom_density(fill="#69b3a2", color="#e9ecef", alpha=.8)
 
-(rawplot_death + rawplot_death_population + rawplot_death_tests)/(plot_death + plot_death_population + plot_death_tests)
+(rawplot_death + rawplot_death_population + rawplot_death_tests)/(plot_death+plot_death_population+plot_death_tests)
 
 demo_death %>%
     select(-area) %>%
     gtsummary::tbl_summary() %>%
-    gtsummary::bold_labels() %>%
-    as.tibble() %>% 
-    knitr::kable()
+    gtsummary::bold_labels()
 ```
 
 * The cleaned data includes `r nrow(demo_death)` states and `ncol(demo_death)` including `r names(demo_death)`. The data is extremely right-skewed and the natural logarithms are applied to each explortory continuous variables.
@@ -122,7 +108,7 @@ summary(reg_full)
 * As the interaction term has p-value < 0.05, we can conclude that ln(population) and ln(total_tests) have significant interaction at 0.05 significance level, hence the two variables will be included in the model with the interaction term.
 
 ## Modelling Diagnosis & Weighted Least Squares Regression
-```{r warning = F, message = F, fig.height = 10, fig.width = 10}
+```{r warning = F, message = F}
 sd_function <- lm(abs(reg_full$residuals) ~ reg_full$fitted.values)
 
 var_fitted <- sd_function$fitted.values^2
@@ -132,10 +118,9 @@ wt <- 1/var_fitted
 wls_death <- lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death, weights = wt)
 
 summary(wls_death)
-
-check_model(reg_full, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
-check_model(wls_death, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
-
+par(mfrow = c(2, 4))
+plot(reg_full)
+plot(wls_death)
 ```
 
 * Ordinary Least Squares violates normal assumption
