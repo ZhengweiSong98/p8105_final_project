@@ -52,7 +52,7 @@ race =
            percent_deaths,
            percent_of_ca_population) %>%
     drop_na() %>%
-    rename("age_group" = demographic_value,
+    rename("race_group" = demographic_value,
            "date" = report_date)
 
 gender =
