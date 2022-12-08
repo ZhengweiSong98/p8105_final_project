@@ -11,8 +11,8 @@ navbar:
         href: timeline-part.html
     - text: 'Inference analyses'
       menu:
-      - text: "Linear Model for mortality"
-        href:  statistical-analysis.html
+      - text: "Multiple Linear Model for death cases"
+        href:  mlr_death.html
       - text: "Logistic Model for hospitality"
         href: violation_covid.html
       - text: "Lowess Model for vaccination rate"
