@@ -32,7 +32,14 @@ Through analyzing extracted dataset, it is the hope of this investigation to fin
 #### Initial questions
 Our initial questions is how does different factors(e.g. Race, Age, Demographic factor, gender) influence on the hospitalization and disease odds for an individual or social group in the state of California. Particularly, does different sex groups have difference in their vaccination rate? In what parts of California tend to have the highest prevalence of the disease? How does the hospitalization rate differs among each racial group? Are teenagers being considered as a vulnerable group towards the virus, judging based on the data set we have? 
 
-### Data
+### Data 
 
-#### Source 
+All of the data used in this investigation originally came from [California Health and Human Service Open Data Portal](https://data.chhs.ca.gov/organization/california-department-of-public-health). This is a website with numerous databases, directly held by the department of public health, California. 
 
+The two specific datasets that will be used for this investigation later is listed below, extracted from the site by simply downloading them into the R project:
+
+https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state : This data set focuses at information such as demographic category, total cases, case percentage, death, and report date related to COVID-19 in different counties of the state of California.
+
+https://data.chhs.ca.gov/dataset/covid-19-post-vaccination-infection-data : This data set focuses on the COVID-19 disease information on vaccination status, including variables such as vaccinated cases vs. unvaccinated cases, vaccinated death vs. unvaccinated death.
+
+The data cleaning process is being presented in the index page, you can go to there by clicking on the button at the upper left corner.
