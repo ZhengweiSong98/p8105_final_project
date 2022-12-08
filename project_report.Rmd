@@ -7,4 +7,12 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
+## P8105：Project Report
+#### Runze Cui, Zhengwei Song, Shangsi Lin, Yunxi Yang, Jiahe Deng
+### Introduction
+#### Motivation
+With the spread of COVID-19 enters its third year, the human society seem to have accepted its existence and accepted it as part of our daily lives. However, that doesn't mean COVID has stopped its harm on the public. with the huge amount of studies on COVID-19 in multiple different disciplines of studies, researchers and scholars have understand its influence more than ever, and agreed on the fact that COVID has disproportionately harmed certain groups of people more than others due to [race, economic, or social status.](https://www.tandfonline.com/doi/full/10.1080/01419870.2020.1851382)
+With interest in investigating more on factors that can influence people's chances of getting the disease, the builders of this website decided to look specifically into one state of America: California. California is chosen due to its large geographic area, relatively large population size, and relatively modern infrastructures. It is likely that California's picture during the pandemic can be interpreted as a reference to other regions with high population across the world. Since COVID-19 is a highly transmissible disease to start with, this is ideal knowledge that analysts want to gain insight on.
 
+#### Related Work
+As stated in motivation, there are many published works focused on COVID since its first outbreak. To gain as much insight on the Initial questions as possible, the analysts mainly looked at literature related to COVID spreading in the region of California. [A particular paper](https://www.healthaffairs.org/doi/full/10.1377/hlthaff.2020.00598) was very valuable to this investigation as it analyzed 
