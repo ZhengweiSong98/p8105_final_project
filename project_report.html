@@ -13,7 +13,7 @@
 
 <title>Project Report</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -357,7 +350,7 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="statistical-analysis.html">Linear Model for mortality</a>
+      <a href="mlr_death.html">Multiple Linear Model for death cases</a>
     </li>
     <li>
       <a href="violation_covid.html">Logistic Model for hospitality</a>
@@ -407,7 +400,122 @@ div.tocify {
 </div>
 
 
-
+<div id="p8105project-report" class="section level2">
+<h2>P8105：Project Report</h2>
+<div id="runze-cui-zhengwei-song-shangsi-lin-yunxi-yang-jiahe-deng"
+class="section level4">
+<h4>Runze Cui, Zhengwei Song, Shangsi Lin, Yunxi Yang, Jiahe Deng</h4>
+</div>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<div id="motivation" class="section level4">
+<h4>Motivation</h4>
+<p>With the spread of COVID-19 enters its third year, the human society
+seem to have accepted its existence and accepted it as part of our daily
+lives. However, that doesn’t mean COVID has stopped its harm on the
+public. with the huge amount of studies on COVID-19 in multiple
+different disciplines of studies, researchers and scholars have
+understand its influence more than ever, and agreed on the fact that
+COVID has disproportionately harmed certain groups of people more than
+others due to <a
+href="https://www.tandfonline.com/doi/full/10.1080/01419870.2020.1851382">race,
+economic, or social status.</a></p>
+<p>With interest in investigating more on factors that can influence
+people’s chances of getting the disease, the builders of this website
+decided to look specifically into one state of America: California.
+California is chosen due to its large geographic area, relatively large
+population size, and relatively modern infrastructures. It is likely
+that California’s picture during the pandemic can be interpreted as a
+reference to other regions with high population across the world. Since
+COVID-19 is a highly transmissible disease to start with, this is ideal
+knowledge that analysts want to gain insight on.</p>
+</div>
+<div id="related-work" class="section level4">
+<h4>Related Work</h4>
+<p>As stated in motivation, there are many published works focused on
+COVID since its first outbreak. To gain as much insight on the Initial
+questions as possible, the analysts mainly looked at literature related
+to COVID spreading in the region of California.</p>
+<p><a
+href="https://www.healthaffairs.org/doi/full/10.1377/hlthaff.2020.00598">A
+particular paper</a> was very valuable to this investigation as it
+analyzed more than a thousand cases of COVID-19 patients in California
+during a time period that overlaps partly with our time period of
+investigation interest.It used multivariable logistic regression to
+assess the risk of hospitalization for the patients, which is also a
+regression method that this investigation intend to use. Thus, it was a
+very good reference literature.</p>
+<p>Since part of the data set that this study is based on are focused on
+different age groups and their chance of hospitalization and infection
+of COVID-19. One of the key factors that analysts are interested in is
+age. To understand this particular sector better, <a
+href="https://www.science.org/doi/full/10.1126/science.abe8372">this
+piece of literature</a> provided lots of information on the “source age
+group” of resurgence of cases during the pandemic, and offered insights
+on potential confonders that needs to be mentioned and discussed in this
+investigation.</p>
+<p>Apart from populations that gets the disease, it is also necessary to
+discuss the most popular measure for public to avoid getting the disease
+in the first place: vaccination. There are lots of published papers,
+articles, and <a
+href="https://www.gavi.org/covid19-vaccines?gclid=Cj0KCQiAkMGcBhCSARIsAIW6d0BUi9lbMMWwoJ7FTmCexEJBhB4GvVsFFIvKkecWwx0-56lMKlHI0wUaApzqEALw_wcB">websites</a>
+informing public the effect and basic knowledge about the vaccine.
+However, there are still groups of people who doesn’t take the vaccine
+due to many different reasons such as religion, personal beliefs,
+economic difficulties or hardship of getting access to the vaccine.</p>
+<p>Through analyzing extracted dataset, it is the hope of this
+investigation to find certain populations that are least likely to take
+the vaccine and propose potential future works to find out what caused
+the observed pattern. To better understand the process, analysts looked
+at <a
+href="https://www.cdc.gov/mmwr/volumes/71/wr/mm7104e1.htm?fbclid=IwAR0V9HbHoK8TZNZd5PptJoahzzS2qpwVCGAztIvAZzNNdPLweSaPWCYPnGU">a
+paper published on CDC official website</a> to gain valuable insights.It
+is mentioned in this work that the least vaccined group keeps changing
+as time pass by. suggesting that timeliness is something that should be
+considered in later discussion.</p>
+<p><a href="https://covid19.ca.gov/">The COVID website</a> created by
+the government of California is also a big inspiration in the creation
+process of this website, as builders designed part of the planning of
+this website while referring to it.</p>
+</div>
+<div id="initial-questions" class="section level4">
+<h4>Initial questions</h4>
+<p>Our initial questions is how does different factors(e.g. Race, Age,
+Demographic factor, gender) influence on the hospitalization and disease
+odds for an individual or social group in the state of California.
+Particularly, does different sex groups have difference in their
+vaccination rate? In what parts of California tend to have the highest
+prevalence of the disease? How does the hospitalization rate differs
+among each racial group? Are teenagers being considered as a vulnerable
+group towards the virus, judging based on the data set we have?</p>
+</div>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>All of the data used in this investigation originally came from <a
+href="https://data.chhs.ca.gov/organization/california-department-of-public-health">California
+Health and Human Service Open Data Portal</a>. This is a website with
+numerous databases, directly held by the department of public health,
+California.</p>
+<p>The two specific datasets that will be used for this investigation
+later is listed below, extracted from the site by simply downloading
+them into the R project:</p>
+<p><a
+href="https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state"
+class="uri">https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state</a>
+: This data set focuses at information such as demographic category,
+total cases, case percentage, death, and report date related to COVID-19
+in different counties of the state of California.</p>
+<p><a
+href="https://data.chhs.ca.gov/dataset/covid-19-post-vaccination-infection-data"
+class="uri">https://data.chhs.ca.gov/dataset/covid-19-post-vaccination-infection-data</a>
+: This data set focuses on the COVID-19 disease information on
+vaccination status, including variables such as vaccinated cases
+vs. unvaccinated cases, vaccinated death vs. unvaccinated death.</p>
+<p>The data cleaning process is being presented in the index page, you
+can go to there by clicking on the button at the upper left corner.</p>
+</div>
+</div>
 
 
 
