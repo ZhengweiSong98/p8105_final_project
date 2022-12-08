@@ -519,6 +519,8 @@ grid.arrange(
  
     race %&gt;%
     filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
     ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
     geom_bar(stat = &quot;identity&quot;, width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -535,11 +537,14 @@ grid.arrange(
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     scale_y_continuous(labels = point),
     
 
     race %&gt;% 
-    filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;)) %&gt;%   
+    filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
     ggplot(aes(x = total_cases, fill = race_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.3, aes(color = race_group)) +

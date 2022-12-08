@@ -176,6 +176,8 @@ grid.arrange(
  
     race %>%
     filter(!race_group %in% c("Total", "Other")) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
     ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -192,12 +194,15 @@ grid.arrange(
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     scale_y_continuous(labels = point),
     
 
 
     race %>% 
-    filter(!race_group %in% c("Total", "Other")) %>%   
+    filter(!race_group %in% c("Total", "Other")) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
     ggplot(aes(x = total_cases, fill = race_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.3, aes(color = race_group)) +
@@ -222,4 +227,5 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
                       c(1, 1, 2, 2, 2, 2, 2),
                       c(1, 1, 2, 2, 2, 2, 2)
 ))
+
 ```
