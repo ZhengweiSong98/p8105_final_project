@@ -6,9 +6,9 @@ navbar:
     - text: 'Descriptive analyses'
       menu:
       - text: 'Graphs'
-        href: frequencyI.html
+        href: graph.html
       - text: 't-test'
-        href: timeline-part.html
+        href: statistical_test.html
     - text: 'Inference analyses'
       menu:
       - text: "Multiple Linear Model for death cases"
