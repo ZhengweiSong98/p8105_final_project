@@ -412,15 +412,15 @@ Processing</h1>
 <h2>Introduction</h2>
 <p>COVID-19 has resulted in many long-term effects on societies all
 across the world, especially in areas with high population density such
-as the State of California. The motivation of our project is to
+as the State of California. The motivation of this project is to
 investigate the trends of COVID-19 new cases development in the past in
 relation with factors like vaccine administration and demographic
-factors. We aim to eventually come up with conclusions that can identify
-vulnerable groups and areas to COVID-19 and offer suggestions for the
-protection of people against the disease. We are particularly interested
-in topics such as the relationship between county population size and
-COVID-19 prevalence, and the COVID-19 prevalence between different age
-groups.</p>
+factors. This project aims to eventually come up with conclusions that
+can identify vulnerable groups and areas to COVID-19 and offer
+suggestions for the protection of people against the disease. This
+project is particularly interested in topics such as the relationship
+between county population size and COVID-19 prevalence, and the COVID-19
+prevalence between different age groups.</p>
 <p><img src="picture/index.jpg" style="width:95%"></p>
 <p>Begin the data processing procedure by loading all of the interested
 data frames from the internet, including <code>Age.csv</code>,
@@ -437,11 +437,11 @@ post_stat = read_csv(&quot;data/post_stat.csv&quot;)</code></pre>
 <p><code>Age.csv</code> originally has 13267 rows and 8 variables. It
 includes COVID-19 data such as total case, percent case, deaths in
 respect to three different demographic groups including age group, race
-ethnicity, and gender. Thus, we decide to separate it into three
-distinct data frames, each describing on one demographic group. We also
-arranged the sequence of the columns by moving the ‘date’ variable in
-front of other variables to better match the sequence of other data
-frames in this study.</p>
+ethnicity, and gender. Thus, analysts decide to separate it into three
+distinct data frames, each describing on one demographic group.
+Subsequently, arranged the sequence of the columns by moving the ‘date’
+variable in front of other variables to better match the sequence of
+other data frames in this study.</p>
 <pre class="r"><code>## datasets of age_df
 age =
     age_df %&gt;%
@@ -490,18 +490,18 @@ gender =
 <p><code>Demo.csv</code> originally has 62647 rows and 17 variables.It
 contains COVID-19 data belonging to different demographic areas, mainly
 the different counties in the state of California, but it also includes
-COVID-19 data for the whole states. For our purposes, we decide to focus
-our analysis on comparing the COVID-19 data in different counties. Thus
-we decide to drop any rows with the <code>area_type</code> of state.
-Then, delete the column <code>area_type</code> and rename the column
-<code>area</code> to <code>county_name</code>. We also decide to focus
-our analysis on the cumulative COVID-19 data instead of the changes per
-day. Thus we delete some columns including <code>total_test</code>,
-<code>positive_test</code>, <code>reported_cases</code>,
-<code>reported_deaths</code>, and <code>reported_tests</code>. Lastly,
-drop all of the rows containing N/A values.The resulted data frame
-includes data such as the population, the cumulative cases, tests, and
-reported deaths of the county.</p>
+COVID-19 data for the whole states. For our purposes, analysts decide to
+focus our analysis on comparing the COVID-19 data in different counties.
+Thus analysts decide to drop any rows with the <code>area_type</code> of
+state. Then, delete the column <code>area_type</code> and rename the
+column <code>area</code> to <code>county_name</code>. Analysts also
+decide to focus the analysis on the cumulative COVID-19 data instead of
+the changes per day. Then, delete some columns including
+<code>total_test</code>, <code>positive_test</code>,
+<code>reported_cases</code>, <code>reported_deaths</code>, and
+<code>reported_tests</code>. Lastly, drop all of the rows containing N/A
+values.The resulted data frame includes data such as the population, the
+cumulative cases, tests, and reported deaths of the county.</p>
 <pre class="r"><code>## dataset of demo
 demo_df = read_csv(&quot;data/demo.csv&quot;)
 

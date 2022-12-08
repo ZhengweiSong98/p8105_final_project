@@ -25,7 +25,7 @@ source("data_preprocessing_backbone.R")
 ```
 
 ## Introduction 
-COVID-19 has resulted in many long-term effects on societies all across the world, especially in areas with high population density such as the State of California. The motivation of our project is to investigate the trends of COVID-19 new cases development in the past in relation with factors like vaccine administration and demographic factors. We aim to eventually come up with conclusions that can identify vulnerable groups and areas to COVID-19 and offer suggestions for the protection of people against the disease. We are particularly interested in topics such as the relationship between county population size and COVID-19 prevalence, and the COVID-19 prevalence between different age groups. 
+COVID-19 has resulted in many long-term effects on societies all across the world, especially in areas with high population density such as the State of California. The motivation of this project is to investigate the trends of COVID-19 new cases development in the past in relation with factors like vaccine administration and demographic factors. This project aims to eventually come up with conclusions that can identify vulnerable groups and areas to COVID-19 and offer suggestions for the protection of people against the disease. This project is particularly interested in topics such as the relationship between county population size and COVID-19 prevalence, and the COVID-19 prevalence between different age groups. 
 
 <img src="picture/index.jpg" style="width:95%">
 
@@ -42,7 +42,7 @@ post_stat = read_csv("data/post_stat.csv")
 
 ## Age, race and gender datasets
 
-`Age.csv` originally has `r nrow(age_df)` rows and `r ncol(age_df)` variables. It includes COVID-19 data such as total case, percent case, deaths in respect to three different demographic groups including age group, race ethnicity, and gender. Thus, we decide to separate it into three distinct data frames, each describing on one demographic group. We also arranged the sequence of the columns by moving the 'date' variable in front of other variables to better match the sequence of other data frames in this study.
+`Age.csv` originally has `r nrow(age_df)` rows and `r ncol(age_df)` variables. It includes COVID-19 data such as total case, percent case, deaths in respect to three different demographic groups including age group, race ethnicity, and gender. Thus, analysts decide to separate it into three distinct data frames, each describing on one demographic group. Subsequently, arranged the sequence of the columns by moving the 'date' variable in front of other variables to better match the sequence of other data frames in this study.
 
 
 ```{r warning = F, message = F}
@@ -92,7 +92,7 @@ gender =
 
 ## Demographic dataset
 
-`Demo.csv` originally has `r nrow(demo_df)` rows and `r ncol(demo_df)` variables.It contains COVID-19 data belonging to different demographic areas, mainly the different counties in the state of California, but it also includes COVID-19 data for the whole states. For our purposes, we decide to focus our analysis on comparing the COVID-19 data in different counties. Thus we decide to drop any rows with the `area_type` of state. Then, delete the column `area_type` and rename the column `area` to `county_name`. We also decide to focus our analysis on the cumulative COVID-19 data instead of the changes per day. Thus we delete some columns including `total_test`, `positive_test`, `reported_cases`, `reported_deaths`, and `reported_tests`. Lastly, drop all of the rows containing N/A values.The resulted data frame includes data such as the population, the cumulative cases, tests, and reported deaths of the county.
+`Demo.csv` originally has `r nrow(demo_df)` rows and `r ncol(demo_df)` variables.It contains COVID-19 data belonging to different demographic areas, mainly the different counties in the state of California, but it also includes COVID-19 data for the whole states. For our purposes, analysts decide to focus our analysis on comparing the COVID-19 data in different counties. Thus analysts decide to drop any rows with the `area_type` of state. Then, delete the column `area_type` and rename the column `area` to `county_name`. Analysts also decide to focus the analysis on the cumulative COVID-19 data instead of the changes per day. Then, delete some columns including `total_test`, `positive_test`, `reported_cases`, `reported_deaths`, and `reported_tests`. Lastly, drop all of the rows containing N/A values.The resulted data frame includes data such as the population, the cumulative cases, tests, and reported deaths of the county.
 
 
 ```{r warning = F, message = F}
