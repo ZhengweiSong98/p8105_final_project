@@ -380,7 +380,7 @@ div.tocify {
   <a href="references.html">References</a>
 </li>
 <li>
-  <a href="https://github.com/sarahyanwang/parking_violation.github.io">
+  <a href="https://github.com/charksong/p8105_final_project">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -464,7 +464,6 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
 grid.arrange(
  
     gender %&gt;% 
-    filter(!gender %in% c(&quot;Total&quot;, &quot;Unknown&quot;)) %&gt;% 
     ggplot(aes(x = gender, y = total_cases, fill = gender)) +
     geom_bar(stat = &quot;identity&quot;, width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -484,7 +483,6 @@ grid.arrange(
     scale_y_continuous(labels = point),
 
     gender %&gt;% 
-    filter(!gender %in% c(&quot;Total&quot;, &quot;Unknown&quot;)) %&gt;% 
     ggplot(aes(x = total_cases, fill = gender)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.3, aes(color = gender)) +
@@ -518,7 +516,6 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
 grid.arrange(
  
     race %&gt;%
-    filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;)) %&gt;% 
     mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
            &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
     ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
@@ -537,12 +534,13 @@ grid.arrange(
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
-    scale_y_continuous(labels = point),
+    scale_y_continuous(labels = point) +
+    theme(axis.title.x = element_blank(),
+         axis.text.x = element_blank(),
+         axis.ticks.x = element_blank()),
     
 
     race %&gt;% 
-    filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;)) %&gt;% 
     mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
            &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
     ggplot(aes(x = total_cases, fill = race_group)) +
@@ -551,7 +549,7 @@ grid.arrange(
     scale_color_viridis(discrete = TRUE) +
     labs(x = &quot;Total cases&quot;,
          y = &quot;Density&quot;) +
-    theme(legend.position = &quot;right&quot;) +
+    theme(legend.position = &quot;left&quot;) +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, &#39;cm&#39;),
           legend.text = element_text(size = 4)) +
@@ -559,10 +557,11 @@ grid.arrange(
           axis.title.x = element_text(size = 6),
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +  
-    scale_x_continuous(labels = point) +
-    scale_y_continuous(labels = point),
-  
+          axis.text.y = element_text(size = 5)) + 
+    xlim(0, 3.0e6) +   
+    ylim(0, 2.0e-5),
+   
+    
 
 
 layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
@@ -570,6 +569,7 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
                       c(1, 1, 2, 2, 2, 2, 2)
 ))</code></pre>
 <p><img src="graph_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>[Text]</p>
 </div>
 
 

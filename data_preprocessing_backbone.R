@@ -53,7 +53,8 @@ race =
            percent_of_ca_population) %>%
     drop_na() %>%
     rename("race_group" = demographic_value,
-           "date" = report_date)
+           "date" = report_date) %>%
+    filter(!race_group %in% c("Total", "Other"))
 
 gender =
     age_df %>%
@@ -67,7 +68,8 @@ gender =
            percent_of_ca_population) %>%
     drop_na() %>%
     rename("gender" = demographic_value,
-           "date" = report_date)
+           "date" = report_date) %>%
+    filter(!gender %in% c("Total", "Unknown"))
 
 
 ## dataset of post_stat

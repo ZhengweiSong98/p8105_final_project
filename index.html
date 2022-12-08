@@ -380,7 +380,7 @@ div.tocify {
   <a href="references.html">References</a>
 </li>
 <li>
-  <a href="https://github.com/sarahyanwang/parking_violation.github.io">
+  <a href="https://github.com/charksong/p8105_final_project">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -470,7 +470,8 @@ race =
            percent_of_ca_population) %&gt;%
     drop_na() %&gt;%
     rename(&quot;race_group&quot; = demographic_value,
-           &quot;date&quot; = report_date)
+           &quot;date&quot; = report_date) %&gt;% 
+    filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;))
 
 gender =
     age_df %&gt;%
@@ -484,7 +485,8 @@ gender =
            percent_of_ca_population) %&gt;%
     drop_na() %&gt;%
     rename(&quot;gender&quot; = demographic_value,
-           &quot;date&quot; = report_date)</code></pre>
+           &quot;date&quot; = report_date) %&gt;% 
+    filter(!gender %in% c(&quot;Total&quot;, &quot;Unknown&quot;))</code></pre>
 </div>
 <div id="demographic-dataset" class="section level2">
 <h2>Demographic dataset</h2>
