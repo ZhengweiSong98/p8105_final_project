@@ -434,7 +434,7 @@ grid.arrange(
     age %&gt;% 
     ggplot(aes(x = total_cases, fill = age_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
-    geom_density(alpha = 0, aes(color = age_group)) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
     scale_color_viridis(discrete = TRUE) +
     labs(x = &quot;Total cases&quot;,
          y = &quot;Density&quot;) +
@@ -456,6 +456,58 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
                       c(1, 1, 2, 2, 2, 2, 2)
 ))</code></pre>
 <p><img src="graph_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>[Text]</p>
+</div>
+<div id="gender-vs-total-cases" class="section level2">
+<h2>Gender vs Total Cases</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    gender %&gt;% 
+    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Gender&quot;) +
+    ylab(&quot;Total cases&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point),
+
+    gender %&gt;% 
+    ggplot(aes(x = total_cases, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Total cases&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
+                      c(1, 1, 2, 2, 2, 2, 2),
+                      c(1, 1, 2, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>[Text]</p>
 </div>
 
 

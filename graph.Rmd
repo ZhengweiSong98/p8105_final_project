@@ -82,7 +82,7 @@ grid.arrange(
     age %>% 
     ggplot(aes(x = total_cases, fill = age_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
-    geom_density(alpha = 0, aes(color = age_group)) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
     scale_color_viridis(discrete = TRUE) +
     labs(x = "Total cases",
          y = "Density") +
@@ -106,4 +106,59 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
     
 ```
 
+[Text]
 
+## Gender vs Total Cases
+
+```{r warning = F, Fig.width = 45, Fig.height = 10}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    gender %>% 
+    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Total cases") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point),
+
+
+    gender %>% 
+    ggplot(aes(x = total_cases, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Total cases",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
+                      c(1, 1, 2, 2, 2, 2, 2),
+                      c(1, 1, 2, 2, 2, 2, 2)
+))
+    
+```
+
+[Text]
