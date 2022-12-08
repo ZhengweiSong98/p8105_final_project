@@ -7,8 +7,8 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-## P8105：Project Report
-#### Runze Cui, Zhengwei Song, Shangsi Lin, Yunxi Yang, Jiahe Deng
+## P8105：Final Project Report
+#### Runze Cui (rc3521), Zhengwei Song (zs2539), Shangsi Lin (sl5232), Yunxi Yang (yy3297), Jiahe Deng (jd3924)
 ### Introduction
 #### Motivation
 With the spread of COVID-19 enters its third year, the human society seem to have accepted its existence and accepted it as part of our daily lives. However, that doesn't mean COVID has stopped its harm on the public. with the huge amount of studies on COVID-19 in multiple different disciplines of studies, researchers and scholars have understand its influence more than ever, and agreed on the fact that COVID has disproportionately harmed certain groups of people more than others due to [race, economic, or social status.](https://www.tandfonline.com/doi/full/10.1080/01419870.2020.1851382)
