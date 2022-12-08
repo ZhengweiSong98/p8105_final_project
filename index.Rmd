@@ -59,7 +59,8 @@ age =
             percent_of_ca_population) %>%
     drop_na() %>%
     rename("age_group" = demographic_value,
-           "date" = report_date)
+           "date" = report_date) %>% 
+    filter(!age_group %in% c("missing", "Missing","Total"))
 
 race =
     age_df %>%

@@ -1,5 +1,5 @@
 ---
-title: "t test"
+title: "Statistical test"
 output: 
   html_document: 
     toc: yes
