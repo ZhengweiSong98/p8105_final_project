@@ -28,3 +28,11 @@ Apart from populations that gets the disease, it is also necessary to discuss th
 Through analyzing extracted dataset, it is the hope of this investigation to find certain populations that are least likely to take the vaccine and propose potential future works to find out what caused the observed pattern. To better understand the process, analysts looked at [a paper published on CDC official website](https://www.cdc.gov/mmwr/volumes/71/wr/mm7104e1.htm?fbclid=IwAR0V9HbHoK8TZNZd5PptJoahzzS2qpwVCGAztIvAZzNNdPLweSaPWCYPnGU) to gain valuable insights.It is mentioned in this work that the least vaccined group keeps changing as time pass by. suggesting that timeliness is something that should be considered in later discussion.
 
 [The COVID website](https://covid19.ca.gov/) created by the government of California is also a big inspiration in the creation process of this website, as builders designed part of the planning of this website while referring to it.
+
+#### Initial questions
+Our initial questions is how does different factors(e.g. Race, Age, Demographic factor, gender) influence on the hospitalization and disease odds for an individual or social group in the state of California. Particularly, does different sex groups have difference in their vaccination rate? In what parts of California tend to have the highest prevalence of the disease? How does the hospitalization rate differs among each racial group? Are teenagers being considered as a vulnerable group towards the virus, judging based on the data set we have? 
+
+### Data
+
+#### Source 
+
