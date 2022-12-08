@@ -18,11 +18,11 @@ navbar:
       - text: "Lowess Model for vaccination rate"
         href: violation_covid.html
     - text: 'Additional prediction'
-      href: hydrant_mapping.html
+      href: shiny_app.html
     - text: 'Project Report'
       href: project_report.html
-    - text: 'Video'
-      href: https://youtu.be/QbPegpn8rK4
+    - text: 'Shiny'
+      href: https://zhengweisong.shinyapps.io/shiny_dashboard/
     - text: 'References'
       href: references.html
     - icon: fa-github fa-lg
