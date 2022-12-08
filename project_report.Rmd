@@ -1,0 +1,10 @@
+---
+title: "Project Report"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
+---
+

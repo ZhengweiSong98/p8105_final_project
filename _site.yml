@@ -20,7 +20,7 @@ navbar:
     - text: 'Additional prediction'
       href: hydrant_mapping.html
     - text: 'Project Report'
-      href: final_report.html
+      href: project_report.html
     - text: 'Video'
       href: https://youtu.be/QbPegpn8rK4
     - text: 'References'
