@@ -52,7 +52,7 @@ head(demo_raw)
 
 * The data includes `r nrow(demo_raw)` observations and `r ncol(demo_raw)` variables. Now we are interested on whether the death cases are associated with `area`, `population` and `testing_cases`.
 
-## Data description
+## Data Description
 ```{r warning = F, message = F, fig.width = 16, fig.height = 10}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 rawplot_death = demo_raw %>%
