@@ -464,6 +464,7 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
 grid.arrange(
  
     gender %&gt;% 
+    filter(!gender %in% c(&quot;Total&quot;, &quot;Unknown&quot;)) %&gt;% 
     ggplot(aes(x = gender, y = total_cases, fill = gender)) +
     geom_bar(stat = &quot;identity&quot;, width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -483,6 +484,7 @@ grid.arrange(
     scale_y_continuous(labels = point),
 
     gender %&gt;% 
+    filter(!gender %in% c(&quot;Total&quot;, &quot;Unknown&quot;)) %&gt;% 
     ggplot(aes(x = total_cases, fill = gender)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.3, aes(color = gender)) +

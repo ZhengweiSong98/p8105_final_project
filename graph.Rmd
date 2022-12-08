@@ -115,6 +115,7 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
     gender %>% 
+    filter(!gender %in% c("Total", "Unknown")) %>% 
     ggplot(aes(x = gender, y = total_cases, fill = gender)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -135,6 +136,7 @@ grid.arrange(
 
 
     gender %>% 
+    filter(!gender %in% c("Total", "Unknown")) %>% 
     ggplot(aes(x = total_cases, fill = gender)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.3, aes(color = gender)) +
