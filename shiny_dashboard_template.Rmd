@@ -11,6 +11,7 @@ runtime: shiny
 library(flexdashboard)
 library(tidyverse)
 library(broom)
+library(shiny)
 ```
 
 Column {.sidebar}
