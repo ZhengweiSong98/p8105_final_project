@@ -192,6 +192,7 @@ grid.arrange(
         theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     theme(
           axis.title.x = element_text(size = 6),
           axis.text.x = element_text(size = 5),
@@ -305,32 +306,63 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 [Text]
 
 
+## Age vs Death Rate
+
+```{r warning = F}
+age %>% 
+    mutate(date = factor(date)) %>%
+    mutate(text_label = str_c("Date: ", date, 
+                              "\n Age: ", age_group,
+                              "\n Death(%): ", percent_deaths)) %>%
+    plot_ly(y = ~percent_deaths, 
+          x = ~date, 
+          color = ~age_group, 
+          width = 950,
+          height = 500, 
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 3),
+          colors = "inferno",
+          text = ~ text_label) %>%
+    layout(xaxis = list(
+           title = "Date",
+           tickangle = 60),
+           yaxis = list(
+           title = "Death Rate"))
+```
+
+[Text]
+
+## Gender vs Death Rate
 
 
+```{r warning = F}
+gender %>% 
+    mutate(date = factor(date)) %>%
+    mutate(text_label = str_c("Date: ", date, 
+                              "\n Gender: ", gender,
+                              "\n Death(%): ", percent_deaths)) %>%
+    plot_ly(y = ~percent_deaths, 
+          x = ~date, 
+          color = ~gender, 
+          width = 950,
+          height = 500, 
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 3),
+          colors = "viridis",
+          text = ~ text_label) %>%
+    layout(xaxis = list(
+           title = "Date",
+           tickangle = 60),
+           yaxis = list(
+           title = "Death Rate"))
+```
+
+[Text]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Race vs Dealth Rate
+## Race vs Death Rate 
 
 ```{r warning = F}
 race %>% 
