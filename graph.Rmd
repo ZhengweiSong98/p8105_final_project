@@ -131,6 +131,68 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
     
 ```
 
+
+
+```{r}
+# Highest Total cases
+age_17 = 
+  age %>% 
+  filter(age_group == "0-17") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+
+age_49 =
+  age %>% 
+  filter(age_group == "18-49") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) 
+
+age_64 = 
+  age %>% 
+  filter(age_group == "50-64") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+age_65 =
+  age %>% 
+  filter(age_group == "65+") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+age_all = 
+    rbind(age_17, age_49, age_64, age_65) %>% 
+    arrange(desc(growth_perc)) %>% 
+    select(date, age_group, total_cases, growth_perc)
+
+head(age_all) %>% 
+    knitr::kable(
+    caption = "Highest total cases growth rate by age",
+    col.names = c("Date", "Age", "Total cases", "Growth rate"),
+    digits = 2
+  )
+```
+
+
+```{r}
+age_all_low = 
+    rbind(age_17, age_49, age_64, age_65) %>% 
+    arrange(growth_perc) %>% 
+    select(date, age_group, total_cases, growth_perc)
+
+head(age_all_low) %>% 
+    knitr::kable(
+    caption = "Lowest total cases growth rate by age",
+    col.names = c("Date", "Age", "Total cases", "Growth rate"),
+    digits = 2
+  )
+```
+
+
 [Text] Note: the red line of boxplot is median
 
 ## Gender vs Total Cases
@@ -209,6 +271,47 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
                       c(3, 3, 3, 2, 2, 2, 2)
 ))
     
+```
+
+```{r}
+gender_M =
+  gender %>% 
+  filter(gender == "Male") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+gender_F =
+  gender %>% 
+  filter(gender == "Female") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+gender_all =
+    rbind(gender_M, gender_F) %>%
+    arrange(desc(growth_perc)) %>% 
+    select(date, gender, total_cases, growth_perc)
+
+head(gender_all) %>% 
+    knitr::kable(
+    caption = "Highest total cases growth rate by gender",
+    col.names = c("Date", "Gender", "Total cases", "Growth rate"),
+    digits = 2
+  )
+```
+
+```{r}
+gender_all_1 =
+    rbind(gender_M, gender_F) %>%
+    arrange(growth_perc) %>% 
+    select(date, gender, total_cases, growth_perc)
+head(gender_all_1) %>% 
+    knitr::kable(
+    caption = "Lowest total cases growth rate by gender",
+    col.names = c("Date", "Gender", "Total cases", "Growth rate"),
+    digits = 2
+  )
 ```
 
 [Text]
@@ -306,8 +409,13 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
                       c(3, 3, 3, 2, 2, 2, 2)
 ))
     
-
 ```
+
+(table for race and demo have not finished yet)
+
+
+
+
 
 [Text]
 
@@ -516,5 +624,10 @@ demo %>%
 ```
 
 [Text: Note: states users can use our dashboard to research this]
+
+
+
+
+
 
 
