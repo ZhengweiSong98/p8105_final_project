@@ -106,7 +106,8 @@ demo_df = read_csv("data/demo.csv")
 demo =
     demo_df %>%
     filter(area_type == "County") %>%
-    select(-c(area_type, total_tests, positive_tests, reported_cases, reported_deaths, reported_tests)) %>%
-    rename("county_name" = area)
+    select(-c(area_type, total_tests, reported_tests)) %>%
+    rename("county_name" = area) %>%
+    filter(!county_name  %in% c("Unknown"))
 
 

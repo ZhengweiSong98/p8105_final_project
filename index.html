@@ -502,13 +502,9 @@ demo_df = read_csv(&quot;data/demo.csv&quot;)
 demo =
     demo_df %&gt;%
     filter(area_type == &quot;County&quot;) %&gt;%
-    select(-c(area_type, 
-              total_tests, 
-              positive_tests, 
-              reported_cases, 
-              reported_deaths, 
-              reported_tests)) %&gt;%
-    rename(&quot;county_name&quot; = area)</code></pre>
+    select(-c(area_type, total_tests, reported_tests)) %&gt;%
+    rename(&quot;county_name&quot; = area) %&gt;% 
+    filter(!county_name  %in% c(&quot;Unknown&quot;))</code></pre>
 </div>
 <div id="post-statistics-categorized-by-age" class="section level2">
 <h2>Post statistics categorized by age</h2>
