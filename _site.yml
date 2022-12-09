@@ -4,7 +4,11 @@ navbar:
   title: "Home: Data Description"
   right:
     - text: 'Exploratory analyses'
-      href: graph.html
+      menu:
+      - text: "Total Cases and Death Rate"
+        href: graph.html
+      - text: "Hospitalization and Vaccincation"
+        href: graph2.html
     - text: 'Statistical Test'
       href: statistical_test.html
     - text: 'Inference analyses'

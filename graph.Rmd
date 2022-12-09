@@ -57,7 +57,7 @@ post_stat
 # Total Confirmed Cases
 ## Age vs Total Cases
 
-```{r warning = F}
+```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
@@ -104,7 +104,7 @@ grid.arrange(
     age %>%
     ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
@@ -135,7 +135,7 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 
 ## Gender vs Total Cases
 
-```{r warning = F}
+```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
@@ -183,7 +183,7 @@ grid.arrange(
     gender %>%
     ggplot(aes(x = gender, y = total_cases, fill = gender)) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
@@ -216,7 +216,7 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 
 ## Race vs Total Cases
 
-```{r warning = F}
+```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
@@ -278,7 +278,8 @@ race %>%
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
     ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    ylim(0, 30000) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
@@ -295,6 +296,7 @@ race %>%
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point) +
     theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+ 
 
 
 layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
@@ -310,7 +312,7 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 [Text]
 
 ## Area vs Total Cases
-```{r warning = F}
+```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
@@ -367,7 +369,7 @@ demo %>%
     mutate(county_name = fct_reorder(county_name, cumulative_cases)) %>% 
     ggplot(aes(x = county_name, y = cumulative_cases, fill = county_name, color = "transparent")) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(demo$cumulative_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    geom_hline(yintercept = median(demo$cumulative_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
@@ -403,7 +405,7 @@ layout_matrix = rbind(c(1, 1, 1, 1, 2, 2, 2),
 # Death Rate
 ## Age vs Death Rate
 
-```{r warning = F}
+```{r warning = F, message = F}
 age %>% 
     mutate(date = factor(date)) %>%
     mutate(text_label = str_c("Date: ", date, 
@@ -413,7 +415,7 @@ age %>%
           x = ~date, 
           color = ~age_group, 
           width = 950,
-          height = 500, 
+          height = 300, 
           type = "scatter",
           mode = "markers",
           marker = list(size = 3),
@@ -431,7 +433,7 @@ age %>%
 ## Gender vs Death Rate
 
 
-```{r warning = F}
+```{r warning = F, message = F}
 gender %>% 
     mutate(date = factor(date)) %>%
     mutate(text_label = str_c("Date: ", date, 
@@ -441,7 +443,7 @@ gender %>%
           x = ~date, 
           color = ~gender, 
           width = 950,
-          height = 500, 
+          height = 300, 
           type = "scatter",
           mode = "markers",
           marker = list(size = 3),
@@ -459,7 +461,7 @@ gender %>%
 
 ## Race vs Death Rate 
 
-```{r warning = F}
+```{r warning = F, message = F}
 race %>% 
     mutate(date = factor(date)) %>%
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
@@ -471,7 +473,7 @@ race %>%
           x = ~date, 
           color = ~race_group, 
           width = 950,
-          height = 500, 
+          height = 300, 
           type = "scatter",
           mode = "markers",
           marker = list(size = 3),
@@ -488,7 +490,7 @@ race %>%
 
 ## Area vs Death Rate 
 
-```{r warning = F}
+```{r warning = F, message = F}
 demo %>% 
     mutate(percent_deaths = (cumulative_deaths / cumulative_cases) * 100) %>%
     mutate(date = factor(date)) %>%
