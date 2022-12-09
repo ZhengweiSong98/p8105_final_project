@@ -77,8 +77,8 @@ grid.arrange(
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-    scale_y_continuous(labels = point),
-
+          scale_y_continuous(labels = point),
+    
 
     age %>% 
     ggplot(aes(x = total_cases, fill = age_group)) +
@@ -98,16 +98,39 @@ grid.arrange(
           axis.text.y = element_text(size = 5)) +
     scale_x_continuous(labels = point) +
     scale_y_continuous(labels = point),
+    
+    
+    age %>%
+    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Total cases") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
 
 
-layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
-                      c(1, 1, 2, 2, 2, 2, 2),
-                      c(1, 1, 2, 2, 2, 2, 2)
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
 ))
     
 ```
 
-[Text]
+[Text] Note: the red line of boxplot is median
 
 ## Gender vs Total Cases
 
@@ -154,11 +177,34 @@ grid.arrange(
     scale_x_continuous(labels = point) +
     scale_y_continuous(labels = point) +
     scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %>%
+    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Total cases") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
 
 
-layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
-                      c(1, 1, 2, 2, 2, 2, 2),
-                      c(1, 1, 2, 2, 2, 2, 2)
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
 ))
     
 ```
@@ -175,6 +221,7 @@ grid.arrange(
     race %>%
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
     ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -201,6 +248,7 @@ grid.arrange(
     race %>% 
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
     ggplot(aes(x = total_cases, fill = race_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.1, aes(color = race_group)) +
@@ -222,10 +270,35 @@ grid.arrange(
     
 
 
-layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
-                      c(1, 1, 2, 2, 2, 2, 2),
-                      c(1, 1, 2, 2, 2, 2, 2)
+race %>%
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = "red", size = 1, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Total cases") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
 ))
+    
 
 ```
 
