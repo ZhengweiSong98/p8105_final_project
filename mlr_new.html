@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>MLR Incidence</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home: Data Description</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="graph.html">Total Cases and Death Rate</a>
+    </li>
+    <li>
+      <a href="graph2.html">Hospitalization and Vaccincation</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="statistical_test.html">Statistical Test</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Inference analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="mlr_death.html">Multiple Linear Model for death cases</a>
+    </li>
+    <li>
+      <a href="cases_by_time.html">Confirmed cases by time</a>
+    </li>
+    <li>
+      <a href="violation_covid.html">Lowess Model for vaccination rate</a>
+    </li>
+    <li>
+      <a href="mlr_new.html">Multiple Linear Model for Incidence</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="shiny_app.html">Additional prediction</a>
+</li>
+<li>
+  <a href="project_report.html">Project Report</a>
+</li>
+<li>
+  <a href="https://zhengweisong.shinyapps.io/shiny_dashboard/">Shiny</a>
+</li>
+<li>
+  <a href="references.html">References</a>
+</li>
+<li>
+  <a href="https://github.com/charksong/p8105_final_project">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">MLR Incidence</h1>
+
+</div>
+
+
+<div id="data-importing" class="section level2">
+<h2>Data Importing</h2>
+<pre class="r"><code>source(&quot;data_preprocessing_backbone.R&quot;)
+labor_data = read_csv(&quot;./data/CA_Labor.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    select(-employment,-unemployment,-rank) %&gt;%
+    rename(unemployment=unemployment_rate_per_cent)
+
+population_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    select(-rank) %&gt;%
+    dplyr::select(-state)
+
+geo_data = read_csv(&quot;./data/ca_boundaries.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    select(name, intptlat, intptlon) %&gt;%
+    rename(county=name)
+
+ca_joining_data = left_join(population_data, labor_data, by = c(&quot;county&quot;))
+ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c(&quot;county&quot;))
+
+ca_nonmedical_data = ca_nonmedical_data %&gt;%
+    mutate(labor_rate = labor_force/population*100) %&gt;%
+    select(-labor_force)
+
+demo_covid = demo %&gt;%
+    mutate(cumulative_deaths= as.numeric(population),
+           cumulative_cases = as.numeric(cumulative_cases),
+        incidence=cumulative_cases/population*100,
+        test = cumulative_total_tests/population*100) %&gt;%
+    select(county_name, incidence, test) %&gt;%
+    rename(county=county_name) %&gt;%
+    group_by(county) %&gt;%
+    summarize(incidence=max(incidence),
+              test = max(test)) %&gt;%
+    filter(!county %in% c(&quot;Out of state&quot;,&quot;Unknown&quot;))
+
+ca_premodel_data = left_join(demo_covid, ca_nonmedical_data, by = c(&quot;county&quot;))
+skimr::skim(ca_premodel_data)</code></pre>
+<table>
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">ca_premodel_data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">58</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="13%" />
+<col width="19%" />
+<col width="5%" />
+<col width="5%" />
+<col width="8%" />
+<col width="12%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">58</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="8%" />
+<col width="12%" />
+<col width="8%" />
+<col width="9%" />
+<col width="6%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="9%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">incidence</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">22.53</td>
+<td align="right">5.77</td>
+<td align="right">9.45</td>
+<td align="right">19.54</td>
+<td align="right">22.51</td>
+<td align="right">25.47</td>
+<td align="right">38.64</td>
+<td align="left">▂▆▇▂▁</td>
+</tr>
+<tr class="even">
+<td align="left">test</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">367.42</td>
+<td align="right">171.84</td>
+<td align="right">104.51</td>
+<td align="right">277.33</td>
+<td align="right">312.06</td>
+<td align="right">402.06</td>
+<td align="right">983.95</td>
+<td align="left">▅▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">land_area_sq_mi</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2685.85</td>
+<td align="right">3102.32</td>
+<td align="right">46.87</td>
+<td align="right">959.49</td>
+<td align="right">1535.34</td>
+<td align="right">3454.40</td>
+<td align="right">20056.92</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">population</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">656326.21</td>
+<td align="right">1443528.73</td>
+<td align="right">1202.00</td>
+<td align="right">47277.50</td>
+<td align="right">179992.50</td>
+<td align="right">656486.00</td>
+<td align="right">9974203.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">unemployment</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.33</td>
+<td align="right">2.12</td>
+<td align="right">4.42</td>
+<td align="right">5.97</td>
+<td align="right">6.96</td>
+<td align="right">8.22</td>
+<td align="right">17.37</td>
+<td align="left">▇▆▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">intptlat</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">37.84</td>
+<td align="right">2.16</td>
+<td align="right">33.02</td>
+<td align="right">36.65</td>
+<td align="right">38.04</td>
+<td align="right">39.25</td>
+<td align="right">41.76</td>
+<td align="left">▃▂▇▇▃</td>
+</tr>
+<tr class="odd">
+<td align="left">intptlon</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">-120.75</td>
+<td align="right">1.94</td>
+<td align="right">-124.00</td>
+<td align="right">-122.03</td>
+<td align="right">-120.91</td>
+<td align="right">-119.84</td>
+<td align="right">-115.36</td>
+<td align="left">▃▇▃▂▁</td>
+</tr>
+<tr class="even">
+<td align="left">labor_rate</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">45.90</td>
+<td align="right">6.86</td>
+<td align="right">27.46</td>
+<td align="right">41.68</td>
+<td align="right">47.42</td>
+<td align="right">50.03</td>
+<td align="right">65.86</td>
+<td align="left">▁▃▇▂▁</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The data includes 58 observations and 9 variables. Now we are
+interested on whether the death cases are associated with
+<code>area</code>, <code>population</code> and
+<code>testing_cases</code>.</li>
+</ul>
+</div>
+<div id="data-description" class="section level2">
+<h2>Data Description</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+rawplot_incidence = ca_premodel_data %&gt;%
+    ggplot(aes(x = incidence)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8) +
+    scale_y_continuous(labels = point)
+
+rawplot_unemployment = ca_premodel_data %&gt;%
+    ggplot(aes(x = unemployment)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+rawplot_labor = ca_premodel_data %&gt;%
+    ggplot(aes(x = labor_rate)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+rawplot_population = ca_premodel_data %&gt;%
+    ggplot(aes(x = population)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+plot_area = ca_premodel_data %&gt;%
+    ggplot(aes(x = land_area_sq_mi)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
+
+plot_test = ca_premodel_data %&gt;%
+    ggplot(aes(x = test)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
+
+ca_model_data = ca_premodel_data %&gt;% 
+    mutate(ln_unemployment = log(unemployment),
+           ln_area = log(land_area_sq_mi),
+           ln_population = log(population),
+           ln_test = log(test)) %&gt;%
+    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)
+
+plot_ln_test = ca_model_data %&gt;%
+    ggplot(aes(x = ln_test)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
+
+plot_ln_unemployment = ca_model_data %&gt;%
+    ggplot(aes(x = ln_unemployment)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
+
+plot_ln_area = ca_model_data %&gt;%
+    ggplot(aes(x = ln_area)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
+
+plot_ln_population = ca_model_data %&gt;%
+    ggplot(aes(x = ln_population)) +
+    geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
+
+(rawplot_incidence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)</code></pre>
+<p><img src="mlr_new_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<pre class="r"><code>ca_model_data %&gt;%
+    gtsummary::tbl_summary() %&gt;%
+    gtsummary::bold_labels() %&gt;%
+    as.tibble() %&gt;% 
+    knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"><strong>Characteristic</strong></th>
+<th align="left"><strong>N = 58</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>incidence</strong></td>
+<td align="left">23 (20, 25)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>labor_rate</strong></td>
+<td align="left">47 (42, 50)</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>ln_unemployment</strong></td>
+<td align="left">1.94 (1.79, 2.11)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>ln_area</strong></td>
+<td align="left">7.34 (6.87, 8.15)</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>ln_population</strong></td>
+<td align="left">12.10 (10.76, 13.39)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>ln_test</strong></td>
+<td align="left">5.74 (5.63, 6.00)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The cleaned data includes 58 states and
+<code>ncol(ca_model_data)</code> including incidence, labor_rate,
+ln_unemployment, ln_area, ln_population, ln_test. The data is extremely
+right-skewed and the natural logarithms are applied to each explortory
+continuous variables.</li>
+</ul>
+</div>
+<div id="correlation" class="section level2">
+<h2>Correlation</h2>
+<pre class="r"><code>ca_model_data %&gt;% GGally::ggpairs()</code></pre>
+<p><img src="mlr_new_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<ul>
+<li>The correlation between predictors are highly correlated, which is
+more than 0.95. This is because testing count may associate with
+population in the area empirically.</li>
+</ul>
+</div>
+<div id="modelling-fit" class="section level2">
+<h2>Modelling Fit</h2>
+<pre class="r"><code>reg_full = lm(incidence ~ ., data = ca_model_data)
+
+reg_intercept = lm(incidence ~ 1, data = ca_model_data)</code></pre>
+</div>
+<div id="model-selection" class="section level2">
+<h2>Model Selection</h2>
+<pre class="r"><code>#forward Selection
+step(reg_intercept, direction=&#39;forward&#39;, scope=formula(reg_full),trace=0)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incidence ~ ln_test + ln_unemployment + ln_area + 
+##     ln_population, data = ca_model_data)
+## 
+## Coefficients:
+##     (Intercept)          ln_test  ln_unemployment          ln_area  
+##        -69.0486           9.3890           9.2513           1.4949  
+##   ln_population  
+##          0.6422</code></pre>
+<pre class="r"><code>#backwards elimination
+step(reg_full, direction=&#39;backward&#39;, scope=formula(reg_full),trace=0)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incidence ~ ln_unemployment + ln_area + ln_population + 
+##     ln_test, data = ca_model_data)
+## 
+## Coefficients:
+##     (Intercept)  ln_unemployment          ln_area    ln_population  
+##        -69.0486           9.2513           1.4949           0.6422  
+##         ln_test  
+##          9.3890</code></pre>
+<pre class="r"><code>#stepwise Selection
+step(reg_full, direction = &quot;both&quot;, scope=formula(reg_full),trace=0)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incidence ~ ln_unemployment + ln_area + ln_population + 
+##     ln_test, data = ca_model_data)
+## 
+## Coefficients:
+##     (Intercept)  ln_unemployment          ln_area    ln_population  
+##        -69.0486           9.2513           1.4949           0.6422  
+##         ln_test  
+##          9.3890</code></pre>
+<pre class="r"><code># Use criterion-based procedures to guide your selection of the ‘best subset’
+# chosen using SSE/RSS (smaller is better)
+criterion_selected = regsubsets(incidence ~ ., data = ca_model_data)
+criterion_plot = summary(criterion_selected)
+# plot of Cp and Adj-R2 as functions of parameters
+par(mfrow=c(1,2))
+plot(2:6, criterion_plot$cp, xlab=&quot;No. of parameters&quot;, ylab=&quot;Cp Statistic&quot;)
+abline(0,1)
+plot(2:6, criterion_plot$adjr2, xlab=&quot;No. of parameters&quot;, ylab=&quot;Adj R2&quot;)</code></pre>
+<p><img src="mlr_new_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>The plots above show the Cp index and Adjusted 𝑅2 for various numbers
+of parameters. When choosing a model based on Cp criterion, we want to
+choose a model for which 𝐶𝑝 ≤ 𝑝, where 𝑝 is the number of parameters.
+From the Cp plot above, we should have either 4 parameters (3
+predictors), 5 parameters (4 predictors), or 6 parameters (5
+predictors). If we consider the principle of parsimony as well, this
+would suggest the 4 parameters (3 predictors) model. But if we choose
+the model with 5 parameters (4 predictors), which has the lowest value
+for Cp</p>
+<p>Use the LASSO method to perform variable selection. Make sure you
+choose the “best lambda” to use and show how you determined this</p>
+<pre class="r"><code># using cross validation to choose lambda
+lambda_seq = 10^seq(-5, 0, by = .01)
+set.seed(2022)
+cv_object &lt;- cv.glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence,
+lambda = lambda_seq, nfolds = 5)
+cv_object</code></pre>
+<pre><code>## 
+## Call:  cv.glmnet(x = as.matrix(ca_model_data[2:6]), y = ca_model_data$incidence,      lambda = lambda_seq, nfolds = 5) 
+## 
+## Measure: Mean-Squared Error 
+## 
+##     Lambda Index Measure    SE Nonzero
+## min 0.1905    73   11.54 3.199       4
+## 1se 0.8710     7   14.61 5.190       4</code></pre>
+<pre class="r"><code># plot the CV results
+tibble(lambda = cv_object$lambda,
+mean_cv_error = cv_object$cvm) %&gt;%
+ggplot(aes(x = lambda, y = mean_cv_error)) +
+geom_point()</code></pre>
+<p><img src="mlr_new_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<pre class="r"><code># refit the lasso model with the &quot;best&quot; lambda
+fit_bestcv &lt;- glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence, lambda = cv_object$lambda.min)
+coef(fit_bestcv)</code></pre>
+<pre><code>## 6 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                          s0
+## (Intercept)     -62.2159161
+## labor_rate        .        
+## ln_unemployment   8.5108713
+## ln_area           1.2956716
+## ln_population     0.5844533
+## ln_test           8.8382953</code></pre>
+<p>Since the stepwise selection techniques and the criterion techniques
+all chose the same model with 4 predictors, we recommend this as our
+final model. (The LASSO gave a very similar suggested model, with the
+addition of log area.) Our final model:</p>
+<pre class="r"><code>mlr_model = lm(incidence~ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+summary(mlr_model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incidence ~ ln_test + ln_unemployment + ln_area + 
+##     ln_population, data = ca_model_data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.8469 -2.1735  0.0286  1.9947  9.2223 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     -69.0486     8.1404  -8.482 1.91e-11 ***
+## ln_test           9.3890     1.1234   8.358 3.01e-11 ***
+## ln_unemployment   9.2513     1.7631   5.247 2.76e-06 ***
+## ln_area           1.4949     0.4735   3.157  0.00263 ** 
+## ln_population     0.6422     0.2554   2.514  0.01499 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.155 on 53 degrees of freedom
+## Multiple R-squared:  0.7224, Adjusted R-squared:  0.7014 
+## F-statistic: 34.47 on 4 and 53 DF,  p-value: 3.603e-14</code></pre>
+<ul>
+<li>As the interaction term has p-value &lt; 0.05, we can conclude that
+ln(population) and ln(total_tests) have significant interaction at 0.05
+significance level, hence the two variables will be included in the
+model with the interaction term.</li>
+</ul>
+<p>All three of these methods agree on the same suggested model. This
+might give good evidence that we should explore this model further.</p>
+<p>From the outputs above, we see that frost had a p-value close to
+0.05. This might mean that the relationship between life expectancy and
+frost is weak. To determine if there is an association between
+illiteracy and HS graduation rate, we can refer to our matrix of plots
+in part a. The correlation between these two variables is quite strong
+(approx. 0.7), implying that including that including both of these
+variables in the model could result in poor coefficient estimation and
+inflated standard errors (due to multicollinearity). Our model selection
+techniques were able to “figure this out” and only HS gradation rate was
+included in the final models.</p>
+</div>
+<div id="modelling-diagnosis-weighted-least-squares-regression"
+class="section level2">
+<h2>Modelling Diagnosis &amp; Weighted Least Squares Regression</h2>
+<pre class="r"><code>sd_function &lt;- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+
+var_fitted &lt;- sd_function$fitted.values^2
+
+wt &lt;- 1/var_fitted
+
+wls_incidence &lt;- lm(incidence~ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+
+summary(wls_incidence)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = incidence ~ ln_test + ln_unemployment + ln_area + 
+##     ln_population, data = ca_model_data, weights = wt)
+## 
+## Weighted Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.7040 -0.9482 -0.0203  0.8140  3.5440 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     -69.5696     8.0886  -8.601 1.24e-11 ***
+## ln_test           9.4508     1.1359   8.320 3.46e-11 ***
+## ln_unemployment   9.0369     1.7924   5.042 5.73e-06 ***
+## ln_area           1.4795     0.4707   3.143  0.00274 ** 
+## ln_population     0.7003     0.2555   2.741  0.00833 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.326 on 53 degrees of freedom
+## Multiple R-squared:  0.7356, Adjusted R-squared:  0.7157 
+## F-statistic: 36.87 on 4 and 53 DF,  p-value: 1.002e-14</code></pre>
+<pre class="r"><code>check_model(mlr_model, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
+<p><img src="mlr_new_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<pre class="r"><code>check_model(wls_incidence, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
+<p><img src="mlr_new_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
+<ul>
+<li>Ordinary Least Squares violates normal assumption</li>
+<li>The coefficient estimate for the <code>ln_population</code>
+predictor variable changed somewhat and the model fit improved.</li>
+<li>The residual standard error changed from 9.224 (in the simple linear
+regression model) to 1.199 in the weighted LS model. This shows that the
+predictions ffrom the WLS model are much closer to the actual
+observations than those from the ordinary LS model.</li>
+<li>R-squared improved in the WLS model. WLS model is able to explain
+more of the variation in exam scores compared to the OLS model.</li>
+</ul>
+</div>
+<div id="cv" class="section level2">
+<h2>CV</h2>
+<pre class="r"><code>set.seed(2022)
+# use 10-fold validation and create the training sets
+train = trainControl(method = &quot;cv&quot;, number = 10)
+# fit the 4-variables model that we selected as our final model
+model_caret = train(incidence~ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = &#39;lm&#39;, na.action = na.pass)
+model_caret</code></pre>
+<pre><code>## Linear Regression 
+## 
+## 58 samples
+##  4 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 53, 52, 51, 53, 52, 52, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared   MAE     
+##   3.114563  0.7260751  2.593705
+## 
+## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
+<pre class="r"><code>model_caret$resample</code></pre>
+<pre><code>##        RMSE  Rsquared      MAE Resample
+## 1  3.280702 0.6815173 2.838143   Fold01
+## 2  3.401562 0.6765707 3.271787   Fold02
+## 3  1.522824 0.8621392 1.131554   Fold03
+## 4  2.120258 0.9443245 1.899383   Fold04
+## 5  1.836400 0.9766780 1.518833   Fold05
+## 6  3.687199 0.4015162 3.143141   Fold06
+## 7  2.484725 0.8407829 1.897638   Fold07
+## 8  3.257643 0.8783562 2.609566   Fold08
+## 9  4.942543 0.7580452 3.965481   Fold09
+## 10 4.611778 0.2408208 3.661528   Fold10</code></pre>
+<ul>
+<li>From the output above, the overall RMSE (root mean squared error) is
+3.115, which would mean our MSE is 9.701. Our MAE (mean absolute error)
+is 2.594. These measures show that this model is doing a good job at
+predicting responses for “new” data points. Additionally, the variance
+for these measures is relatively small, showing that these estimates are
+probably pretty close to the true predictive ability.</li>
+</ul>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<ul>
+<li>We employed automatic search procedures, criterion based approaches,
+and the LASSO tech- nique to select a final model:</li>
+</ul>
+<p><span
+class="math inline">\(life\_exp=-69.049+9.251*ln(unemployment)+1.495*ln(area)+0.642*ln(population)+9.389*ln(test)\)</span></p>
+<ul>
+<li>From this model, we can see that as the murder rate and average
+number of freezing days (frost) increase, the predicted life expectancy
+decreases, while increases in high school graduations and (log)
+population were associated with an increase in expected life expectancy.
+Overall, from our 10-fold cross validation, we see that our model has
+pretty good predictive ability for new points. However, this model was
+only built on data from the US, so it should not be used to predict life
+expectancy in other locations. Additionally, we noticed that Hawaii was
+a potential influential point – by exploring Hawaii’s role in our model,
+we may have slightly different conclusions.</li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

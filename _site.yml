@@ -19,6 +19,8 @@ navbar:
         href: cases_by_time.html
       - text: "Lowess Model for vaccination rate"
         href: violation_covid.html
+      - text: "Multiple Linear Model for Incidence"
+        href: mlr_new.html
     - text: 'Additional prediction'
       href: shiny_app.html
     - text: 'Project Report'
