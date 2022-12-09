@@ -3,12 +3,10 @@ output_dir: "."
 navbar:
   title: "Home: Data Description"
   right:
-    - text: 'Descriptive analyses'
-      menu:
-      - text: 'Graphs'
-        href: graph.html
-      - text: 'Statistical Test'
-        href: statistical_test.html
+    - text: 'Exploratory analyses'
+      href: graph.html
+    - text: 'Statistical Test'
+      href: statistical_test.html
     - text: 'Inference analyses'
       menu:
       - text: "Multiple Linear Model for death cases"

@@ -1,5 +1,5 @@
 ---
-title: "Graphs"
+title: "Exploratory Analysis"
 output: 
   html_document: 
     toc: yes
@@ -390,3 +390,5 @@ race %>%
 ```
 
 [Text]
+
+
