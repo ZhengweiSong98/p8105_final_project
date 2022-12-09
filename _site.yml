@@ -13,16 +13,16 @@ navbar:
       menu:
       - text: "Multiple Linear Model for death cases"
         href:  mlr_death.html
-      - text: "Logistic Model for hospitality"
-        href: violation_covid.html
+      - text: "Confirmed cases by time"
+        href: cases_by_time.html
       - text: "Lowess Model for vaccination rate"
         href: violation_covid.html
     - text: 'Additional prediction'
-      href: hydrant_mapping.html
+      href: shiny_app.html
     - text: 'Project Report'
       href: project_report.html
-    - text: 'Video'
-      href: https://youtu.be/QbPegpn8rK4
+    - text: 'Shiny'
+      href: https://zhengweisong.shinyapps.io/shiny_dashboard/
     - text: 'References'
       href: references.html
     - icon: fa-github fa-lg
