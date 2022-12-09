@@ -418,17 +418,16 @@ div.tocify {
 <pre class="r"><code>source(&quot;data_preprocessing_backbone.R&quot;)
 labor_data = read_csv(&quot;./data/CA_Labor.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
-    select(-employment,-unemployment,-rank) %&gt;%
+    dplyr::select(-employment,-unemployment,-rank) %&gt;%
     rename(unemployment=unemployment_rate_per_cent)
 
 population_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
-    select(-rank) %&gt;%
-    dplyr::select(-state)
+    dplyr::select(-rank, -state)
 
 geo_data = read_csv(&quot;./data/ca_boundaries.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
-    select(name, intptlat, intptlon) %&gt;%
+    dplyr::select(name, intptlat, intptlon) %&gt;%
     rename(county=name)
 
 ca_joining_data = left_join(population_data, labor_data, by = c(&quot;county&quot;))
@@ -436,21 +435,37 @@ ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c(&quot;county&qu
 
 ca_nonmedical_data = ca_nonmedical_data %&gt;%
     mutate(labor_rate = labor_force/population*100) %&gt;%
-    select(-labor_force)
+    dplyr::select(-labor_force)
 
 demo_covid = demo %&gt;%
     mutate(cumulative_deaths= as.numeric(population),
            cumulative_cases = as.numeric(cumulative_cases),
         incidence=cumulative_cases/population*100,
         test = cumulative_total_tests/population*100) %&gt;%
-    select(county_name, incidence, test) %&gt;%
+    dplyr::select(county_name, incidence, test, population) %&gt;%
     rename(county=county_name) %&gt;%
     group_by(county) %&gt;%
     summarize(incidence=max(incidence),
               test = max(test)) %&gt;%
     filter(!county %in% c(&quot;Out of state&quot;,&quot;Unknown&quot;))
 
-ca_premodel_data = left_join(demo_covid, ca_nonmedical_data, by = c(&quot;county&quot;))
+vaccine = read_csv(&quot;./data/CA_covid19vaccines.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    group_by(county) %&gt;%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %&gt;%
+    arrange(county) %&gt;%
+    drop_na() %&gt;%
+    filter(!county %in% c(&quot;Unknown&quot;, &quot;All CA Counties&quot;, &quot;All CA and Non-CA Counties&quot;))
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c(&quot;county&quot;))
+ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c(&quot;county&quot;)) %&gt;%
+    mutate(
+        vaccination=fully_vaccinated/population*100) %&gt;%
+    dplyr::select(-fully_vaccinated)
+
 skimr::skim(ca_premodel_data)</code></pre>
 <table>
 <caption>Data summary</caption>
@@ -465,7 +480,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">Number of columns</td>
-<td align="left">9</td>
+<td align="left">10</td>
 </tr>
 <tr class="even">
 <td align="left">_______________________</td>
@@ -481,7 +496,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">numeric</td>
-<td align="left">8</td>
+<td align="left">9</td>
 </tr>
 <tr class="even">
 <td align="left">________________________</td>
@@ -665,10 +680,23 @@ skimr::skim(ca_premodel_data)</code></pre>
 <td align="right">65.86</td>
 <td align="left">▁▃▇▂▁</td>
 </tr>
+<tr class="odd">
+<td align="left">vaccination</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">65.81</td>
+<td align="right">15.11</td>
+<td align="right">26.84</td>
+<td align="right">54.55</td>
+<td align="right">64.62</td>
+<td align="right">76.02</td>
+<td align="right">101.87</td>
+<td align="left">▁▆▇▆▃</td>
+</tr>
 </tbody>
 </table>
 <ul>
-<li>The data includes 58 observations and 9 variables. Now we are
+<li>The data includes 58 observations and 10 variables. Now we are
 interested on whether the death cases are associated with
 <code>area</code>, <code>population</code> and
 <code>testing_cases</code>.</li>
@@ -755,18 +783,22 @@ plot_ln_population = ca_model_data %&gt;%
 <td align="left">47 (42, 50)</td>
 </tr>
 <tr class="odd">
+<td align="left"><strong>vaccination</strong></td>
+<td align="left">65 (55, 76)</td>
+</tr>
+<tr class="even">
 <td align="left"><strong>ln_unemployment</strong></td>
 <td align="left">1.94 (1.79, 2.11)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>ln_area</strong></td>
 <td align="left">7.34 (6.87, 8.15)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><strong>ln_population</strong></td>
 <td align="left">12.10 (10.76, 13.39)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>ln_test</strong></td>
 <td align="left">5.74 (5.63, 6.00)</td>
 </tr>
@@ -775,9 +807,9 @@ plot_ln_population = ca_model_data %&gt;%
 <ul>
 <li>The cleaned data includes 58 states and
 <code>ncol(ca_model_data)</code> including incidence, labor_rate,
-ln_unemployment, ln_area, ln_population, ln_test. The data is extremely
-right-skewed and the natural logarithms are applied to each explortory
-continuous variables.</li>
+vaccination, ln_unemployment, ln_area, ln_population, ln_test. The data
+is extremely right-skewed and the natural logarithms are applied to each
+explortory continuous variables.</li>
 </ul>
 </div>
 <div id="correlation" class="section level2">
@@ -840,9 +872,9 @@ criterion_selected = regsubsets(incidence ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
 par(mfrow=c(1,2))
-plot(2:6, criterion_plot$cp, xlab=&quot;No. of parameters&quot;, ylab=&quot;Cp Statistic&quot;)
+plot(2:7, criterion_plot$cp, xlab=&quot;No. of parameters&quot;, ylab=&quot;Cp Statistic&quot;)
 abline(0,1)
-plot(2:6, criterion_plot$adjr2, xlab=&quot;No. of parameters&quot;, ylab=&quot;Adj R2&quot;)</code></pre>
+plot(2:7, criterion_plot$adjr2, xlab=&quot;No. of parameters&quot;, ylab=&quot;Adj R2&quot;)</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
 <p>The plots above show the Cp index and Adjusted 𝑅2 for various numbers
 of parameters. When choosing a model based on Cp criterion, we want to
@@ -867,8 +899,8 @@ cv_object</code></pre>
 ## Measure: Mean-Squared Error 
 ## 
 ##     Lambda Index Measure    SE Nonzero
-## min 0.1905    73   11.54 3.199       4
-## 1se 0.8710     7   14.61 5.190       4</code></pre>
+## min 0.6457    20   24.55 4.641       3
+## 1se 1.0000     1   25.60 5.500       2</code></pre>
 <pre class="r"><code># plot the CV results
 tibble(lambda = cv_object$lambda,
 mean_cv_error = cv_object$cvm) %&gt;%
@@ -880,12 +912,12 @@ fit_bestcv &lt;- glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence, 
 coef(fit_bestcv)</code></pre>
 <pre><code>## 6 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                          s0
-## (Intercept)     -62.2159161
-## labor_rate        .        
-## ln_unemployment   8.5108713
-## ln_area           1.2956716
-## ln_population     0.5844533
-## ln_test           8.8382953</code></pre>
+## (Intercept)     -2.83454214
+## labor_rate      -0.00302513
+## vaccination      .         
+## ln_unemployment  5.77485635
+## ln_area          .         
+## ln_population    1.17966212</code></pre>
 <p>Since the stepwise selection techniques and the criterion techniques
 all chose the same model with 4 predictors, we recommend this as our
 final model. (The LASSO gave a very similar suggested model, with the
