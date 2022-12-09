@@ -56,7 +56,7 @@ post_stat
 
 ## Age vs Total Cases
 
-```{r warning = F, Fig.width = 45, Fig.height = 10}
+```{r warning = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
@@ -111,7 +111,7 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
 
 ## Gender vs Total Cases
 
-```{r warning = F, Fig.width = 45, Fig.height = 10}
+```{r warning = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
@@ -203,11 +203,11 @@ grid.arrange(
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
     ggplot(aes(x = total_cases, fill = race_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
-    geom_density(alpha = 0.3, aes(color = race_group)) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
     scale_color_viridis(discrete = TRUE) +
     labs(x = "Total cases",
          y = "Density") +
-    theme(legend.position = "left") +
+    theme(legend.position = "right") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -227,6 +227,61 @@ layout_matrix = rbind(c(1, 1, 2, 2, 2, 2, 2),
                       c(1, 1, 2, 2, 2, 2, 2)
 ))
 
+```
+
+[Text]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Race vs Dealth Rate
+
+```{r warning = F}
+race %>% 
+    mutate(date = factor(date)) %>%
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(text_label = str_c("Date: ", date, 
+                              "\n Race: ", race_group,
+                              "\n Death(%): ", percent_deaths)) %>%
+    plot_ly(y = ~percent_deaths, 
+          x = ~date, 
+          color = ~race_group, 
+          width = 950,
+          height = 500, 
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 3),
+          colors = "inferno",
+          text = ~ text_label) %>%
+    layout(xaxis = list(
+           title = "Date",
+           tickangle = 60),
+           yaxis = list(
+           title = "Death Rate"))
 ```
 
 [Text]
