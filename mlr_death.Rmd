@@ -137,5 +137,5 @@ check_model(wls_death, check = c("linearity", "qq", "normality", "outliers", "ho
 
 * Ordinary Least Squares violates normal assumption
 * The coefficient estimate for the `ln_population` predictor variable changed somewhat and the model fit improved.
-* The residual standard error changed from 9.224 (in the simple linear regression model) to 1.199 in the weighted LS model. This shows that the predictions ffrom the WLS model are much closer to the actual observations than those from the ordinary LS model.
+* The residual standard error changed from 9.224 (in the simple linear regression model) to 1.199 in the weighted LS model. This shows that the predictions from the WLS model are much closer to the actual observations than those from the ordinary LS model.
 * R-squared improved in the WLS model. WLS model is able to explain more of the variation in exam scores compared to the OLS model.

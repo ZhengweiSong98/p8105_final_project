@@ -11,7 +11,7 @@
 
 
 
-<title>Here’s an extra page</title>
+<title>Statistical test: fatality</title>
 
 <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -417,12 +417,59 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Here’s an extra page</h1>
+<h1 class="title toc-ignore">Statistical test: fatality</h1>
 
 </div>
 
 
-<p>Just showing off at this point tbh</p>
+<p>Analysis of Variance (ANOVA) is a statistical test used to determine
+if there is a statistically significant difference between categorical
+groups. In general, we expect there are one or more group might be
+influential on the dependent variable, while the other group treated as
+control group.</p>
+<p>Before conducting the test, we need to check the test assumption:</p>
+<p><span class="math inline">\(\bullet\)</span> no relationship between
+the subjects. <span class="math inline">\(\bullet\)</span> different
+groups must have equal sample sizes. <span
+class="math inline">\(\bullet\)</span> dependent variable is normally
+distributed. <span class="math inline">\(\bullet\)</span> Population
+variances must be equal(Homogeneity of variance)</p>
+<p>These assumptions were <a href="mlr_fatality.html">checked</a>, and
+our model meet these requirement. Then, we conduct ANOVA test to our
+linear regression, uses the F-test to determine whether the variables
+fits the data as well as our model. If that F-statics are sufficiently
+large, or P-values are significantly small，then we can conclude that
+your model fits the data better than the intercept-only model.</p>
+<p>ANOVA test for model <span class="math display">\[ln(reported \
+death) = ln(population)\beta_{ln(population)} \times total \
+cost\beta_{totol \ test} + \epsilon_i\]</span></p>
+<p>Then, we conduct a hypothesis test.</p>
+<p><span class="math display">\[H_0 = \beta_{ln(population)} =
+\beta_{totol \ test}\]</span> <span class="math display">\[H_1 = At\
+least\ one\ \beta\: is\ not\ zero \]</span></p>
+<pre class="r"><code>mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
+anova(mlr_model) %&gt;% broom::tidy()</code></pre>
+<pre><code>## # A tibble: 8 × 6
+##   term               df   sumsq  meansq statistic    p.value
+##   &lt;chr&gt;           &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 location            1 0.0915  0.0915     20.7    0.0000365
+## 2 vaccinated          1 0.00149 0.00149     0.337  0.564    
+## 3 labor_rate          1 0.0535  0.0535     12.1    0.00108  
+## 4 ln_tests            1 0.0180  0.0180      4.07   0.0493   
+## 5 ln_area             1 0.0478  0.0478     10.8    0.00189  
+## 6 ln_unemployment     1 0.0168  0.0168      3.80   0.0571   
+## 7 ln_bed              1 0.0272  0.0272      6.14   0.0167   
+## 8 Residuals          48 0.212   0.00442    NA     NA</code></pre>
+<p>From the table above, we can see that the Variables,such as <span
+class="math inline">\(location\)</span>,<span
+class="math inline">\(labor\ rate\)</span>,<span
+class="math inline">\(ln(tests)\)</span>,<span
+class="math inline">\(ln(area)\)</span>,<span
+class="math inline">\(ln(unemployment)\)</span>,<span
+class="math inline">\(ln(bed)\)</span> are statistically significant,
+which means their p-value smaller than 0.05. Only variable <span
+class="math inline">\(vaccinated\)</span> has p-value greater than
+0.05.</p>
 
 
 

@@ -11,7 +11,7 @@
 
 
 
-<title>Here’s an extra page</title>
+<title>Statistical test: Prevelance</title>
 
 <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -417,12 +417,50 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Here’s an extra page</h1>
+<h1 class="title toc-ignore">Statistical test: Prevelance</h1>
 
 </div>
 
 
-<p>Just showing off at this point tbh</p>
+<pre class="r"><code>library(readr)
+library(tidyr)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)</code></pre>
+<p>ANOVA test for model <span class="math display">\[Prevalence =
+location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+
+\epsilon_i\]</span></p>
+<p>Then, we conduct a hypothesis test.</p>
+<p><span class="math display">\[H_0 =
+\beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}\]</span>
+<span class="math display">\[H_1 = At\ least\ one\ \beta\: is\ not\ zero
+\]</span></p>
+<pre class="r"><code>mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+sd_function &lt;- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+
+var_fitted &lt;- sd_function$fitted.values^2
+
+wt &lt;- 1/var_fitted
+
+wls_prevalence &lt;- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+aov(wls_prevalence) %&gt;% summary()</code></pre>
+<pre><code>##                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## location         1   6.15    6.15    3.45 0.068913 .  
+## ln_test          1 191.51  191.51  107.45 2.96e-14 ***
+## ln_unemployment  1  47.63   47.63   26.72 3.80e-06 ***
+## ln_area          1  24.60   24.60   13.80 0.000497 ***
+## ln_population    1  19.91   19.91   11.17 0.001544 ** 
+## Residuals       52  92.68    1.78                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>From the table above, we can see that the Variables,such as <span
+class="math inline">\(ln(test)\)</span>,<span
+class="math inline">\(ln(unemployment)\)</span>,<span
+class="math inline">\(ln(area)\)</span>,<span
+class="math inline">\(ln(population)\)</span> are statistically
+significant, which means their p-value smaller than 0.05. Only variable
+<span class="math inline">\(location\)</span> has p-value greater than
+0.05.</p>
 
 
 

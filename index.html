@@ -293,7 +293,48 @@ div.tocify {
 .tocify .list-group-item {
   border-radius: 0px;
 }
+div.masthead {
+    width: 100%;
+    height: 500px;
+    padding-top: 10.5rem;
+    padding-bottom: 6rem;
+    text-align: center;
+    color: #fff;
+    display: block;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+    background-image: url(california.jpg);
 
+}
+
+div.masthead .mast1 {
+    font-size: 1.5rem;
+    text-align: center;
+    font-size: xxx-large;
+    font-style: italic;
+    line-height: 1.5rem;
+    margin-bottom: 65px;
+    font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+div.mast2 {
+    font-size: 1.5rem;
+    text-align: center;
+    font-size: x-large;
+    font-style: italic;
+    line-height: 1.5rem;
+    margin-bottom: 25px;
+    font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+div.container{
+    width: 100%;
+    padding-right:  0.75rem;
+    padding-left: 0.75rem;
+    margin-right: auto;
+    margin-left: auto;
+}
 
 </style>
 
@@ -303,7 +344,13 @@ div.tocify {
 
 <body>
 
-
+<div class="masthead">
+    <div class="container">
+        <div class="mast1">Welcome To Our Project for P8105!</div>
+        <div class="mast2">New York City Covid Trends</div>
+        <a class="btn btn-primary btn-xl text-uppercase" href="">Find Out More</a >
+    </div>
+</div>
 <div class="container-fluid main-container">
 
 
@@ -336,7 +383,7 @@ div.tocify {
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Exploratory analyses
+    Exploratory Analysis
      
     <span class="caret"></span>
   </a>
@@ -354,21 +401,33 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Inference analyses
+    Inference Analysis
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="mlr_fatality.html">Weighted Least Model for Fatality</a>
+      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
     </li>
     <li>
-      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
+      <a href="mlr_fatality.html">Multiple Linear Model for Fatality</a>
     </li>
   </ul>
 </li>
-<li>
-  <a href="statistical_test.html">Statistical Test</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Statistical Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="statistical_test_prevelance.html">ANOVA Test on MLR Prevalence</a>
+    </li>
+    <li>
+      <a href="statistical_test_fatality.html">ANOVA Test on MLR Death Cases</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="shiny_app.html">Additional Prediction</a>
@@ -554,6 +613,350 @@ post_stat =
     janitor::clean_names() %&gt;%
     arrange(date, decreasing = F) %&gt;%
     select(-c(area_type, area))</code></pre>
+</div>
+<div id="county-labor-force-market-and-unemployment-rate"
+class="section level2">
+<h2>County labor force market and unemployment rate</h2>
+<p>After retrieving the CA_Labor and CA_Land_Area data set from the data
+sources, first remove the variable columns of <code>employment</code>,
+<code>unemployment</code>, and <code>rank</code> from the CA_Labor data
+set due to the interest for this investigation. Then rename the column
+<code>unemployment_rate_per_cent</code> as <code>unemployment</code> for
+future data processing. The resulted data set has 58 rows and 3 variable
+columns.</p>
+<p>For CA_Land_Area data set, separate the counties into costal counties
+and inland counties first using <code>mutate()</code> function, then
+remove the variable column of <code>rank</code>,<code>state</code>, and
+<code>population</code>. The resulted data set has 58 observations and 3
+variable columns.</p>
+<p>In the end, using <code>left_join()</code> function to combine the
+two processed data set into one final data set by county names, the
+final data set is named as <code>ca_nonmedical_data</code> and contains
+58 rows and 5 variable columns, including name of the county, county’s
+area in square miles, location type of the county, unemployment and
+labor force.</p>
+<pre class="r"><code>labor_data = read_csv(&quot;./data/CA_Labor.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    dplyr::select(-employment,-unemployment,-rank) %&gt;%
+    rename(unemployment = unemployment_rate_per_cent)
+
+land_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    mutate(
+        location = ifelse(county %in% c(&quot;Los Angeles&quot;, &quot;Orange&quot;, &quot;San Diego&quot;, &quot;Monterey&quot;, &quot;San Benito&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Santa Cruz&quot;, &quot;Ventura&quot;, &quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Napa&quot;, &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Solano&quot;, &quot;Sonoma&quot;, &quot;Del Norte&quot;, &quot;Humboldt&quot;, &quot;Mendocino&quot;), &quot;costal&quot;, &quot;inland&quot;)) %&gt;%
+    dplyr::select(-rank, -state, -population)
+
+ca_nonmedical_data = left_join(land_data, labor_data, by = c(&quot;county&quot;))</code></pre>
+</div>
+<div id="demographical-covid-data" class="section level2">
+<h2>Demographical COVID data</h2>
+<p>For the purpose of model building, a data set focused on reflecting
+covid information such as death rate, total test rate, and population
+with respect to each county is needed. To do this, use the function
+<code>mutate()</code> and some calculation to produce the death rate and
+total test rate column for the new data set. Then select the variables
+of interest including <code>county_name</code>, <code>death_rate</code>,
+<code>test</code>, <code>population</code> and group them by county. The
+resulted data set is named as <code>demon_covid</code>.</p>
+<pre class="r"><code>demo_covid = demo %&gt;%
+     mutate(cumulative_reported_deaths = as.numeric(cumulative_reported_deaths),
+            cumulative_cases = as.numeric(cumulative_cases),
+        death_rate = 0.01 + cumulative_reported_deaths/population*100,
+        test = cumulative_total_tests/population*100) %&gt;%
+    dplyr::select(county_name, death_rate, test,population) %&gt;%
+    rename(county=county_name) %&gt;%
+    group_by(county) %&gt;%
+    summarize(death_rate=max(death_rate,na.rm = T),
+              test = max(test),
+              population = max(population)) %&gt;%
+    filter(!county %in% c(&quot;Out of state&quot;,&quot;Unknown&quot;))</code></pre>
+</div>
+<div id="vaccination" class="section level2">
+<h2>Vaccination</h2>
+<p>To obtain vaccine status of each county, read in the
+CA_covid19vaccines.csv file and group the data by county, then obtain
+the total number of fully vaccinated people by using the
+<code>sum()</code> function. Drop all the N/A values and any county
+besides the 58 counties of interest. The resulted data set includes 58
+rows and 2 column of variables.</p>
+<pre class="r"><code>vaccine = read_csv(&quot;./data/CA_covid19vaccines.csv&quot;) %&gt;%
+    janitor::clean_names() %&gt;%
+    group_by(county) %&gt;%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %&gt;%
+    arrange(county) %&gt;%
+    drop_na() %&gt;%
+    filter(!county %in% c(&quot;Unknown&quot;, &quot;All CA Counties&quot;, &quot;All CA and Non-CA Counties&quot;,&quot;Outside California&quot;))</code></pre>
+</div>
+<div id="hospitalization" class="section level2">
+<h2>Hospitalization</h2>
+<p>This investigation is interested in knowing the hospitalization
+ability of each county in California. After reading in the
+CA_Covid19_Hospital.csv data file, group the data by county and find the
+maximum amount of hospital bed and available ICU beds recorded for each
+county. Then select <code>county</code>, <code>all_hospital_beds</code>,
+<code>icu_available_beds</code> to form the processed data set, which
+includes 56 rows and 3 column variables.</p>
+<pre class="r"><code>hospital = read_csv(&quot;./data/CA_Covid19_Hospital.csv&quot;) %&gt;%
+    group_by(county) %&gt;%
+    summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
+              icu_available_beds = max(icu_available_beds,na.rm = T)) %&gt;%
+    dplyr::select(county, all_hospital_beds, icu_available_beds)</code></pre>
+</div>
+<div id="final-premodel-data-frame" class="section level2">
+<h2>Final premodel data frame</h2>
+<p>After the data pre-processing activities, we are ready to form a
+final pre-model data frame. Combine the <code>demo_covid</code>,
+<code>vaccine</code>, <code>hospital</code>, and
+<code>ca_nonmedical_data</code> together by using the function
+<code>leftjoin()</code> while binding the data sets by the variable
+<code>county</code>. Then relocate the variable <code>death rate</code>
+to the front and do some math adjustment for other data variables
+including <code>vaccinated</code>, <code>labor_rate</code>,
+<code>hospital_bed</code>, <code>icu_bed</code> for the purpose of
+better visual representation afterwards. Remove some columns of
+variables as needed. The final pre-modal dataframe includes 58 rows and
+10 columns of variables.</p>
+<pre class="r"><code>ca_medical_data = left_join(demo_covid, vaccine, by =c(&quot;county&quot;))
+ca_medical_data2 = left_join(ca_medical_data, hospital, by =c(&quot;county&quot;))
+ca_premodel_data = left_join(ca_medical_data2, ca_nonmedical_data, by = c(&quot;county&quot;)) %&gt;%
+    relocate(death_rate) %&gt;%
+    mutate(
+        vaccinated=fully_vaccinated/population*100,
+        labor_rate = labor_force/population*100,
+        hospital_bed = all_hospital_beds/population*100,
+        icu_bed = icu_available_beds/population*100
+    )%&gt;%
+    dplyr::select(-fully_vaccinated, -population, -labor_force,-all_hospital_beds,-icu_available_beds)
+
+skimr::skim(ca_premodel_data)</code></pre>
+<table>
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">ca_premodel_data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">58</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">10</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="13%" />
+<col width="19%" />
+<col width="5%" />
+<col width="5%" />
+<col width="8%" />
+<col width="12%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">58</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">location</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="15%" />
+<col width="9%" />
+<col width="13%" />
+<col width="7%" />
+<col width="7%" />
+<col width="6%" />
+<col width="6%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">death_rate</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.21</td>
+<td align="right">0.09</td>
+<td align="right">0.01</td>
+<td align="right">0.13</td>
+<td align="right">0.19</td>
+<td align="right">0.28</td>
+<td align="right">0.51</td>
+<td align="left">▂▇▅▃▁</td>
+</tr>
+<tr class="even">
+<td align="left">test</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">367.42</td>
+<td align="right">171.84</td>
+<td align="right">104.51</td>
+<td align="right">277.33</td>
+<td align="right">312.06</td>
+<td align="right">402.06</td>
+<td align="right">983.95</td>
+<td align="left">▅▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">land_area_sq_mi</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2685.85</td>
+<td align="right">3102.32</td>
+<td align="right">46.87</td>
+<td align="right">959.49</td>
+<td align="right">1535.34</td>
+<td align="right">3454.40</td>
+<td align="right">20056.92</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">unemployment</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">7.33</td>
+<td align="right">2.12</td>
+<td align="right">4.42</td>
+<td align="right">5.97</td>
+<td align="right">6.96</td>
+<td align="right">8.22</td>
+<td align="right">17.37</td>
+<td align="left">▇▆▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">vaccinated</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">63.20</td>
+<td align="right">13.47</td>
+<td align="right">29.78</td>
+<td align="right">54.34</td>
+<td align="right">61.29</td>
+<td align="right">72.35</td>
+<td align="right">94.09</td>
+<td align="left">▁▇▇▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">labor_rate</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">44.16</td>
+<td align="right">5.95</td>
+<td align="right">30.47</td>
+<td align="right">40.29</td>
+<td align="right">44.59</td>
+<td align="right">47.75</td>
+<td align="right">61.19</td>
+<td align="left">▂▅▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">hospital_bed</td>
+<td align="right">2</td>
+<td align="right">0.97</td>
+<td align="right">0.32</td>
+<td align="right">0.39</td>
+<td align="right">0.08</td>
+<td align="right">0.18</td>
+<td align="right">0.22</td>
+<td align="right">0.29</td>
+<td align="right">2.79</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">icu_bed</td>
+<td align="right">2</td>
+<td align="right">0.97</td>
+<td align="right">0.03</td>
+<td align="right">0.05</td>
+<td align="right">0.00</td>
+<td align="right">0.01</td>
+<td align="right">0.01</td>
+<td align="right">0.03</td>
+<td align="right">0.35</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 

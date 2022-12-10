@@ -336,7 +336,7 @@ div.tocify {
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Exploratory analyses
+    Exploratory Analysis
      
     <span class="caret"></span>
   </a>
@@ -354,21 +354,33 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Inference analyses
+    Inference Analysis
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="mlr_fatality.html">Weighted Least Model for Fatality</a>
+      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
     </li>
     <li>
-      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
+      <a href="mlr_fatality.html">Multiple Linear Model for Fatality</a>
     </li>
   </ul>
 </li>
-<li>
-  <a href="statistical_test.html">Statistical Test</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Statistical Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="statistical_test_prevelance.html">ANOVA Test on MLR Prevalence</a>
+    </li>
+    <li>
+      <a href="statistical_test_fatality.html">ANOVA Test on MLR Death Cases</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="shiny_app.html">Additional Prediction</a>
@@ -605,7 +617,7 @@ summary(wls_death)</code></pre>
 predictor variable changed somewhat and the model fit improved.</li>
 <li>The residual standard error changed from 9.224 (in the simple linear
 regression model) to 1.199 in the weighted LS model. This shows that the
-predictions ffrom the WLS model are much closer to the actual
+predictions from the WLS model are much closer to the actual
 observations than those from the ordinary LS model.</li>
 <li>R-squared improved in the WLS model. WLS model is able to explain
 more of the variation in exam scores compared to the OLS model.</li>

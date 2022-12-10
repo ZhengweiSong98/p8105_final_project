@@ -1,5 +1,5 @@
 ---
-title: "Statistical test"
+title: 'Statistical test: Prevelance'
 output: 
   html_document: 
     toc: yes
@@ -8,12 +8,22 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r, include=FALSE}
+```{r}
 library(readr)
 library(tidyr)
 library(tidyverse)
+library(dplyr)
+library(ggplot2)
 ```
-```{r, include=FALSE}
+
+ANOVA test for model $$Prevalence = location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+ \epsilon_i$$
+
+Then, we conduct a hypothesis test.
+
+$$H_0 = \beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}$$
+$$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
+
+```{r,include=FALSE}
 source("data_preprocessing_backbone.R")
 labor_data = read_csv("./data/CA_Labor.csv") %>%
     janitor::clean_names() %>%
@@ -73,51 +83,17 @@ ca_model_data = ca_premodel_data %>%
            ln_population = log(population),
            ln_test = log(test)) %>%
     dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)
-
 ```
 
-We apply ANOVA test to our linear regression, uses the F-test to determine whether the variables fits the data as well as our model. If that F-statics are sufficiently large, or P-values are significantly small，then we can conclude that your model fits the data better than the intercept-only model. 
-
-ANOVA test for model $$ln(reported \ death) = ln(population)\beta_{ln(population)} \times total \ cost\beta_{totol \ test} + \epsilon_i$$
-
-Then, we conduct a hypothesis test.
-
-$$H_0 = \beta_{ln(population)} = \beta_{totol \ test}$$
-$$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
-
-```{r, include=FALSE}
-demo_raw = read_csv("./data/Demo.csv") %>%
-    janitor::clean_names() %>%
-    filter(!area %in% c("Unknown", "Out of state")) %>%
-    select(area, population, total_tests, reported_deaths) %>%
-    group_by(area) %>%
-    summarize(
-        population = max(population),
-        total_tests = sum(total_tests,na.rm = T),
-        reported_deaths = sum(reported_deaths)
-        )
-demo_death = demo_raw %>% 
-    mutate(ln_population = log(population + 0.01),
-           ln_total_tests = log(total_tests + 0.01),
-           ln_reported_deaths = log(reported_deaths + 0.01)) %>%
-    dplyr::select(-population,-total_tests,-reported_deaths) %>%
-    relocate(ln_reported_deaths)
-```
-```{r}
-reg_full = lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death)
-aov(reg_full) %>% summary()
-```
-
-
-ANOVA test for model $$Prevalence = location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+ \epsilon_i$$
-
-Then, we conduct a hypothesis test.
-
-$$H_0 = \beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}$$
-$$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
 ```{r}
 mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
-aov(mlr_model) %>% summary()
+sd_function <- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+
+var_fitted <- sd_function$fitted.values^2
+
+wt <- 1/var_fitted
+
+wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+aov(wls_prevalence) %>% summary()
 ```
-
-
+From the table above, we can see that the Variables,such as $ln(test)$,$ln(unemployment)$,$ln(area)$,$ln(population)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $location$ has p-value greater than 0.05.
