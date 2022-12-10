@@ -65,14 +65,22 @@ The data cleaning process is being presented in the index page, you can go to th
 ### Inference Analysis: Regression
 #### Multiple linear Regression 
 
-For model building purpose of this investigation, a multiple linear regression model is considered to investigate on hospitalization rate. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
+For model building purpose of this investigation, a multiple linear regression model is considered to investigate on hospitalization rate. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, location and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
 
-disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area + B4 * population
+disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area + B4 * population + B5 * location
 
-In the above equation, disease prevalence is the desired outcome while the amount of tests, unemployment, area, and population are predictors. B1, B2, B3, and B4 are the factors for each predictors respectively. Under ideal circumstances, we would expect our model to be able to predict the death counts in a region, given its number of tests, population, and unemployment rate. 
+In the above equation, disease prevalence is the desired outcome while the amount of tests, unemployment, area, location, and population are predictors. B1, B2, B3, B4 and B5 are the factors for each predictors respectively. Under ideal circumstances, we would expect our model to be able to predict the death counts in a region, given its number of tests, population, and unemployment rate. 
 
 It is necessary to mention that in the original dataset on which this model looked at, analysts observed strong correlation within the some other data variables such as `vaccination` and `labor_rate`. After some data exploratory works, some right-skewness is noticed so analysts decided to apply natural logarithms to each continuous variables.
 
 Another thing to look at was the correlation between the predictors to avoid the potential effect of multicollinearity, which is a statistical concept that describes the incidence of  several independent variables in a model are in fact correlated within themselves. This correlation test is later combined with criterion based model selection to select which predictors to put in for the final model.
 
 The three criterion based model selection method are Cp criterion, adjusted R squared criterion, and LASSO. The results of these model selection method all gave similar predictor size, so in the end the analysts chose four predictors to construct the final model as shown in the equation above. After the construction of this model, a corss validation process is performed to further assess the prediction ability of this model.
+
+### Discussion
+#### Project Obstacle
+
+One of the first obstacles this project met was related with data scraping and cleaning. It was the groups' intention to perform similar investigations about COVID, but on a much more broader scale such as across the whole country. The reason that analysts didn't follow this starting plan is because data sets from different parts of the country simply are organized quite differently. So it would take analysts a lot of time to do the necessary bindings to forge a complete data set to work on. Also it is questioned whether the equipment that analysts use can efficiently process such large amount of data in reasonable time during later analysis process.
+
+After deciding to put our focus on the state of California, the next obstacle analysts met was related to data pre-processing. There were lots of data variables retrieved from the original database that aren't going to be used in this investigation and also certain variable columns need to be created using the `mutate` function. As team members excahnged a lot of ideas when discussing and planning on which specific data to throw out and which ones to keep, sometimes there were even data manipulations going "back and forth", the website building process didn't really start for quite a long time. 
+
