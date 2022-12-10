@@ -302,7 +302,7 @@ age_death =
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
-      legend.position = "bottom"
+      legend.position = "none"
     ) +
     xlab("Age") +
     ylab("Percent Deaths") +
@@ -323,7 +323,7 @@ gender_death =
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
-      legend.position = "bottom"
+      legend.position = "none"
     ) +
     xlab("Gender") +
     ylab("Percent Deaths") +
@@ -345,7 +345,7 @@ race_death =
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
-      legend.position = "bottom"
+      legend.position = "none"
     ) +
     xlab("Race") +
     ylab("Percent Death") +
@@ -367,46 +367,46 @@ age_death + gender_death + race_death
 
 
 ```{r}
-age %>% 
-    mutate(date = factor(date)) %>%
-    mutate(text_label = str_c("Date: ", date, 
-                              "\n Age: ", age_group,
-                              "\n Death(%): ", percent_deaths)) %>%
-    plot_ly(y = ~percent_deaths, 
-          x = ~date, 
-          color = ~age_group, 
-          width = 950,
-          height = 300, 
-          type = "scatter",
-          mode = "markers",
-          marker = list(size = 3),
-          colors = "inferno",
-          text = ~ text_label) %>%
-    layout(xaxis = list(
-           title = "Date",
-           tickangle = 60),
-           yaxis = list(
-           title = "Death Rate"))
-gender %>% 
-    mutate(date = factor(date)) %>%
-    mutate(text_label = str_c("Date: ", date, 
-                              "\n Gender: ", gender,
-                              "\n Death(%): ", percent_deaths)) %>%
-    plot_ly(y = ~percent_deaths, 
-          x = ~date, 
-          color = ~gender, 
-          width = 950,
-          height = 300, 
-          type = "scatter",
-          mode = "markers",
-          marker = list(size = 3),
-          colors = "viridis",
-          text = ~ text_label) %>%
-    layout(xaxis = list(
-           title = "Date",
-           tickangle = 60),
-           yaxis = list(
-           title = "Death Rate"))
+# age %>% 
+#     mutate(date = factor(date)) %>%
+#     mutate(text_label = str_c("Date: ", date, 
+#                               "\n Age: ", age_group,
+#                               "\n Death(%): ", percent_deaths)) %>%
+#     plot_ly(y = ~percent_deaths, 
+#           x = ~date, 
+#           color = ~age_group, 
+#           width = 950,
+#           height = 300, 
+#           type = "scatter",
+#           mode = "markers",
+#           marker = list(size = 3),
+#           colors = "inferno",
+#           text = ~ text_label) %>%
+#     layout(xaxis = list(
+#            title = "Date",
+#            tickangle = 60),
+#            yaxis = list(
+#            title = "Death Rate"))
+# gender %>% 
+#     mutate(date = factor(date)) %>%
+#     mutate(text_label = str_c("Date: ", date, 
+#                               "\n Gender: ", gender,
+#                               "\n Death(%): ", percent_deaths)) %>%
+#     plot_ly(y = ~percent_deaths, 
+#           x = ~date, 
+#           color = ~gender, 
+#           width = 950,
+#           height = 300, 
+#           type = "scatter",
+#           mode = "markers",
+#           marker = list(size = 3),
+#           colors = "viridis",
+#           text = ~ text_label) %>%
+#     layout(xaxis = list(
+#            title = "Date",
+#            tickangle = 60),
+#            yaxis = list(
+#            title = "Death Rate"))
 ```
 
 
