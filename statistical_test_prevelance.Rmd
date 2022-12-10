@@ -96,4 +96,4 @@ wt <- 1/var_fitted
 wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
 aov(wls_prevalence) %>% summary()
 ```
-
+From the table above, we can see that the Variables,such as $ln(test)$,$ln(unemployment)$,$ln(area)$,$ln(population)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $location$ has p-value greater than 0.05.

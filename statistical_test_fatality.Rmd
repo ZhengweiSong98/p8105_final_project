@@ -85,12 +85,17 @@ ca_model_data = ca_premodel_data %>%
 
 ```
 
-Analysis of Variance (ANOVA) is a statistical test used to determine if there is a statistically significant difference between categorical groups. In general, we expect there are one or more group might be influential on the dependent variable, while the other group treated as control group. Before conducting the test, we need to check the test assumption:
--no relationship between the subjects.
--different groups must have equal sample sizes.
--dependent variable is normally distributed.
--Population variances must be equal(Homogeneity of variance)
+Analysis of Variance (ANOVA) is a statistical test used to determine if there is a statistically significant difference between categorical groups. In general, we expect there are one or more group might be influential on the dependent variable, while the other group treated as control group. 
 
+Before conducting the test, we need to check the test assumption:
+
+$\bullet$ no relationship between the subjects.
+$\bullet$ different groups must have equal sample sizes.
+$\bullet$ dependent variable is normally distributed.
+$\bullet$ Population variances must be equal(Homogeneity of variance)
+
+
+These assumptions were [checked](mlr_fatality.html), and our model meet these requirement.
 Then, we conduct ANOVA test to our linear regression, uses the F-test to determine whether the variables fits the data as well as our model. If that F-statics are sufficiently large, or P-values are significantly small，then we can conclude that your model fits the data better than the intercept-only model. 
 
 ANOVA test for model $$ln(reported \ death) = ln(population)\beta_{ln(population)} \times total \ cost\beta_{totol \ test} + \epsilon_i$$
@@ -99,10 +104,8 @@ Then, we conduct a hypothesis test.
 
 $$H_0 = \beta_{ln(population)} = \beta_{totol \ test}$$
 $$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
-
-
 ```{r}
 mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
 anova(mlr_model) %>% broom::tidy()
 ```
-
+From the table above, we can see that the Variables,such as $location$,$labor\ rate$,$ln(tests)$,$ln(area)$,$ln(unemployment)$,$ln(bed)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $vaccinated$ has p-value greater than 0.05. 
