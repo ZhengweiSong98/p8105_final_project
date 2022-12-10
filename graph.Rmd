@@ -68,8 +68,9 @@ demo_plot = demo %>%
     summarize(total_cases = sum(reported_cases),
               total_deaths = sum(reported_deaths),
               prevalence = total_cases/mean(population)) %>% 
+    ungroup() %>% 
     mutate(county_name = fct_reorder(county_name, prevalence)) %>% 
-    ggplot(aes(x = reorder(county_name, prevalence), y = prevalence, color = county_name)) +
+    ggplot(aes(x = county_name, y = prevalence, color = county_name)) +
     geom_point(alpha = 1) +
     theme(
       legend.position = "none"
@@ -366,9 +367,21 @@ ggplotly(demo_asso, width = 800, height = 500)
 ```
 
 
+```{r warning = F, message = F}
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population),
+              death_rates = total_deaths/total_cases) %>%
+    ungroup() %>% 
+    dplyr::select(prevalence, death_rates) %>% 
+    GGally::ggpairs()
+```
 
 
-
+The correlation between prevalence and death rate is low, so we need shift focus on the.
 
 
 
