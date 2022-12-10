@@ -95,7 +95,9 @@ ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county
 skimr::skim(ca_premodel_data)
 ```
 
-* The data includes `r nrow(ca_premodel_data)` observations and `r ncol(ca_premodel_data)` variables. Now we are interested on whether the death cases are associated with `area`, `population` and `testing_cases`.
+* For `labor_data`, con
+
+The data includes `r nrow(ca_premodel_data)` observations and `r ncol(ca_premodel_data)` variables. Now we are interested on whether the death cases are associated with `area`, `population` and `testing_cases`.
 
 ## Data Description
 ```{r warning = F, message = F, fig.width = 16, fig.height = 10}
