@@ -5,12 +5,12 @@ navbar:
   right:
     - text: 'Exploratory analyses'
       menu:
-      - text: "Total Cases and Death Rate"
+      - text: "Overview of Outcomes by County"
         href: graph.html
-      - text: "Hospitalization and Vaccincation"
+      - text: "Overview of Outcomes by Demographics"
         href: graph2.html
-    - text: 'Statistical Test'
-      href: statistical_test.html
+      - text: "Associations Between Predictors and Outcomes"
+        href: graph3.html
     - text: 'Inference analyses'
       menu:
       - text: "Multiple Linear Model for death cases"
@@ -21,7 +21,9 @@ navbar:
         href: violation_covid.html
       - text: "Multiple Linear Model for Prevalence"
         href: mlr_new.html
-    - text: 'Additional prediction'
+    - text: 'Statistical Test'
+      href: statistical_test.html
+    - text: 'Additional Prediction'
       href: shiny_app.html
     - text: 'Project Report'
       href: project_report.html
