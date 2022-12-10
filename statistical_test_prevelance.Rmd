@@ -23,7 +23,7 @@ Then, we conduct a hypothesis test.
 $$H_0 = \beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}$$
 $$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
 
-```{r}
+```{r,include=FALSE}
 source("data_preprocessing_backbone.R")
 labor_data = read_csv("./data/CA_Labor.csv") %>%
     janitor::clean_names() %>%
