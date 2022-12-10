@@ -67,7 +67,7 @@ The data cleaning process is being presented in the index page, you can go to th
 
 For model building purpose of this investigation, a multiple linear regression model is considered to investigate on hospitalization rate. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, location and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
 
-disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area + B4 * population + B5 * location
+$$\widehat{Prevalence}=-69.049+9.251 \cdot ln(unemployment)+1.495 \cdot ln(area)+0.642 \cdot ln(population)+9.389 \cdot ln(test)$$
 
 In the above equation, disease prevalence is the desired outcome while the amount of tests, unemployment, area, location, and population are predictors. B1, B2, B3, B4 and B5 are the factors for each predictors respectively. Under ideal circumstances, we would expect our model to be able to predict the death counts in a region, given its number of tests, population, and unemployment rate. 
 

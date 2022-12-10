@@ -598,8 +598,9 @@ The underlying logic for this model is relatively simple, analysts
 extract data that includes disease prevalence, area, population,
 location and tests. The hypothetical multiple linear regression function
 for this particular inference analysis is shown as below:</p>
-<p>disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area
-+ B4 * population + B5 * location</p>
+<p><span class="math display">\[\widehat{Prevalence}=-69.049+9.251 \cdot
+ln(unemployment)+1.495 \cdot ln(area)+0.642 \cdot ln(population)+9.389
+\cdot ln(test)\]</span></p>
 <p>In the above equation, disease prevalence is the desired outcome
 while the amount of tests, unemployment, area, location, and population
 are predictors. B1, B2, B3, B4 and B5 are the factors for each
