@@ -320,9 +320,9 @@ model_caret$resample
 
 ## Conclusion
 
-* We employed automatic search procedures, criterion based approaches, and the LASSO technique to select a final model:
+* We employed automatic search procedures, criterion based approaches, and the LASSO technique to select a final model with the outcome of death rate (DR) and totally 7 parameters: 
 
-$\widehat{Death\;Rate}=-0.572+0.079 \cdot ln(location=inland)+0.002 \cdot vaccinated-0.004 \cdot labor\;rate+0.066 \cdot ln(test)+0.034 \cdot ln(area)+0.073 \cdot ln(unemployment)$
+$$\widehat{DR}=-0.572+0.079 \cdot ln(location=inland)+0.002 \cdot vaccinated-0.004 \cdot labor\;rate+0.066 \cdot ln(test)+0.034 \cdot ln(area)+0.073 \cdot ln(unemployment)$$
 
 * From this model, we can see that as the murder rate and average number of freezing days (frost) increase, the predicted life expectancy decreases, while increases in high school graduations and (log) population were associated with an increase in expected life expectancy.
 Overall, from our 10-fold cross validation, we see that our model has pretty good predictive ability for new points. However, this model was only built on data from the US, so it should not be used to predict life expectancy in other locations. Additionally, we noticed that Hawaii was a potential influential point – by exploring Hawaii’s role in our model, we may have slightly different conclusions.
