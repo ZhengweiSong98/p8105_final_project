@@ -15,11 +15,11 @@ navbar:
       menu:
       - text: "Multiple Linear Model for death cases"
         href:  mlr_death.html
-      - text: "Confirmed cases by time"
-        href: cases_by_time.html
+      - text: "Multiple Linear Model for fatality"
+        href: mlr_fatality.html
       - text: "Lowess Model for vaccination rate"
         href: violation_covid.html
-      - text: "Multiple Linear Model for Incidence"
+      - text: "Multiple Linear Model for Prevalence"
         href: mlr_new.html
     - text: 'Additional prediction'
       href: shiny_app.html
