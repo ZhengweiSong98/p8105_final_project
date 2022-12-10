@@ -410,84 +410,19 @@ div.tocify {
 </div>
 
 
-<div id="total-cases-vs-age" class="section level2">
-<h2>Total Cases vs Age</h2>
-<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
-grid.arrange(
- 
-    age %&gt;% 
-    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
-    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = &quot;none&quot;
-    ) +
-    xlab(&quot;Age&quot;) +
-    ylab(&quot;Total cases&quot;) +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point),
-    
-
-    age %&gt;% 
-    ggplot(aes(x = total_cases, fill = age_group)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
-    geom_density(alpha = 0.3, aes(color = age_group)) +
-    scale_color_viridis(discrete = TRUE) +
-    labs(x = &quot;Total cases&quot;,
-         y = &quot;Density&quot;) +
-    theme(legend.position = &quot;right&quot;) +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_x_continuous(labels = point) +
-    scale_y_continuous(labels = point),
-    
-    
-    age %&gt;%
-    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
-    geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = &quot;red&quot;, size = 0.4, lty = &quot;dashed&quot;) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = &quot;none&quot;
-    ) +
-    xlab(&quot;Age&quot;) +
-    ylab(&quot;Total cases&quot;) +
-        theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point),
-
-
-layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2)
-))</code></pre>
-<p><img src="graph2_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<div id="total-cases" class="section level1">
+<h1>1. Total cases</h1>
+<div id="a.-daily-growth-rate-of-total-cases-by-age"
+class="section level2">
+<h2>1a. Daily growth rate of total cases by age</h2>
 <pre class="r"><code>age_17 = 
   age %&gt;% 
   filter(age_group == &quot;0-17&quot;) %&gt;% 
   arrange(date) %&gt;% 
   mutate(lag = lag(total_cases)) %&gt;% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %&gt;% 
+  select(date, age_group, growth_perc) 
+
 
 
 age_49 =
@@ -495,249 +430,156 @@ age_49 =
   filter(age_group == &quot;18-49&quot;) %&gt;% 
   arrange(date) %&gt;% 
   mutate(lag = lag(total_cases)) %&gt;% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %&gt;% 
+  select(date, age_group, growth_perc) 
+
 
 age_64 = 
   age %&gt;% 
   filter(age_group == &quot;50-64&quot;) %&gt;% 
   arrange(date) %&gt;% 
   mutate(lag = lag(total_cases)) %&gt;% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %&gt;% 
+  select(date, age_group, growth_perc) 
+
 
 age_65 =
   age %&gt;% 
   filter(age_group == &quot;65+&quot;) %&gt;% 
   arrange(date) %&gt;% 
   mutate(lag = lag(total_cases)) %&gt;% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %&gt;% 
+  select(date, age_group, growth_perc) 
+
 
 age_all = 
     rbind(age_17, age_49, age_64, age_65) %&gt;% 
-    arrange(desc(growth_perc)) %&gt;% 
-    select(date, age_group, total_cases, growth_perc)
+    filter(date != &quot;2020-04-22&quot;)</code></pre>
+<pre class="r"><code>age_all_1 =
+    rbind(age_17, age_49, age_64, age_65) %&gt;%
+    arrange(growth_perc) %&gt;%
+    select(date, age_group, growth_perc) %&gt;% 
+    filter(date != &quot;2020-12-23&quot;)
 
-head(age_all) %&gt;% 
+age_all_2 =
+    cbind(age_all, age_all_1)
+
+head(age_all_2) %&gt;%
     knitr::kable(
-    caption = &quot;Highest total cases growth rate by age&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Age&quot;, &quot;Total cases&quot;, &quot;Growth rate&quot;),
+    caption = &quot;Highest &amp; Lowest Total Cases Growth Rate by Age&quot;,
+    col.names = c(&quot;Date&quot;, &quot;Age&quot;, &quot;Growth rate&quot;, &quot;Date&quot;, &quot;Age&quot;, &quot;Growth rate&quot;),
     digits = 2
   )</code></pre>
 <table>
-<caption>Highest total cases growth rate by age</caption>
+<caption>Highest &amp; Lowest Total Cases Growth Rate by Age</caption>
 <thead>
 <tr class="header">
 <th align="left">Date</th>
 <th align="left">Age</th>
-<th align="right">Total cases</th>
+<th align="right">Growth rate</th>
+<th align="left">Date</th>
+<th align="left">Age</th>
 <th align="right">Growth rate</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">2020-04-29</td>
-<td align="left">0-17</td>
-<td align="right">1398</td>
-<td align="right">9.66</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-27</td>
-<td align="left">0-17</td>
-<td align="right">1190</td>
-<td align="right">8.82</td>
-</tr>
 <tr class="odd">
 <td align="left">2020-04-23</td>
 <td align="left">0-17</td>
-<td align="right">936</td>
 <td align="right">8.65</td>
-</tr>
-<tr class="even">
-<td align="left">2020-05-05</td>
-<td align="left">0-17</td>
-<td align="right">1937</td>
-<td align="right">8.47</td>
-</tr>
-<tr class="odd">
-<td align="left">2022-01-09</td>
-<td align="left">0-17</td>
-<td align="right">945336</td>
-<td align="right">8.29</td>
-</tr>
-<tr class="even">
-<td align="left">2022-01-16</td>
-<td align="left">0-17</td>
-<td align="right">1158294</td>
-<td align="right">7.62</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>age_all_low = 
-    rbind(age_17, age_49, age_64, age_65) %&gt;% 
-    arrange(growth_perc) %&gt;% 
-    select(date, age_group, total_cases, growth_perc)
-
-head(age_all_low) %&gt;% 
-    knitr::kable(
-    caption = &quot;Lowest total cases growth rate by age&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Age&quot;, &quot;Total cases&quot;, &quot;Growth rate&quot;),
-    digits = 2
-  )</code></pre>
-<table>
-<caption>Lowest total cases growth rate by age</caption>
-<thead>
-<tr class="header">
-<th align="left">Date</th>
-<th align="left">Age</th>
-<th align="right">Total cases</th>
-<th align="right">Growth rate</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
 <td align="left">2021-06-29</td>
 <td align="left">65+</td>
-<td align="right">391708</td>
 <td align="right">-0.17</td>
 </tr>
 <tr class="even">
+<td align="left">2020-04-24</td>
+<td align="left">0-17</td>
+<td align="right">7.42</td>
 <td align="left">2021-06-29</td>
 <td align="left">50-64</td>
-<td align="right">703990</td>
 <td align="right">-0.13</td>
 </tr>
 <tr class="odd">
+<td align="left">2020-04-25</td>
+<td align="left">0-17</td>
+<td align="right">2.69</td>
 <td align="left">2021-06-29</td>
 <td align="left">18-49</td>
-<td align="right">2127853</td>
 <td align="right">-0.11</td>
 </tr>
 <tr class="even">
+<td align="left">2020-04-26</td>
+<td align="left">0-17</td>
+<td align="right">4.24</td>
 <td align="left">2021-06-29</td>
 <td align="left">0-17</td>
-<td align="right">484599</td>
 <td align="right">-0.10</td>
 </tr>
 <tr class="odd">
+<td align="left">2020-04-27</td>
+<td align="left">0-17</td>
+<td align="right">8.82</td>
 <td align="left">2021-04-23</td>
 <td align="left">65+</td>
-<td align="right">384595</td>
 <td align="right">-0.01</td>
 </tr>
 <tr class="even">
-<td align="left">2020-12-23</td>
+<td align="left">2020-04-28</td>
 <td align="left">0-17</td>
-<td align="right">234174</td>
+<td align="right">5.78</td>
+<td align="left">2020-12-30</td>
+<td align="left">0-17</td>
 <td align="right">0.00</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="total-cases-vs-gender" class="section level2">
-<h2>Total Cases vs Gender</h2>
-<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
-grid.arrange(
- 
-    gender %&gt;% 
-    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
-    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = &quot;none&quot;
-    ) +
-    xlab(&quot;Gender&quot;) +
-    ylab(&quot;Total cases&quot;) +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_y_continuous(labels = point),
-
-    gender %&gt;% 
-    ggplot(aes(x = total_cases, fill = gender)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
-    geom_density(alpha = 0.3, aes(color = gender)) +
-    scale_color_viridis(discrete = TRUE) +
-    labs(x = &quot;Total cases&quot;,
-         y = &quot;Density&quot;) +
-    theme(legend.position = &quot;right&quot;) +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_x_continuous(labels = point) +
-    scale_y_continuous(labels = point) +
-    scale_fill_viridis(discrete = TRUE),
-    
-    
-    gender %&gt;%
-    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
-    geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = &quot;red&quot;, size = 0.4, lty = &quot;dashed&quot;) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = &quot;none&quot;
-    ) +
-    xlab(&quot;Gender&quot;) +
-    ylab(&quot;Total cases&quot;) +
-        theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point),
-
-
-layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2)
-))</code></pre>
-<p><img src="graph2_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<div id="b.-daily-growth-rate-of-total-cases-by-gender"
+class="section level2">
+<h2>1b. Daily growth rate of total cases by gender</h2>
 <pre class="r"><code>gender_M =
   gender %&gt;% 
   filter(gender == &quot;Male&quot;) %&gt;% 
   arrange(date) %&gt;% 
   mutate(lag = lag(total_cases)) %&gt;% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %&gt;% 
+    select(date, gender, growth_perc)
 
 gender_F =
   gender %&gt;% 
   filter(gender == &quot;Female&quot;) %&gt;% 
   arrange(date) %&gt;% 
   mutate(lag = lag(total_cases)) %&gt;% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %&gt;% 
+  select(date, gender, growth_perc)
 
 gender_all =
     rbind(gender_M, gender_F) %&gt;%
     arrange(desc(growth_perc)) %&gt;% 
-    select(date, gender, total_cases, growth_perc)
+    select(date, gender, growth_perc)
+gender_all_1 =
+    rbind(gender_M, gender_F) %&gt;%
+    arrange(growth_perc) %&gt;% 
+    select(date, gender, growth_perc)
 
-head(gender_all) %&gt;% 
+gender_all_2 = 
+    cbind(gender_all, gender_all_1)
+head(gender_all_2) %&gt;% 
     knitr::kable(
-    caption = &quot;Highest total cases growth rate by gender&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Gender&quot;, &quot;Total cases&quot;, &quot;Growth rate&quot;),
+    caption = &quot;Highest &amp; Lowest Total Cases Growth Rate by Gender&quot;,
+    col.names = c(&quot;Date&quot;, &quot;Gender&quot;, &quot;Growth rate&quot;, &quot;Date&quot;, &quot;Gender&quot;, &quot;Growth rate&quot;),
     digits = 2
   )</code></pre>
 <table>
-<caption>Highest total cases growth rate by gender</caption>
+<caption>Highest &amp; Lowest Total Cases Growth Rate by
+Gender</caption>
 <thead>
 <tr class="header">
 <th align="left">Date</th>
 <th align="left">Gender</th>
-<th align="right">Total cases</th>
+<th align="right">Growth rate</th>
+<th align="left">Date</th>
+<th align="left">Gender</th>
 <th align="right">Growth rate</th>
 </tr>
 </thead>
@@ -745,191 +587,571 @@ head(gender_all) %&gt;%
 <tr class="odd">
 <td align="left">2020-04-29</td>
 <td align="left">Male</td>
-<td align="right">24372</td>
 <td align="right">5.44</td>
+<td align="left">2021-06-29</td>
+<td align="left">Male</td>
+<td align="right">-0.12</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-09</td>
 <td align="left">Female</td>
-<td align="right">3034425</td>
 <td align="right">5.31</td>
+<td align="left">2021-06-29</td>
+<td align="left">Female</td>
+<td align="right">-0.11</td>
 </tr>
 <tr class="odd">
 <td align="left">2020-04-23</td>
 <td align="left">Female</td>
-<td align="right">19394</td>
 <td align="right">5.15</td>
+<td align="left">2020-12-23</td>
+<td align="left">Male</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="even">
 <td align="left">2020-04-24</td>
 <td align="left">Female</td>
-<td align="right">20395</td>
 <td align="right">4.91</td>
+<td align="left">2020-12-30</td>
+<td align="left">Male</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="odd">
 <td align="left">2022-01-09</td>
 <td align="left">Male</td>
-<td align="right">2813232</td>
 <td align="right">4.89</td>
+<td align="left">2020-12-23</td>
+<td align="left">Female</td>
+<td align="right">0.00</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-16</td>
 <td align="left">Female</td>
-<td align="right">3445681</td>
 <td align="right">4.80</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>gender_all_1 =
-    rbind(gender_M, gender_F) %&gt;%
-    arrange(growth_perc) %&gt;% 
-    select(date, gender, total_cases, growth_perc)
-head(gender_all_1) %&gt;% 
-    knitr::kable(
-    caption = &quot;Lowest total cases growth rate by gender&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Gender&quot;, &quot;Total cases&quot;, &quot;Growth rate&quot;),
-    digits = 2
-  )</code></pre>
-<table>
-<caption>Lowest total cases growth rate by gender</caption>
-<thead>
-<tr class="header">
-<th align="left">Date</th>
-<th align="left">Gender</th>
-<th align="right">Total cases</th>
-<th align="right">Growth rate</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">2021-06-29</td>
-<td align="left">Male</td>
-<td align="right">1774418</td>
-<td align="right">-0.12</td>
-</tr>
-<tr class="even">
-<td align="left">2021-06-29</td>
-<td align="left">Female</td>
-<td align="right">1884983</td>
-<td align="right">-0.11</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-12-23</td>
-<td align="left">Male</td>
-<td align="right">945758</td>
-<td align="right">0.00</td>
-</tr>
-<tr class="even">
-<td align="left">2020-12-30</td>
-<td align="left">Male</td>
-<td align="right">1064781</td>
-<td align="right">0.00</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-12-23</td>
-<td align="left">Female</td>
-<td align="right">993649</td>
-<td align="right">0.00</td>
-</tr>
-<tr class="even">
 <td align="left">2020-12-30</td>
 <td align="left">Female</td>
-<td align="right">1121071</td>
 <td align="right">0.00</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="total-cases-vs-race" class="section level2">
-<h2>Total Cases vs Race</h2>
-<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
-grid.arrange(
- 
-    race %&gt;%
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;%
-    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
-    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = &quot;none&quot;
-    ) +
-    xlab(&quot;Race&quot;) +
-    ylab(&quot;Total cases&quot;) +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_y_continuous(labels = point) +
-    theme(axis.title.x = element_blank(),
-         axis.text.x = element_blank(),
-         axis.ticks.x = element_blank()),
-    
-
+<div id="c.-daily-growth-rate-of-total-cases-by-race"
+class="section level2">
+<h2>1c. Daily growth rate of total cases by race</h2>
+<pre class="r"><code>race_ia = 
     race %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;%
-    ggplot(aes(x = total_cases, fill = race_group)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
-    geom_density(alpha = 0.1, aes(color = race_group)) +
-    scale_color_viridis(discrete = TRUE) +
-    labs(x = &quot;Total cases&quot;,
-         y = &quot;Density&quot;) +
-    theme(legend.position = &quot;right&quot;) +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) + 
-    xlim(0, 2.5e6) +   
-    ylim(0, 1.5e-5),
-   
-    
-
-
-race %&gt;%
     mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
     mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
-    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
-    geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = &quot;red&quot;, size = 0.4, lty = &quot;dashed&quot;) +
-    ylim(0, 30000) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = &quot;none&quot;
-    ) +
-    xlab(&quot;Race&quot;) +
-    ylab(&quot;Total cases&quot;) +
-        theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, &#39;cm&#39;),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Indian/Alaska&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_asian =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Asian&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_black =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Black&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_latino =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Latino&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_multi =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Multi-Race&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)  
+race_hi =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Hawaiian/Islander&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_white =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;White&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    mutate(lag = lag(total_cases)) %&gt;% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+race_all =
+    rbind(race_ia, race_asian, race_black, race_latino, race_multi, race_hi) %&gt;%
+    arrange(desc(growth_perc)) %&gt;% 
+    select(date, race_group, growth_perc)
+
+race_all_1 =
+    rbind(race_ia, race_asian, race_black, race_latino, race_multi, race_hi) %&gt;%
+    arrange(growth_perc) %&gt;% 
+    select(date, race_group, growth_perc)
+
+race_all_2 =
+    cbind(race_all, race_all_1) 
+head(race_all_2) %&gt;% 
+    knitr::kable(
+    caption = &quot;Highest &amp; Lowest Total Cases Growth Rate by Race&quot;,
+    col.names = c(&quot;Date&quot;, &quot;Race&quot;, &quot;Growth rate&quot;, &quot;Date&quot;, &quot;Race&quot;, &quot;Growth rate&quot;),
+    digits = 2
+  )</code></pre>
+<table>
+<caption>Highest &amp; Lowest Total Cases Growth Rate by Race</caption>
+<colgroup>
+<col width="14%" />
+<col width="18%" />
+<col width="16%" />
+<col width="14%" />
+<col width="18%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Date</th>
+<th align="left">Race</th>
+<th align="right">Growth rate</th>
+<th align="left">Date</th>
+<th align="left">Race</th>
+<th align="right">Growth rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2022-10-25</td>
+<td align="left">Multi-Race</td>
+<td align="right">61.37</td>
+<td align="left">2020-04-21</td>
+<td align="left">Multi-Race</td>
+<td align="right">-363.49</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-20</td>
+<td align="left">Multi-Race</td>
+<td align="right">54.57</td>
+<td align="left">2022-11-01</td>
+<td align="left">Multi-Race</td>
+<td align="right">-158.00</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-04-21</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">14.00</td>
+<td align="left">2020-04-30</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">-10.61</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-14</td>
+<td align="left">Multi-Race</td>
+<td align="right">11.55</td>
+<td align="left">2021-04-30</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">-3.28</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-04-28</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">11.27</td>
+<td align="left">2020-04-15</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">-3.12</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-14</td>
+<td align="left">Latino</td>
+<td align="right">10.73</td>
+<td align="left">2021-05-27</td>
+<td align="left">Multi-Race</td>
+<td align="right">-2.17</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="death-rate" class="section level1">
+<h1>2. Death Rate</h1>
+<div id="a.-daily-death-rate-by-age" class="section level2">
+<h2>2a. Daily death rate by age</h2>
+<pre class="r"><code>age_17_d = 
+  age %&gt;% 
+  filter(age_group == &quot;0-17&quot;) %&gt;% 
+  arrange(date) %&gt;% 
+  select(date, age_group, percent_deaths) 
+
+
+
+age_49_d =
+  age %&gt;% 
+  filter(age_group == &quot;18-49&quot;) %&gt;% 
+  arrange(date) %&gt;% 
+  select(date, age_group, percent_deaths) 
  
 
 
-layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2)
-))</code></pre>
-<p><img src="graph2_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+age_64_d = 
+  age %&gt;% 
+  filter(age_group == &quot;50-64&quot;) %&gt;% 
+  arrange(date) %&gt;% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_65_d =
+  age %&gt;% 
+  filter(age_group == &quot;65+&quot;) %&gt;% 
+  arrange(date) %&gt;% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_all_d = 
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %&gt;% 
+    arrange(desc(percent_deaths))</code></pre>
+<pre class="r"><code>age_all_1_d =
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %&gt;%
+    arrange(percent_deaths)
+
+
+age_all_2_d =
+    cbind(age_all_d, age_all_1_d)
+
+head(age_all_2) %&gt;%
+    knitr::kable(
+    caption = &quot;Highest &amp; Lowest Death Percent by Age&quot;,
+    col.names = c(&quot;Date&quot;, &quot;Age&quot;, &quot;Death Percent&quot;, &quot;Date&quot;, &quot;Age&quot;, &quot;Death Percent&quot;),
+    digits = 2
+  )</code></pre>
+<table>
+<caption>Highest &amp; Lowest Death Percent by Age</caption>
+<thead>
+<tr class="header">
+<th align="left">Date</th>
+<th align="left">Age</th>
+<th align="right">Death Percent</th>
+<th align="left">Date</th>
+<th align="left">Age</th>
+<th align="right">Death Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2020-04-23</td>
+<td align="left">0-17</td>
+<td align="right">8.65</td>
+<td align="left">2021-06-29</td>
+<td align="left">65+</td>
+<td align="right">-0.17</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-24</td>
+<td align="left">0-17</td>
+<td align="right">7.42</td>
+<td align="left">2021-06-29</td>
+<td align="left">50-64</td>
+<td align="right">-0.13</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-04-25</td>
+<td align="left">0-17</td>
+<td align="right">2.69</td>
+<td align="left">2021-06-29</td>
+<td align="left">18-49</td>
+<td align="right">-0.11</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-26</td>
+<td align="left">0-17</td>
+<td align="right">4.24</td>
+<td align="left">2021-06-29</td>
+<td align="left">0-17</td>
+<td align="right">-0.10</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-04-27</td>
+<td align="left">0-17</td>
+<td align="right">8.82</td>
+<td align="left">2021-04-23</td>
+<td align="left">65+</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-28</td>
+<td align="left">0-17</td>
+<td align="right">5.78</td>
+<td align="left">2020-12-30</td>
+<td align="left">0-17</td>
+<td align="right">0.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="b.-daily-death-rate-by-gender" class="section level2">
+<h2>2b. Daily death rate by gender</h2>
+<pre class="r"><code>gender_M_d =
+  gender %&gt;% 
+  filter(gender == &quot;Male&quot;) %&gt;% 
+  arrange(date) %&gt;% 
+  select(date, gender, percent_deaths)
+
+gender_F_d =
+  gender %&gt;% 
+  filter(gender == &quot;Female&quot;) %&gt;% 
+  arrange(date) %&gt;% 
+  select(date, gender, percent_deaths)
+
+gender_all_d =
+    rbind(gender_M_d, gender_F_d) %&gt;%
+    arrange(desc(percent_deaths)) %&gt;% 
+    select(date, gender, percent_deaths)
+gender_all_d_1 =
+    rbind(gender_M_d, gender_F_d) %&gt;%
+    arrange(percent_deaths) %&gt;% 
+    select(date, gender, percent_deaths)
+
+gender_all_2_d = 
+    cbind(gender_all_d, gender_all_d_1)
+head(gender_all_2_d) %&gt;% 
+    knitr::kable(
+    caption = &quot;Highest &amp; Lowest Death Percent by Gender&quot;,
+    col.names = c(&quot;Date&quot;, &quot;Gender&quot;, &quot;Death Percent&quot;, &quot;Date&quot;, &quot;Gender&quot;, &quot;Death Percent&quot;),
+    digits = 2
+  )</code></pre>
+<table>
+<caption>Highest &amp; Lowest Death Percent by Gender</caption>
+<thead>
+<tr class="header">
+<th align="left">Date</th>
+<th align="left">Gender</th>
+<th align="right">Death Percent</th>
+<th align="left">Date</th>
+<th align="left">Gender</th>
+<th align="right">Death Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2020-04-22</td>
+<td align="left">Male</td>
+<td align="right">60.1</td>
+<td align="left">2020-04-22</td>
+<td align="left">Female</td>
+<td align="right">39.5</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-26</td>
+<td align="left">Male</td>
+<td align="right">60.1</td>
+<td align="left">2020-04-26</td>
+<td align="left">Female</td>
+<td align="right">39.6</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-04-24</td>
+<td align="left">Male</td>
+<td align="right">60.0</td>
+<td align="left">2020-04-24</td>
+<td align="left">Female</td>
+<td align="right">39.7</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-25</td>
+<td align="left">Male</td>
+<td align="right">59.9</td>
+<td align="left">2020-04-23</td>
+<td align="left">Female</td>
+<td align="right">39.8</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-04-23</td>
+<td align="left">Male</td>
+<td align="right">59.8</td>
+<td align="left">2020-04-25</td>
+<td align="left">Female</td>
+<td align="right">39.9</td>
+</tr>
+<tr class="even">
+<td align="left">2020-04-27</td>
+<td align="left">Male</td>
+<td align="right">59.7</td>
+<td align="left">2020-04-27</td>
+<td align="left">Female</td>
+<td align="right">40.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="c.-daily-death-rate-by-race" class="section level2">
+<h2>2c. Daily death rate by race</h2>
+<pre class="r"><code>race_ia_d = 
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Indian/Alaska&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)
+race_asian_d =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Asian&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)
+race_black_d =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Black&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)
+race_latino_d =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Latino&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)
+race_multi_d =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Multi-Race&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)  
+race_hi_d =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;Hawaiian/Islander&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)
+race_white_d =
+    race %&gt;% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
+    filter(race_group == &quot;White&quot;) %&gt;% 
+    arrange(date) %&gt;% 
+    select(date, race_group, percent_deaths)
+
+race_all_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %&gt;%
+    arrange(desc(percent_deaths)) 
+
+race_all_1_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %&gt;% 
+    arrange(percent_deaths)
+
+race_all_2_d =
+    cbind(race_all_d, race_all_1_d) 
+head(race_all_2_d) %&gt;% 
+    knitr::kable(
+    caption = &quot;Highest &amp; Lowest Death Percent by Race&quot;,
+    col.names = c(&quot;Date&quot;, &quot;Race&quot;, &quot;Death Percent&quot;, &quot;Date&quot;, &quot;Race&quot;, &quot;Death Percent&quot;),
+    digits = 2
+  )</code></pre>
+<table style="width:100%;">
+<caption>Highest &amp; Lowest Death Percent by Race</caption>
+<colgroup>
+<col width="15%" />
+<col width="9%" />
+<col width="19%" />
+<col width="15%" />
+<col width="19%" />
+<col width="19%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Date</th>
+<th align="left">Race</th>
+<th align="right">Death Percent</th>
+<th align="left">Date</th>
+<th align="left">Race</th>
+<th align="right">Death Percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2020-10-27</td>
+<td align="left">Latino</td>
+<td align="right">48.7</td>
+<td align="left">2020-04-22</td>
+<td align="left">Multi-Race</td>
+<td align="right">0.2</td>
+</tr>
+<tr class="even">
+<td align="left">2020-09-11</td>
+<td align="left">Latino</td>
+<td align="right">48.6</td>
+<td align="left">2020-04-23</td>
+<td align="left">Multi-Race</td>
+<td align="right">0.2</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-09-12</td>
+<td align="left">Latino</td>
+<td align="right">48.6</td>
+<td align="left">2020-04-27</td>
+<td align="left">Multi-Race</td>
+<td align="right">0.2</td>
+</tr>
+<tr class="even">
+<td align="left">2020-09-13</td>
+<td align="left">Latino</td>
+<td align="right">48.6</td>
+<td align="left">2020-04-21</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">0.3</td>
+</tr>
+<tr class="odd">
+<td align="left">2020-09-14</td>
+<td align="left">Latino</td>
+<td align="right">48.6</td>
+<td align="left">2020-05-02</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">0.3</td>
+</tr>
+<tr class="even">
+<td align="left">2020-09-15</td>
+<td align="left">Latino</td>
+<td align="right">48.6</td>
+<td align="left">2020-05-03</td>
+<td align="left">Indian/Alaska</td>
+<td align="right">0.3</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
