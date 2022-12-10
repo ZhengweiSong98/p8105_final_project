@@ -59,5 +59,20 @@ This is a website contains data about states, metro areas, counties, cities, zip
 
 #### Employment Development Department
 Since 1935, the Employment Development Department(EDD) had been connecting with job seekers and employers in an effort to build the economy of Golden State. Mean while it has been collecting data related to employment each month by industry data for California and sub-state areas. One of its data set is [current industry employment and unemployment rates for counties](https://www.labormarketinfo.edd.ca.gov/data/industry-employment-and-unemployment-rates-for-counties.html), which could produce insightful result through this investigation by connecting data like unemployment rate to the prevalence of disease or hospitalization rate. 
-
+A
 The data cleaning process is being presented in the index page, you can go to there by clicking on the button at the upper left corner.
+
+### Inference Analysis: Regression
+#### Multiple linear Regression 
+
+For model building purpose of this investigation, a multiple linear regression model is considered to investigate on hospitalization rate. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
+
+disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area + B4 * population
+
+In the above equation, disease prevalence is the desired outcome while the amount of tests, unemployment, area, and population are predictors. B1, B2, B3, and B4 are the factors for each predictors respectively. Under ideal circumstances, we would expect our model to be able to predict the death counts in a region, given its number of tests, population, and unemployment rate. 
+
+It is necessary to mention that in the original dataset on which this model looked at, analysts observed strong correlation within the some other data variables such as `vaccination` and `labor_rate`. After some data exploratory works, some right-skewness is noticed so analysts decided to apply natural logarithms to each continuous variables.
+
+Another thing to look at was the correlation between the predictors to avoid the potential effect of multicollinearity, which is a statistical concept that describes the incidence of  several independent variables in a model are in fact correlated within themselves. This correlation test is later combined with criterion based model selection to select which predictors to put in for the final model.
+
+The three criterion based model selection method are Cp criterion, adjusted R squared criterion, and LASSO. The results of these model selection method all gave similar predictor size, so in the end the analysts chose four predictors to construct the final model as shown in the equation above. After the construction of this model, a corss validation process is performed to further assess the prediction ability of this model.
