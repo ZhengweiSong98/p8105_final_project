@@ -168,7 +168,7 @@ ca_model_data %>%
 ## Correlation
 ```{r warning = F, message = F}
 ca_model_data %>% 
-    select(-location) %>%
+    dplyr::select(-location) %>%
     GGally::ggpairs()
 ```
 

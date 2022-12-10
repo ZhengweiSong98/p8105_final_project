@@ -416,6 +416,7 @@ div.tocify {
 </div>
 
 
+<<<<<<< HEAD
 <pre class="r"><code>library(readr)
 library(tidyr)
 library(tidyverse)</code></pre>
@@ -568,6 +569,8 @@ ca_model_data = ca_premodel_data %&gt;%
            ln_population = log(population),
            ln_test = log(test)) %&gt;%
     dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)</code></pre>
+=======
+>>>>>>> 31e2054dede43c49ee046d203d3f170717d592d4
 <p>We apply ANOVA test to our linear regression, uses the F-test to
 determine whether the variables fits the data as well as our model. If
 that F-statics are sufficiently large, or P-values are significantly
@@ -580,6 +583,7 @@ cost\beta_{totol \ test} + \epsilon_i\]</span></p>
 <p><span class="math display">\[H_0 = \beta_{ln(population)} =
 \beta_{totol \ test}\]</span> <span class="math display">\[H_1 = At\
 least\ one\ \beta\: is\ not\ zero \]</span></p>
+<<<<<<< HEAD
 <pre class="r"><code>demo_raw = read_csv(&quot;./data/Demo.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
     filter(!area %in% c(&quot;Unknown&quot;, &quot;Out of state&quot;)) %&gt;%
@@ -607,6 +611,9 @@ least\ one\ \beta\: is\ not\ zero \]</span></p>
     relocate(ln_reported_deaths)
 
 reg_full = lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death)
+=======
+<pre class="r"><code>reg_full = lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death)
+>>>>>>> 31e2054dede43c49ee046d203d3f170717d592d4
 aov(reg_full) %&gt;% summary()</code></pre>
 <pre><code>##                              Df Sum Sq Mean Sq F value   Pr(&gt;F)    
 ## ln_population                 1 303.31  303.31 641.217  &lt; 2e-16 ***
