@@ -202,13 +202,21 @@ reg_intercept = lm(death_rate ~ 1, data = ca_model_data)
 ## Model Selection
 ```{r warning = F, message = F}
 #forward Selection
-step(reg_intercept, direction='forward', scope=formula(reg_full),trace=0)
-
+step(reg_intercept, direction='forward', scope=formula(reg_full),trace=0) %>%
+ broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 #backwards elimination
-step(reg_full, direction='backward', scope=formula(reg_full),trace=0)
+step(reg_full, direction='backward', scope=formula(reg_full),trace=0) %>%
+ broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 
 #stepwise Selection
-step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
+step(reg_full, direction = "both", scope=formula(reg_full),trace=0) %>%
+ broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 
 # Use criterion-based procedures to guide your selection of the ‘best subset’
 # chosen using SSE/RSS (smaller is better)
@@ -247,7 +255,10 @@ ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()
 # refit the lasso model with the "best" lambda
 fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:9]), ca_model_data$death_rate, lambda = cv_object$lambda.min)
-coef(fit_bestcv)
+fit_bestcv %>%
+ broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 ```
 
 Since the stepwise selection techniques and the criterion techniques all chose the same model
@@ -257,7 +268,10 @@ Our final model:
 
 ```{r warning = F, message = F}
 mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
-summary(mlr_model)
+mlr_model %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 ```
 
 * As the interaction term has p-value < 0.05, we can conclude that ln(population) and ln(total_tests) have significant interaction at 0.05 significance level, hence the two variables will be included in the model with the interaction term.
@@ -284,7 +298,11 @@ wt <- 1/var_fitted
 
 wls_incidence <- lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment,data = ca_model_data, weights = wt)
 
-summary(wls_incidence)
+wls_incidence %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
+
 check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 check_model(wls_incidence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 ```

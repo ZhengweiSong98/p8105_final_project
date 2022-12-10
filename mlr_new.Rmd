@@ -229,7 +229,10 @@ ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()
 # refit the lasso model with the "best" lambda
 fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
-coef(fit_bestcv)
+fit_bestcv %>%
+         broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 ```
 
 Since the stepwise selection techniques and the criterion techniques all chose the same model
@@ -239,7 +242,10 @@ Our final model:
 
 ```{r warning = F, message = F}
 mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
-summary(mlr_model)
+mlr_model %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 ```
 
 * As the interaction term has p-value < 0.05, we can conclude that ln(population) and ln(total_tests) have significant interaction at 0.05 significance level, hence the two variables will be included in the model with the interaction term.
@@ -266,7 +272,11 @@ wt <- 1/var_fitted
 
 wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
 
-summary(wls_prevalence)
+wls_incidence %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
+
 check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 check_model(wls_prevalence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 ```
