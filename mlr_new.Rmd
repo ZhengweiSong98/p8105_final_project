@@ -1,5 +1,5 @@
 ---
-title: "MLR Incidence"
+title: "MLR prevalence"
 output: 
   html_document: 
     toc: yes
@@ -46,7 +46,9 @@ labor_data = read_csv("./data/CA_Labor.csv") %>%
 
 population_data = read_csv("./data/CA_Land_Area.csv") %>%
     janitor::clean_names() %>%
-    dplyr::select(-rank, -state)
+    dplyr::select(-rank, -state) %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
 
 geo_data = read_csv("./data/ca_boundaries.csv") %>%
     janitor::clean_names() %>%
@@ -63,12 +65,13 @@ ca_nonmedical_data = ca_nonmedical_data %>%
 demo_covid = demo %>%
     mutate(cumulative_deaths= as.numeric(population),
            cumulative_cases = as.numeric(cumulative_cases),
-        incidence=cumulative_cases/population*100,
-        test = cumulative_total_tests/population*100) %>%
-    dplyr::select(county_name, incidence, test, population) %>%
+        prevalence=cumulative_cases/population*100,
+        test = cumulative_total_tests/population*100,
+        ) %>%
+    dplyr::select(county_name, prevalence, test, population) %>%
     rename(county=county_name) %>%
     group_by(county) %>%
-    summarize(incidence=max(incidence),
+    summarize(prevalence=max(prevalence),
               test = max(test)) %>%
     filter(!county %in% c("Out of state","Unknown"))
 
@@ -97,8 +100,8 @@ skimr::skim(ca_premodel_data)
 ## Data Description
 ```{r warning = F, message = F, fig.width = 16, fig.height = 10}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
-rawplot_incidence = ca_premodel_data %>%
-    ggplot(aes(x = incidence)) +
+rawplot_prevalence = ca_premodel_data %>%
+    ggplot(aes(x = prevalence)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
     scale_y_continuous(labels = point)
 
@@ -151,7 +154,7 @@ plot_ln_population = ca_model_data %>%
     ggplot(aes(x = ln_population)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
-(rawplot_incidence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)
+(rawplot_prevalence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)
 
 ca_model_data %>%
     gtsummary::tbl_summary() %>%
@@ -164,16 +167,18 @@ ca_model_data %>%
 
 ## Correlation
 ```{r warning = F, message = F}
-ca_model_data %>% GGally::ggpairs()
+ca_model_data %>% 
+    select(-location) %>%
+    GGally::ggpairs()
 ```
 
 * The correlation between predictors are highly correlated, which is more than 0.95. This is because testing count may associate with population in the area empirically.
 
 ## Modelling Fit
 ```{r warning = F, message = F}
-reg_full = lm(incidence ~ ., data = ca_model_data)
+reg_full = lm(prevalence ~ ., data = ca_model_data)
 
-reg_intercept = lm(incidence ~ 1, data = ca_model_data)
+reg_intercept = lm(prevalence ~ 1, data = ca_model_data)
 ```
 
 ## Model Selection
@@ -189,13 +194,13 @@ step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
 
 # Use criterion-based procedures to guide your selection of the ‘best subset’
 # chosen using SSE/RSS (smaller is better)
-criterion_selected = regsubsets(incidence ~ ., data = ca_model_data)
+criterion_selected = regsubsets(prevalence ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
 par(mfrow=c(1,2))
-plot(2:7, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
+plot(2:8, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
 abline(0,1)
-plot(2:7, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
+plot(2:8, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
 ```
 
 The plots above show the Cp index and Adjusted 𝑅2 for various numbers of parameters.
@@ -209,10 +214,12 @@ value for Cp
 Use the LASSO method to perform variable selection. Make sure you choose the
 “best lambda” to use and show how you determined this
 ```{r warning = F, message = F}
+ca_lasso_data = ca_model_data %>% mutate(
+    location=ifelse(location =="costal", 1,0))
 # using cross validation to choose lambda
 lambda_seq = 10^seq(-5, 0, by = .01)
 set.seed(2022)
-cv_object <- cv.glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence,
+cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence,
 lambda = lambda_seq, nfolds = 5)
 cv_object
 # plot the CV results
@@ -221,7 +228,7 @@ mean_cv_error = cv_object$cvm) %>%
 ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()
 # refit the lasso model with the "best" lambda
-fit_bestcv <- glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence, lambda = cv_object$lambda.min)
+fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
 coef(fit_bestcv)
 ```
 
@@ -231,7 +238,7 @@ suggested model, with the addition of log area.)
 Our final model:
 
 ```{r warning = F, message = F}
-mlr_model = lm(incidence~ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
 summary(mlr_model)
 ```
 
@@ -257,11 +264,11 @@ var_fitted <- sd_function$fitted.values^2
 
 wt <- 1/var_fitted
 
-wls_incidence <- lm(incidence~ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
 
-summary(wls_incidence)
+summary(wls_prevalence)
 check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
-check_model(wls_incidence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
+check_model(wls_prevalence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 ```
 
 * Ordinary Least Squares violates normal assumption
@@ -275,7 +282,7 @@ set.seed(2022)
 # use 10-fold validation and create the training sets
 train = trainControl(method = "cv", number = 10)
 # fit the 4-variables model that we selected as our final model
-model_caret = train(incidence~ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
+model_caret = train(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
 model_caret
 
 model_caret$resample
@@ -288,7 +295,7 @@ model_caret$resample
 * We employed automatic search procedures, criterion based approaches, and the LASSO tech-
 nique to select a final model:
 
-$life\_exp=-69.049+9.251*ln(unemployment)+1.495*ln(area)+0.642*ln(population)+9.389*ln(test)$
+$\hat{Prevalence}=-69.049+9.251*ln(unemployment)+1.495*ln(area)+0.642*ln(population)+9.389*ln(test)$
 
 * From this model, we can see that as the murder rate and average number of freezing days (frost) increase, the predicted life expectancy decreases, while increases in high school graduations and (log) population were associated with an increase in expected life expectancy.
 Overall, from our 10-fold cross validation, we see that our model has pretty good predictive ability for new points. However, this model was only built on data from the US, so it should not be used to predict life expectancy in other locations. Additionally, we noticed that Hawaii was a potential influential point – by exploring Hawaii’s role in our model, we may have slightly different conclusions.
