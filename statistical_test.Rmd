@@ -8,12 +8,12 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r}
+```{r, include=FALSE}
 library(readr)
 library(tidyr)
 library(tidyverse)
 ```
-```{r}
+```{r, include=FALSE}
 source("data_preprocessing_backbone.R")
 labor_data = read_csv("./data/CA_Labor.csv") %>%
     janitor::clean_names() %>%
@@ -85,7 +85,7 @@ Then, we conduct a hypothesis test.
 $$H_0 = \beta_{ln(population)} = \beta_{totol \ test}$$
 $$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
 
-```{r}
+```{r, include=FALSE}
 demo_raw = read_csv("./data/Demo.csv") %>%
     janitor::clean_names() %>%
     filter(!area %in% c("Unknown", "Out of state")) %>%
@@ -102,7 +102,8 @@ demo_death = demo_raw %>%
            ln_reported_deaths = log(reported_deaths + 0.01)) %>%
     dplyr::select(-population,-total_tests,-reported_deaths) %>%
     relocate(ln_reported_deaths)
-
+```
+```{r}
 reg_full = lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death)
 aov(reg_full) %>% summary()
 ```
