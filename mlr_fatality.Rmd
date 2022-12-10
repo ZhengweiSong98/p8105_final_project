@@ -223,10 +223,31 @@ step(reg_full, direction = "both", scope=formula(reg_full),trace=0) %>%
 criterion_selected = regsubsets(death_rate ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
-par(mfrow=c(1,2))
-plot(2:9, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
-abline(0,1)
-plot(2:9, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
+
+x_fe = (2:9)
+y_fe = criterion_plot$cp
+z_fe = criterion_plot$adjr2
+cp_fe_p = 
+cbind(x_fe, y_fe, z_fe) %>%
+    as.tibble() %>% 
+    rename(`Number of parameter` = x_fe,
+           `Cp value` = y_fe,
+           `Adj R-square` = z_fe) %>% 
+    mutate(p = `Number of parameter`)
+cp_fe_p_1 =
+    cp_fe_p %>%
+    ggplot() +
+    geom_point(aes(x = `Number of parameter`, y = `Cp value`, color = `Cp value`)) +
+    theme(legend.position = "none") +
+    geom_abline(intercept = 0, slope = 1, color = "red")
+cp_fe_p_2 =
+    cp_fe_p %>%
+    ggplot() +
+    geom_point(aes(x = `Number of parameter`, y = `Adj R-square`, color = `Adj R-square`)) +
+    theme(legend.position = "none")
+
+cp_fe_p_1 + cp_fe_p_2
+
 ```
 
 The plots above show the $C_p$ index and Adjusted $R^2$ for various numbers of parameters.
@@ -241,7 +262,7 @@ Use the LASSO method to perform variable selection. Make sure you choose the
 “best lambda” to use and show how you determined this
 ```{r warning = F, message = F}
 ca_lasso_data = ca_model_data %>% mutate(
-    location=ifelse(location =="costal", 1,0))
+    location=ifelse(location == "costal", 1,0))
 # using cross validation to choose lambda
 lambda_seq = 10^seq(-5, -1, by = .01)
 set.seed(2022)
@@ -251,8 +272,18 @@ cv_object
 # plot the CV results
 tibble(lambda = cv_object$lambda,
 mean_cv_error = cv_object$cvm) %>%
-ggplot(aes(x = lambda, y = mean_cv_error)) +
-geom_point()
+    mutate(text_label = str_c("Lambda: ", lambda,
+                              "\n Mean CV error: ", mean_cv_error)) %>%
+    plotly::plot_ly(y = ~mean_cv_error, x = ~lambda,
+                    color = ~lambda,
+                    width = 900,
+                    height = 500,
+                    type = "scatter",
+                    mode = "markers",
+                    marker = list(size = 6),
+                    colors = "magma",
+                    text = ~ text_label)
+
 # refit the lasso model with the "best" lambda
 fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:9]), ca_model_data$death_rate, lambda = cv_object$lambda.min)
 fit_bestcv %>%
