@@ -1,0 +1,44 @@
+---
+title: "Association Between Predictors and Outcomes"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include = F}
+library(tidyverse)
+library(tidytext)  
+library(ggplot2)
+library(httr)
+library(rvest)
+library(lubridate)
+library(plotly)
+library(patchwork)
+library(lmtest)
+library(hrbrthemes)
+library(viridis)
+library(ggridges)
+library(gridExtra)
+library(scales)
+library(maps)
+library(lattice)
+library(latticeExtra)
+
+
+knitr::opts_chunk$set(
+ echo = TRUE,
+ warning = FALSE,
+ fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))

@@ -13,7 +13,7 @@
 
 <title>Statistical test</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -327,7 +320,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Home: Data Description</a>
+      <a class="navbar-brand" href="index.html">Home</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -416,7 +409,46 @@ div.tocify {
 </div>
 
 
-
+<p>We apply ANOVA test to our linear regression, uses the F-test to
+determine whether the variables fits the data as well as our model. If
+that F-statics are sufficiently large, or P-values are significantly
+small，then we can conclude that your model fits the data better than
+the intercept-only model.</p>
+<p>ANOVA test for model <span class="math display">\[ln(reported \
+death) = ln(population)\beta_{ln(population)} \times total \
+cost\beta_{totol \ test} + \epsilon_i\]</span></p>
+<p>Then, we conduct a hypothesis test.</p>
+<p><span class="math display">\[H_0 = \beta_{ln(population)} =
+\beta_{totol \ test}\]</span> <span class="math display">\[H_1 = At\
+least\ one\ \beta\: is\ not\ zero \]</span></p>
+<pre class="r"><code>reg_full = lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death)
+aov(reg_full) %&gt;% summary()</code></pre>
+<pre><code>##                              Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## ln_population                 1 303.31  303.31 641.217  &lt; 2e-16 ***
+## ln_total_tests                1   0.38    0.38   0.795 0.376560    
+## ln_population:ln_total_tests  1   7.48    7.48  15.816 0.000206 ***
+## Residuals                    55  26.02    0.47                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>ANOVA test for model <span class="math display">\[Prevalence =
+location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+
+\epsilon_i\]</span></p>
+<p>Then, we conduct a hypothesis test.</p>
+<p><span class="math display">\[H_0 =
+\beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}\]</span>
+<span class="math display">\[H_1 = At\ least\ one\ \beta\: is\ not\ zero
+\]</span></p>
+<pre class="r"><code>mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+aov(mlr_model) %&gt;% summary()</code></pre>
+<pre><code>##                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## location         1    4.7     4.7   0.492 0.486063    
+## ln_test          1  889.0   889.0  92.886 3.66e-13 ***
+## ln_unemployment  1  291.3   291.3  30.437 1.10e-06 ***
+## ln_area          1  128.9   128.9  13.469 0.000572 ***
+## ln_population    1   88.3    88.3   9.228 0.003723 ** 
+## Residuals       52  497.7     9.6                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 
 
 
