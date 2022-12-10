@@ -197,10 +197,30 @@ step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
 criterion_selected = regsubsets(prevalence ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
-par(mfrow=c(1,2))
-plot(2:8, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
-abline(0,1)
-plot(2:8, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
+
+x_new = (2:8)
+y_new = criterion_plot$cp
+z_new = criterion_plot$adjr2
+cp_new_p = 
+cbind(x_new, y_new, z_new) %>%
+    as.tibble() %>% 
+    rename(`Number of parameter` = x_new,
+           `Cp value` = y_new,
+           `Adj R-square` = z_new) %>% 
+    mutate(p = `Number of parameter`)
+cp_fe_new_1 =
+    cp_new_p %>%
+    ggplot() +
+    geom_point(aes(x = `Number of parameter`, y = `Cp value`, color = `Cp value`)) +
+    theme(legend.position = "none") +
+    geom_abline(intercept = 0, slope = 1, color = "red")
+cp_fe_new_2 =
+    cp_new_p %>%
+    ggplot() +
+    geom_point(aes(x = `Number of parameter`, y = `Adj R-square`, color = `Adj R-square`)) +
+    theme(legend.position = "none")
+
+cp_fe_new_1 + cp_fe_new_2
 ```
 
 The plots above show the $C_p$ index and Adjusted $R^2$ for various numbers of parameters.
@@ -222,11 +242,23 @@ set.seed(2022)
 cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence,
 lambda = lambda_seq, nfolds = 5)
 cv_object
+
 # plot the CV results
 tibble(lambda = cv_object$lambda,
 mean_cv_error = cv_object$cvm) %>%
-ggplot(aes(x = lambda, y = mean_cv_error)) +
-geom_point()
+    mutate(text_label = str_c("Lambda: ", lambda,
+                              "\n Mean CV error: ", mean_cv_error)) %>%
+    plotly::plot_ly(y = ~mean_cv_error, x = ~lambda,
+                    color = ~lambda,
+                    width = 900,
+                    height = 500,
+                    type = "scatter",
+                    mode = "markers",
+                    marker = list(size = 6),
+                    colors = "magma",
+                    text = ~ text_label)
+
+
 # refit the lasso model with the "best" lambda
 fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
 fit_bestcv %>%
