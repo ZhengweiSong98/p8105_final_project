@@ -353,16 +353,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="mlr_death.html">Multiple Linear Model for death cases</a>
+      <a href="mlr_fatality.html">Weighted Least Model for Fatality</a>
     </li>
     <li>
-      <a href="mlr_fatality.html">Multiple Linear Model for fatality</a>
-    </li>
-    <li>
-      <a href="violation_covid.html">Lowess Model for vaccination rate</a>
-    </li>
-    <li>
-      <a href="mlr_new.html">Multiple Linear Model for Prevalence</a>
+      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
     </li>
   </ul>
 </li>
@@ -559,7 +553,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 <colgroup>
 <col width="13%" />
 <col width="8%" />
-<col width="11%" />
+<col width="12%" />
 <col width="8%" />
 <col width="9%" />
 <col width="6%" />
@@ -567,7 +561,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 <col width="8%" />
 <col width="8%" />
 <col width="9%" />
-<col width="9%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -934,46 +928,129 @@ geom_point()</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 <pre class="r"><code># refit the lasso model with the &quot;best&quot; lambda
 fit_bestcv &lt;- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
-coef(fit_bestcv)</code></pre>
-<pre><code>## 8 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
-##                          s0
-## (Intercept)     -59.1417976
-## location         -0.8839241
-## labor_rate        .        
-## vaccination       .        
-## ln_unemployment   7.6199353
-## ln_area           1.1308352
-## ln_population     0.6371415
-## ln_test           8.7671091</code></pre>
+fit_bestcv %&gt;%
+         broom::tidy() %&gt;% 
+  mutate(term = str_replace(term, &quot;^location&quot;, &quot;Location: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">step</th>
+<th align="right">estimate</th>
+<th align="right">lambda</th>
+<th align="right">dev.ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1</td>
+<td align="right">-59.142</td>
+<td align="right">0.282</td>
+<td align="right">0.724</td>
+</tr>
+<tr class="even">
+<td align="left">Location:</td>
+<td align="right">1</td>
+<td align="right">-0.884</td>
+<td align="right">0.282</td>
+<td align="right">0.724</td>
+</tr>
+<tr class="odd">
+<td align="left">ln_unemployment</td>
+<td align="right">1</td>
+<td align="right">7.620</td>
+<td align="right">0.282</td>
+<td align="right">0.724</td>
+</tr>
+<tr class="even">
+<td align="left">ln_area</td>
+<td align="right">1</td>
+<td align="right">1.131</td>
+<td align="right">0.282</td>
+<td align="right">0.724</td>
+</tr>
+<tr class="odd">
+<td align="left">ln_population</td>
+<td align="right">1</td>
+<td align="right">0.637</td>
+<td align="right">0.282</td>
+<td align="right">0.724</td>
+</tr>
+<tr class="even">
+<td align="left">ln_test</td>
+<td align="right">1</td>
+<td align="right">8.767</td>
+<td align="right">0.282</td>
+<td align="right">0.724</td>
+</tr>
+</tbody>
+</table>
 <p>Since the stepwise selection techniques and the criterion techniques
 all chose the same model with 4 predictors, we recommend this as our
 final model. (The LASSO gave a very similar suggested model, with the
 addition of log area.) Our final model:</p>
 <pre class="r"><code>mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
-summary(mlr_model)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = prevalence ~ location + ln_test + ln_unemployment + 
-##     ln_area + ln_population, data = ca_model_data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -8.2803 -2.0061  0.0117  1.4590  8.6650 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -71.4474     8.0974  -8.823 6.52e-12 ***
-## locationinland    1.9559     1.1080   1.765  0.08339 .  
-## ln_test           9.8152     1.1277   8.703 1.00e-11 ***
-## ln_unemployment   8.0663     1.8547   4.349 6.39e-05 ***
-## ln_area           1.3412     0.4725   2.839  0.00645 ** 
-## ln_population     0.8201     0.2700   3.038  0.00372 ** 
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 3.094 on 52 degrees of freedom
-## Multiple R-squared:  0.7381, Adjusted R-squared:  0.7129 
-## F-statistic:  29.3 on 5 and 52 DF,  p-value: 5.172e-14</code></pre>
+mlr_model %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(term = str_replace(term, &quot;^location&quot;, &quot;Location: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-71.447</td>
+<td align="right">8.097</td>
+<td align="right">-8.823</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Location: inland</td>
+<td align="right">1.956</td>
+<td align="right">1.108</td>
+<td align="right">1.765</td>
+<td align="right">0.083</td>
+</tr>
+<tr class="odd">
+<td align="left">ln_test</td>
+<td align="right">9.815</td>
+<td align="right">1.128</td>
+<td align="right">8.703</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">ln_unemployment</td>
+<td align="right">8.066</td>
+<td align="right">1.855</td>
+<td align="right">4.349</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">ln_area</td>
+<td align="right">1.341</td>
+<td align="right">0.472</td>
+<td align="right">2.839</td>
+<td align="right">0.006</td>
+</tr>
+<tr class="even">
+<td align="left">ln_population</td>
+<td align="right">0.820</td>
+<td align="right">0.270</td>
+<td align="right">3.038</td>
+<td align="right">0.004</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>As the interaction term has p-value &lt; 0.05, we can conclude that
 ln(population) and ln(total_tests) have significant interaction at 0.05
@@ -1004,30 +1081,72 @@ wt &lt;- 1/var_fitted
 
 wls_prevalence &lt;- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
 
-summary(wls_prevalence)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = prevalence ~ location + ln_test + ln_unemployment + 
-##     ln_area + ln_population, data = ca_model_data, weights = wt)
-## 
-## Weighted Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.2974 -0.8230 -0.0490  0.5594  3.3144 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -72.6964     8.0293  -9.054 2.87e-12 ***
-## locationinland    2.0958     1.1001   1.905 0.062304 .  
-## ln_test          10.0014     1.1447   8.737 8.87e-12 ***
-## ln_unemployment   7.6726     1.8812   4.079 0.000156 ***
-## ln_area           1.3436     0.4646   2.892 0.005581 ** 
-## ln_population     0.8894     0.2661   3.342 0.001544 ** 
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 1.335 on 52 degrees of freedom
-## Multiple R-squared:  0.7577, Adjusted R-squared:  0.7344 
-## F-statistic: 32.52 on 5 and 52 DF,  p-value: 7.085e-15</code></pre>
+wls_incidence %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(term = str_replace(term, &quot;^location&quot;, &quot;Location: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-0.567</td>
+<td align="right">0.241</td>
+<td align="right">-2.356</td>
+<td align="right">0.023</td>
+</tr>
+<tr class="even">
+<td align="left">Location: inland</td>
+<td align="right">0.081</td>
+<td align="right">0.029</td>
+<td align="right">2.785</td>
+<td align="right">0.008</td>
+</tr>
+<tr class="odd">
+<td align="left">vaccinated</td>
+<td align="right">0.002</td>
+<td align="right">0.001</td>
+<td align="right">1.347</td>
+<td align="right">0.184</td>
+</tr>
+<tr class="even">
+<td align="left">labor_rate</td>
+<td align="right">-0.003</td>
+<td align="right">0.002</td>
+<td align="right">-1.246</td>
+<td align="right">0.219</td>
+</tr>
+<tr class="odd">
+<td align="left">ln_tests</td>
+<td align="right">0.065</td>
+<td align="right">0.025</td>
+<td align="right">2.576</td>
+<td align="right">0.013</td>
+</tr>
+<tr class="even">
+<td align="left">ln_area</td>
+<td align="right">0.029</td>
+<td align="right">0.011</td>
+<td align="right">2.675</td>
+<td align="right">0.010</td>
+</tr>
+<tr class="odd">
+<td align="left">ln_unemployment</td>
+<td align="right">0.085</td>
+<td align="right">0.046</td>
+<td align="right">1.844</td>
+<td align="right">0.071</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>check_model(mlr_model, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
 <pre class="r"><code>check_model(wls_prevalence, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>

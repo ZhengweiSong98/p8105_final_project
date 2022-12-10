@@ -13,6 +13,7 @@ navbar:
         href: graph3.html
     - text: 'Inference analyses'
       menu:
+<<<<<<< HEAD
       - text: "Multiple Linear Model for Death Cases"
         href:  mlr_death.html
       - text: "Multiple Linear Model for Fatality"
@@ -20,6 +21,11 @@ navbar:
       - text: "Lowess Model for Vaccination Rate"
         href: violation_covid.html
       - text: "Multiple Linear Model for Prevalence"
+=======
+      - text: "Weighted Least Model for Fatality"
+        href: mlr_fatality.html
+      - text: "Weighted Least Model for Prevalence"
+>>>>>>> b0b43149f1152e4db23e9024701a6c306bd32bb4
         href: mlr_new.html
     - text: 'Statistical Test'
       menu:
