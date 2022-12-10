@@ -13,7 +13,7 @@
 
 <title>Project Report</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -657,6 +650,20 @@ members excahnged a lot of ideas when discussing and planning on which
 specific data to throw out and which ones to keep, sometimes there were
 even data manipulations going “back and forth”, the website building
 process didn’t really start for quite a long time.</p>
+<p>Formulating the right regression model and choosing the right
+variables to draw graphs were challenges as well. Due to lots of
+multicolinearity in our original data set, analysts had to run multiple
+model selection to decide which variables to include in the final model.
+A larger issue was that some originally designed plotting turned out to
+be just not feasible due to errors from the data set, for example in
+some cases, the death rate of a county was 100%, which is clearly wrong.
+It was also a challenge overall to interpret correlations after the
+model is built and summarization of the model given using code because
+most of the correlations aren’t perfect, there could be confounders that
+we haven’t considered in the model.</p>
+</div>
+<div id="findings" class="section level4">
+<h4>Findings</h4>
 </div>
 </div>
 </div>

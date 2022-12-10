@@ -13,7 +13,7 @@
 
 <title>Statistical test: Prevelance</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -437,7 +430,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 \]</span></p>
 <pre class="r"><code>source(&quot;data_preprocessing_backbone.R&quot;)</code></pre>
 <pre><code>## Rows: 13267 Columns: 8
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr  (2): demographic_category, demographic_value
 ## dbl  (5): total_cases, percent_cases, deaths, percent_deaths, percent_of_ca_...
@@ -446,7 +439,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ## Rows: 62647 Columns: 17
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr   (2): area, area_type
 ## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
@@ -455,7 +448,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ## Rows: 532 Columns: 24
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr   (2): area, area_type
 ## dbl  (21): unvaccinated_cases, vaccinated_cases, boosted_cases, unvaccinated...
@@ -464,7 +457,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ## Rows: 286 Columns: 17
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr   (2): AREA, AREA_TYPE
 ## dbl  (14): UNVACCINATED_CASES, VACCINATED_CASES, UNVACCINATED_HOSP, VACCINAT...
@@ -473,7 +466,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ## Rows: 607 Columns: 17
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr   (2): area, area_type
 ## dbl  (14): unvaccinated_cases, vaccinated_cases, unvaccinated_hosp, vaccinat...
@@ -482,7 +475,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ## Rows: 62647 Columns: 17
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr   (2): area, area_type
 ## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
@@ -495,7 +488,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
     dplyr::select(-employment,-unemployment,-rank) %&gt;%
     rename(unemployment=unemployment_rate_per_cent)</code></pre>
 <pre><code>## Rows: 58 Columns: 6
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (1): County
 ## dbl (2): Rank, Unemployment Rate (per cent)
@@ -509,7 +502,7 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
     mutate(
         location = ifelse(county %in% c(&quot;Los Angeles&quot;, &quot;Orange&quot;, &quot;San Diego&quot;, &quot;Monterey&quot;, &quot;San Benito&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Santa Cruz&quot;, &quot;Ventura&quot;, &quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Napa&quot;, &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Solano&quot;, &quot;Sonoma&quot;, &quot;Del Norte&quot;, &quot;Humboldt&quot;, &quot;Mendocino&quot;), &quot;costal&quot;, &quot;inland&quot;)) </code></pre>
 <pre><code>## Rows: 58 Columns: 5
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): County, State
 ## dbl (2): Rank, Land Area (sq mi)
@@ -524,15 +517,12 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 <pre><code>## New names:
 ## Rows: 58 Columns: 22
 ## ── Column specification
-## ───────────────────────── Delimiter: &quot;,&quot; chr
-## (8): STUSAB, Geo Point, Geo Shape, NAME,
-## NAMELSAD, CLASSFP, MTFCC, FUNC... dbl (12):
-## ...1, STATEFP, COUNTYFP, COUNTYNS, GEOID, LSAD,
-## CSAFP, CBSAFP, MET... num (2): ALAND, AWATER
-## ℹ Use `spec()` to retrieve the full column
-## specification for this data. ℹ Specify the
-## column types or set `show_col_types = FALSE` to
-## quiet this message.
+## ──────────────────────────────────────────────────────── Delimiter: &quot;,&quot; chr
+## (8): STUSAB, Geo Point, Geo Shape, NAME, NAMELSAD, CLASSFP, MTFCC, FUNC... dbl
+## (12): ...1, STATEFP, COUNTYFP, COUNTYNS, GEOID, LSAD, CSAFP, CBSAFP, MET... num
+## (2): ALAND, AWATER
+## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+## Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ## • `` -&gt; `...1`</code></pre>
 <pre class="r"><code>ca_joining_data = left_join(population_data, labor_data, by = c(&quot;county&quot;))
 ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c(&quot;county&quot;))
@@ -565,7 +555,7 @@ vaccine = read_csv(&quot;./data/CA_covid19vaccines.csv&quot;) %&gt;%
     drop_na() %&gt;%
     filter(!county %in% c(&quot;Unknown&quot;, &quot;All CA Counties&quot;, &quot;All CA and Non-CA Counties&quot;))</code></pre>
 <pre><code>## Rows: 53630 Columns: 23
-## ── Column specification ─────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr   (2): county, california_flag
 ## dbl  (20): total_doses, cumulative_total_doses, pfizer_doses, cumulative_pfi...
