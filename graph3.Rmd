@@ -293,37 +293,73 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ```
 
 
-
-
-
-
-
-
-[Text] Note: the red line of boxplot is median
-
-## Gender vs Total Cases
-
-
-
-
-
-
-
-
-(table for race and demo have not finished yet)
-
-
-
-
-
-[Text]
-
-
-
-
 ## Age vs Death Rate
 
 ```{r warning = F, message = F}
+
+age %>% 
+    ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "bottom"
+    ) +
+    xlab("Age") +
+    ylab("Percent Deaths") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+
+    
+gender %>% 
+    ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "bottom"
+    ) +
+    xlab("Gender") +
+    ylab("Percent Deaths") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+  race %>%
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %>%
+    ggplot(aes(x = race_group, y = percent_deaths, fill = race_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "bottom"
+    ) +
+    xlab("Race") +
+    ylab("Percent Death") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5))
+
+
+
 age %>% 
     mutate(date = factor(date)) %>%
     mutate(text_label = str_c("Date: ", date, 
@@ -344,12 +380,6 @@ age %>%
            tickangle = 60),
            yaxis = list(
            title = "Death Rate"))
-```
-
-
-
-
-```{r warning = F, message = F}
 gender %>% 
     mutate(date = factor(date)) %>%
     mutate(text_label = str_c("Date: ", date, 
@@ -372,33 +402,9 @@ gender %>%
            title = "Death Rate"))
 ```
 
-[Text]
 
 
-## Race vs Death Rate 
 
-```{r warning = F, message = F}
-race %>% 
-    mutate(date = factor(date)) %>%
-    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
-           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    mutate(text_label = str_c("Date: ", date, 
-                              "\n Race: ", race_group,
-                              "\n Death(%): ", percent_deaths)) %>%
-    plot_ly(y = ~percent_deaths, 
-          x = ~date, 
-          color = ~race_group, 
-          width = 950,
-          height = 300, 
-          type = "scatter",
-          mode = "markers",
-          marker = list(size = 3),
-          colors = "inferno",
-          text = ~ text_label) %>%
-    layout(xaxis = list(
-           title = "Date",
-           tickangle = 60),
-           yaxis = list(
-           title = "Death Rate"))
-```
+
+
 
