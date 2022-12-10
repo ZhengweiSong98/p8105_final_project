@@ -11,7 +11,7 @@
 
 
 
-<title>Data Introduction and Further Processing</title>
+<title>Statistical test: fatality</title>
 
 <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -417,156 +417,45 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Data Introduction and Further
-Processing</h1>
+<h1 class="title toc-ignore">Statistical test: fatality</h1>
 
 </div>
 
 
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
-<p>COVID-19 has resulted in many long-term effects on societies all
-across the world, especially in areas with high population density such
-as the State of California. The motivation of this project is to
-investigate the trends of COVID-19 new cases development in the past in
-relation with factors like vaccine administration and demographic
-factors. This project aims to eventually come up with conclusions that
-can identify vulnerable groups and areas to COVID-19 and offer
-suggestions for the protection of people against the disease. This
-project is particularly interested in topics such as the relationship
-between county population size and COVID-19 prevalence, and the COVID-19
-prevalence between different age groups.</p>
-<p><img src="picture/index.jpg" style="width:95%"></p>
-<p>Begin the data processing procedure by loading all of the interested
-data frames from the internet, including <code>Age.csv</code>,
-<code>Demo.csv</code>,<code>12-plus.csv</code>,<code>16-plus.csv</code>,
-and <code>Post_stat.csv</code>.</p>
-<pre class="r"><code>age_df = read_csv(&quot;data/age.csv&quot;)
-demo_df = read_csv(&quot;data/demo.csv&quot;)
-stat_12 = read_csv(&quot;data/12_plus.csv&quot;)
-stat_16 = read_csv(&quot;data/16_plus.csv&quot;)
-post_stat = read_csv(&quot;data/post_stat.csv&quot;)</code></pre>
-</div>
-<div id="age-race-and-gender-datasets" class="section level2">
-<h2>Age, race and gender datasets</h2>
-<p><code>Age.csv</code> originally has 13267 rows and 8 variables. It
-includes COVID-19 data such as total case, percent case, deaths in
-respect to three different demographic groups including age group, race
-ethnicity, and gender. Thus, analysts decide to separate it into three
-distinct data frames, each describing on one demographic group.
-Subsequently, arranged the sequence of the columns by moving the ‘date’
-variable in front of other variables to better match the sequence of
-other data frames in this study.</p>
-<pre class="r"><code>## datasets of age_df
-age =
-    age_df %&gt;%
-    janitor::clean_names() %&gt;%
-    filter(demographic_category == &quot;Age Group&quot;) %&gt;%
-    select(report_date,
-            demographic_value,
-            total_cases,
-            deaths,
-            percent_deaths,
-            percent_of_ca_population) %&gt;%
-    drop_na() %&gt;%
-    rename(&quot;age_group&quot; = demographic_value,
-           &quot;date&quot; = report_date) %&gt;% 
-    filter(!age_group %in% c(&quot;missing&quot;, &quot;Missing&quot;,&quot;Total&quot;))
-
-race =
-    age_df %&gt;%
-    janitor::clean_names() %&gt;%
-    filter(demographic_category == &quot;Race Ethnicity&quot;) %&gt;%
-    select(report_date,
-           demographic_value,
-           total_cases,
-           deaths,
-           percent_deaths,
-           percent_of_ca_population) %&gt;%
-    drop_na() %&gt;%
-    rename(&quot;race_group&quot; = demographic_value,
-           &quot;date&quot; = report_date) %&gt;% 
-    filter(!race_group %in% c(&quot;Total&quot;, &quot;Other&quot;))
-
-gender =
-    age_df %&gt;%
-    janitor::clean_names() %&gt;%
-    filter(demographic_category == &quot;Gender&quot;) %&gt;%
-    select(report_date,
-           demographic_value,
-           total_cases,
-           deaths,
-           percent_deaths,
-           percent_of_ca_population) %&gt;%
-    drop_na() %&gt;%
-    rename(&quot;gender&quot; = demographic_value,
-           &quot;date&quot; = report_date) %&gt;% 
-    filter(!gender %in% c(&quot;Total&quot;, &quot;Unknown&quot;))</code></pre>
-</div>
-<div id="demographic-dataset" class="section level2">
-<h2>Demographic dataset</h2>
-<p><code>Demo.csv</code> originally has 62647 rows and 17 variables.It
-contains COVID-19 data belonging to different demographic areas, mainly
-the different counties in the state of California, but it also includes
-COVID-19 data for the whole states. For our purposes, analysts decide to
-focus our analysis on comparing the COVID-19 data in different counties.
-Thus analysts decide to drop any rows with the <code>area_type</code> of
-state. Then, delete the column <code>area_type</code> and rename the
-column <code>area</code> to <code>county_name</code>. Analysts also
-decide to focus the analysis on the cumulative COVID-19 data instead of
-the changes per day. Then, delete some columns including
-<code>total_test</code>, <code>positive_test</code>,
-<code>reported_cases</code>, <code>reported_deaths</code>, and
-<code>reported_tests</code>. Lastly, drop all of the rows containing N/A
-values.The resulted data frame includes data such as the population, the
-cumulative cases, tests, and reported deaths of the county.</p>
-<pre class="r"><code>## dataset of demo
-demo_df = read_csv(&quot;data/demo.csv&quot;)
-
-demo =
-    demo_df %&gt;%
-    filter(area_type == &quot;County&quot;) %&gt;%
-    select(-c(area_type, total_tests, reported_tests)) %&gt;%
-    rename(&quot;county_name&quot; = area) %&gt;% 
-    filter(!county_name  %in% c(&quot;Unknown&quot;))</code></pre>
-</div>
-<div id="post-statistics-categorized-by-age" class="section level2">
-<h2>Post statistics categorized by age</h2>
-<p><code>12-plus.csv</code>, <code>16-plus.csv</code>,
-<code>Post_stat.csv</code> are legacy tables about COVID-19 status based
-on previous separation between standard vaccinated and boosted groups,
-with restriction on the age group above 16, above 12, and no restriction
-respectively. <code>12-plus.csv</code> originally has 532 rows and 24
-variables. <code>16-plus.csv</code> originally has 286 rows and 17
-variables. <code>Post_stat.csv</code> originally has 607 rows and 17
-variables.Since the <code>AREA</code> and <code>AREA_TYP</code> columns
-contain the exact information throughout all of these data frames, it is
-not valuable for our purpose and thus we remove them. We also removed
-six data rows before the date 02/07/2021 due to missing data in the
-<code>12-plus.csv</code> and <code>Post_stat.csv</code>.</p>
-<pre class="r"><code>## datasets of post_stat
-stat_12 = stat_12[-(1:6),]
-stat_12 =
-    stat_12 %&gt;%
-    arrange(date, decreasing = F) %&gt;%
-    select(-c(area_type, area))
-
-
-
-stat_16 = stat_16[-(1:6),]
-stat_16 =
-    stat_16 %&gt;%
-    janitor::clean_names() %&gt;%
-    arrange(date, decreasing = F) %&gt;%
-    select(-c(area_type, area))
-
-post_stat = post_stat[-(1:6),]
-post_stat =
-    post_stat %&gt;%
-    janitor::clean_names() %&gt;%
-    arrange(date, decreasing = F) %&gt;%
-    select(-c(area_type, area))</code></pre>
-</div>
+<p>Analysis of Variance (ANOVA) is a statistical test used to determine
+if there is a statistically significant difference between categorical
+groups. In general, we expect there are one or more group might be
+influential on the dependent variable, while the other group treated as
+control group. Before conducting the test, we need to check the test
+assumption: -no relationship between the subjects. -different groups
+must have equal sample sizes. -dependent variable is normally
+distributed. -Population variances must be equal(Homogeneity of
+variance)</p>
+<p>Then, we conduct ANOVA test to our linear regression, uses the F-test
+to determine whether the variables fits the data as well as our model.
+If that F-statics are sufficiently large, or P-values are significantly
+small，then we can conclude that your model fits the data better than
+the intercept-only model.</p>
+<p>ANOVA test for model <span class="math display">\[ln(reported \
+death) = ln(population)\beta_{ln(population)} \times total \
+cost\beta_{totol \ test} + \epsilon_i\]</span></p>
+<p>Then, we conduct a hypothesis test.</p>
+<p><span class="math display">\[H_0 = \beta_{ln(population)} =
+\beta_{totol \ test}\]</span> <span class="math display">\[H_1 = At\
+least\ one\ \beta\: is\ not\ zero \]</span></p>
+<pre class="r"><code>mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
+anova(mlr_model) %&gt;% broom::tidy()</code></pre>
+<pre><code>## # A tibble: 8 × 6
+##   term               df   sumsq  meansq statistic    p.value
+##   &lt;chr&gt;           &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 location            1 0.0915  0.0915     20.7    0.0000365
+## 2 vaccinated          1 0.00149 0.00149     0.337  0.564    
+## 3 labor_rate          1 0.0535  0.0535     12.1    0.00108  
+## 4 ln_tests            1 0.0180  0.0180      4.07   0.0493   
+## 5 ln_area             1 0.0478  0.0478     10.8    0.00189  
+## 6 ln_unemployment     1 0.0168  0.0168      3.80   0.0571   
+## 7 ln_bed              1 0.0272  0.0272      6.14   0.0167   
+## 8 Residuals          48 0.212   0.00442    NA     NA</code></pre>
 
 
 

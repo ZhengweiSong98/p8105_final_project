@@ -57,7 +57,7 @@ stat_16
 post_stat
 ```
 
-On this page, we’ll explore overall trends for our key outcomes – Covid prevalence `total cases` and Covid mortality rate (`death rate`) –  across counties in California, as well as the high-level trends for how these outcomes correlate with census predictors, including major demographic variables such as age, gender, and race, and other independent variables, such as unemployment rate, hospitalization percentage, vaccination rate, and land areas.[TBD***]
+On this page, we’ll explore overall trends for our key outcomes – COVID prevalence `total cases` and COVID mortality rate (`death rate`) –  across counties in California, as well as the high-level trends for how these outcomes correlate with census predictors, including major demographic variables such as age, gender, and race, and other independent variables, such as unemployment rate, hospitalization percentage, vaccination rate, and land areas.[TBD***]
 
 # 1. Outcomes by county
 
@@ -118,11 +118,11 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
           scale_x_continuous(labels = point)
 ```
 
-Until November 2022 (information given by data source), we can observe that the covid prevalence ranges from as low as 0.094 to nearly 0.386  by county in California, suggesting a roughly 4.1x difference between the minimum and maximum. As a new study from the Centers for Disease Control and Prevention (CDC) revealed,  the percentage of Americans who have been infected with COVID-19 is approximately 30% in November 2022. Taking the prevalence of 30% as the baseline for further comparisons, it is worth noticing that around 80% of counties in California have a moderate level of prevalence falling between around 16% to 29%, and around 10% of counties show a quite low prevalence below 15%. Only 6 out of 58 counties in California shows prevalence of above 30%. The covid infection in California seems relatively controllable to a large extent compared to the general prevalence level across the United States. As for the prevalence differences, it may be caused by some other differentiable factors across counties, and we would like to further discuss about it in later parts.
+Until November 2022 (information given by data source), we can observe that the COVID prevalence ranges from as low as 0.094 to nearly 0.386  by county in California, suggesting a roughly 4.1x difference between the minimum and maximum. As a new study from the Centers for Disease Control and Prevention (CDC) revealed,  the percentage of Americans who have been infected with COVID-19 is approximately 30% in November 2022. Taking the prevalence of 30% as the baseline for further comparisons, it is worth noticing that around 80% of counties in California have a moderate level of prevalence falling between around 16% to 29%, and around 10% of counties show a quite low prevalence below 15%. Only 6 out of 58 counties in California shows prevalence of above 30%. The COVID infection in California seems relatively controllable to a large extent compared to the general prevalence level across the United States. As for the prevalence differences, it may be caused by some other differentiable factors across counties, and we would like to further discuss about it in later parts.
 
 ## 1b. Death rates across county
 
-The death rate, or called case-fatality ratio, is defined as the ratio of deaths to the population of a particular area or during a particular period of time. Analyzing death rate help us track the socialeconomical and geographical characteristics of those dying due to covid in California, and allow comparisons of death trends across counties.
+The death rate, or called case-fatality ratio, is defined as the ratio of deaths to the population of a particular area or during a particular period of time. Analyzing death rate help us track the social economical and geographical characteristics of those dying due to COVID in California, and allow comparisons of death trends across counties.
 
 ```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
@@ -181,7 +181,7 @@ We can observe that the death rates range from as low as 0.00% to 1.76% by count
 
 ## 2a. Worst counties for each COVID outcome
 
-Furthermore, we zoom in on the pandemic responses and extract the 10 worst covid outcome results, i.e. highest prevalence and highest death rates, in corresponding counties, and plot them as bar charts for a more straightforward visulization.
+Furthermore, we zoom in on the pandemic responses and extract the 10 worst COVID outcome results, i.e. highest prevalence and highest death rates, in corresponding counties, and plot them as bar charts for a more straightforward visualization.
 
 ```{r warning = F, message = F}
 demo_worst_1 =
@@ -345,7 +345,7 @@ demo_best_dea_plot =
 demo_best_pre_plot + demo_best_dea_plot
 ```
 
-From the above tables and bar charts, Kings County responses to covid with highest pravalence of 38.64%, and Siskiyou responses to covid with highest death rate of 1.76%. In comparison, Modoc has the lowest prevalence of 9.45% in California, and Alpine has no recorded death until November 2022. Upon observations, two out of ten counties with top prevalence, Imperial and Tuolumne, also have top death rates. And two out of ten counties with lowest prevalence, Alpine and Colusa, also have lowest death rates. While to be highlighted here, Siskiyou County has one of the lowest prevalence but the highest death rate among all counties. This prelimary observation indicates that it is hard to obtain an apparent relationship between the prevalence and death rates. Fruther steps are required to take in order to explore the associations and correlations between our two outcome variables, covid prevalence and death rates.
+From the above tables and bar charts, Kings County responses to COVID with highest prevalence of 38.64%, and Siskiyou responses to covid with highest death rate of 1.76%. In comparison, Modoc has the lowest prevalence of 9.45% in California, and Alpine has no recorded death until November 2022. Upon observations, two out of ten counties with top prevalence, Imperial and Tuolumne, also have top death rates. And two out of ten counties with lowest prevalence, Alpine and Colusa, also have lowest death rates. While to be highlighted here, Siskiyou County has one of the lowest prevalence but the highest death rate among all counties. This preliminary observation indicates that it is hard to obtain an apparent relationship between the prevalence and death rates. Further steps are required to take in order to explore the associations and correlations between our two outcome variables, COVID prevalence and death rates.
 
 # 3. Correlation between outcomes
 
@@ -363,7 +363,7 @@ From the above tables and bar charts, Kings County responses to covid with highe
 ```
 
 The points fall quite randomly on the plot, which indicates that there is no obvious or strong relationship between the outcome variables. Moreover, the correlation coefficient can range in value from −1 to +1. The larger the absolute value of the coefficient, the stronger the relationship between the variables. In our case, the correlation coefficient of -0.086 means that the relationship between outcomes are very weak and it is not statistically significant at all. 
-Before this precedure, we made a reasonable guess that as prevalence increases, the death rates may increase. However, this plot result contradicts our hypothesis by showing a negative correlation in nature. Hence, in order to gather more comprehensive evidence on this relationship, we decide to take population by county into consideration for a further test on the association between outcomes. 
+Before this procedure, we made a reasonable guess that as prevalence increases, the death rates may increase. However, this plot result contradicts our hypothesis by showing a negative correlation in nature. Hence, in order to gather more comprehensive evidence on this relationship, we decide to take population by county into consideration for a further test on the association between outcomes. 
 
 # 4. Associations between outcomes across county
 
@@ -405,7 +405,7 @@ As we plotted, the values for each bubble are encoded by its horizontal position
 
 On one hand, there is a positive best-fit trend line drawn on this plot which indicates a positive relationship between prevalence and death rates across counties, although this relationship is considerably weak. On the other hand, as the values on the horizontal and vertical scale decreases, we can only observe small bubbles on the bottom-left corners. And as the values on the horizontal or vertical scale increases, relatively large bubbles start to appear. To add on, the largest bubble of Los Angeles located on the top-right corner on this graph, indicating its relatively high prevalence and high death rate. These two perspective of findings may coincide with each other, suggesting a positive but weak relationship between outcomes across county.
 
-Combing our findings in part 3 and 4, we can primarily conclude that across counties in California, prevalence and death rates are very weakly correlated.
+Combining our findings in part 3 and 4, we can primarily conclude that across counties in California, prevalence and death rates are very weakly correlated.
 
 
 
