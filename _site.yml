@@ -3,7 +3,7 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: 'Exploratory analyses'
+    - text: 'Exploratory Analysis'
       menu:
       - text: "Overview of Outcomes by County"
         href: graph.html
@@ -11,7 +11,7 @@ navbar:
         href: graph2.html
       - text: "Associations Between Predictors and Outcomes"
         href: graph3.html
-    - text: 'Inference analyses'
+    - text: 'Inference Analysis'
       menu:
       - text: "Multiple Linear Model for Fatality"
         href: mlr_fatality.html
