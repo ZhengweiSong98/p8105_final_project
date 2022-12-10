@@ -13,16 +13,20 @@ navbar:
         href: graph3.html
     - text: 'Inference analyses'
       menu:
-      - text: "Multiple Linear Model for death cases"
+      - text: "Multiple Linear Model for Death Cases"
         href:  mlr_death.html
-      - text: "Multiple Linear Model for fatality"
+      - text: "Multiple Linear Model for Fatality"
         href: mlr_fatality.html
-      - text: "Lowess Model for vaccination rate"
+      - text: "Lowess Model for Vaccination Rate"
         href: violation_covid.html
       - text: "Multiple Linear Model for Prevalence"
         href: mlr_new.html
     - text: 'Statistical Test'
-      href: statistical_test.html
+      menu:
+      - text: "ANOVA Test on MLR Death Cases"
+        href: statistical_test_fatality.html
+      - text: "ANOVA Test on MLR Prevalence"
+        href: statistical_test_prevelance.html
     - text: 'Additional Prediction'
       href: shiny_app.html
     - text: 'Project Report'
