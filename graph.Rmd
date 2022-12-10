@@ -25,7 +25,6 @@ library(gridExtra)
 library(scales)
 library(maps)
 library(lattice)
-library(latticeExtra)
 library(corrplot)
 
 
