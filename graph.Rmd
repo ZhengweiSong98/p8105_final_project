@@ -57,13 +57,13 @@ stat_16
 post_stat
 ```
 
-On this page, we’ll explore overall trends for our key outcomes – COVID prevalence `total cases` and COVID mortality rate (`death rate`) –  across counties in California, as well as the high-level trends for how these outcomes correlate with census predictors, including major demographic variables such as age, gender, and race, and other independent variables, such as unemployment rate, hospitalization percentage, vaccination rate, and land areas.[TBD***]
+On this page, we’ll explore overall trends for our key outcomes – COVID `prevalence` and COVID `death rate` –  across counties in California, as well as the high-level trends for how these outcomes correlate with census predictors, including major demographic variables such as age, gender, and race, and other independent variables, such as unemployment rate, hospitalization percentage, vaccination rate, and land areas.[TBD***]
 
 # 1. Outcomes by county
 
 ## 1a. Prevalence across county
 
-Considering the different population bases for each county, we decided to convert the values in the `total case count` into the `prevalence proportion`. Prevalence is defined as the proportion of persons in a population who have a particular disease or attribute at a specified point in time or over a specified period of time. By utilizing `prevalence`, we are able to conduct a more comparable analysis of their respective pandemic responses across counties. 
+Considering the different population bases for each county, we decided to convert the values in the `total case count` into the `prevalence` proportion. Prevalence is defined as the proportion of persons in a population who have a particular disease or attribute at a specified point in time or over a specified period of time. By utilizing `prevalence`, we are able to conduct a more comparable analysis of their respective pandemic responses across counties. 
 
 ```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
@@ -118,9 +118,9 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
           scale_x_continuous(labels = point)
 ```
 
-Until November 2022 (information given by data source), we can observe that the COVID prevalence ranges from as low as 0.094 to nearly 0.386  by county in California, suggesting a roughly 4.1x difference between the minimum and maximum. As a new study from the Centers for Disease Control and Prevention (CDC) revealed,  the percentage of Americans who have been infected with COVID-19 is approximately 30% in November 2022. Taking the prevalence of 30% as the baseline for further comparisons, it is worth noticing that around 80% of counties in California have a moderate level of prevalence falling between around 16% to 29%, and around 10% of counties show a quite low prevalence below 15%. Only 6 out of 58 counties in California shows prevalence of above 30%. The COVID infection in California seems relatively controllable to a large extent compared to the general prevalence level across the United States. As for the prevalence differences, it may be caused by some other differentiable factors across counties, and we would like to further discuss about it in later parts.
+Until November 2022 (information given by data source), we can observe that the COVID prevalence ranges from as low as 0.094 to nearly 0.386  by county in California, suggesting a roughly 4.1x difference between the minimum and maximum. As a new study from the Centers for Disease Control and Prevention (CDC) revealed, the percentage of Americans who have been infected with COVID-19 is approximately 30% in November 2022. Taking the prevalence of 30% as the baseline for further comparisons, it is worth noticing that around 80% of counties in California have a moderate level of prevalence falling between around 16% to 29%, and around 10% of counties show a quite low prevalence below 15%. Only 6 out of 58 counties in California shows prevalence of above 30%. The COVID infection in California seems relatively controllable to a large extent compared to the general prevalence level across the United States. As for the prevalence differences, it may be caused by some other differentiable factors across counties, and we would like to further discuss about it in later parts.
 
-## 1b. Death rates across county
+## 1b. Death rate across county
 
 The death rate, or called case-fatality ratio, is defined as the ratio of deaths to the population of a particular area or during a particular period of time. Analyzing death rate help us track the social economical and geographical characteristics of those dying due to COVID in California, and allow comparisons of death trends across counties.
 
@@ -140,8 +140,8 @@ demo_plot_1 = demo %>%
       legend.position = "none"
     ) +
     labs(x = "County",
-         y = "Death Rates",
-         title = "Death Rates Across County") +
+         y = "Death Rate",
+         title = "Death Rate Across County") +
     theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     scale_y_continuous(labels = point)
 
@@ -158,7 +158,7 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
     mutate(county_name = fct_reorder(county_name, death_rate)) %>%
     ggplot(aes(x = death_rate, fill = county_name)) +
     geom_histogram(alpha = 0.7) +
-    labs(x = "Death Rates",
+    labs(x = "Death Rate",
          y = "Count") +
     theme(
       legend.position = "bottom"
@@ -175,7 +175,7 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
           scale_x_continuous(labels = point)
 ```
 
-We can observe that the death rates range from as low as 0.00% to 1.76% by county in California. The density graph suggests a quite centralized distribution of death rates across counties, that most counties’ death rates fall between 0.25% to 1.25%. As for the minimum value from this data set, there is so far no recorded death so as 0% death rate in Alpine. As for the maximum, Siskiyou’s recorded death rate is 1.76% in November 2022, which is a little bit higher than the average country-wide death rate of 1.09% (data reported by John Hopkins University’s Coronavirus Resource Center). Considering the difference shown in death rates across counties, we will investigate the associations between this outcome variable and other potential factors in the following section.
+We can observe that the death rates range from as low as 0.00% to 1.76% by county in California. The density graph suggests a quite centralized distribution of death rates across counties, that most counties’ death rates fall between 0.25% to 1.25%. As for the minimum value from this data set, there is so far no recorded death so as 0% death rate in Alpine. As for the maximum, Siskiyou’s recorded death rate is 1.76% in November 2022, which is a little bit higher than the average country-wide death rate of 1.09% (data reported by [John Hopkins University’s Coronavirus Resource Center](https://coronavirus.jhu.edu/data/mortality)). Considering the difference shown in death rates across counties, we will investigate the associations between this outcome variable and other potential factors in the following section.
 
 # 2. Worst & Best conties for outcomes
 
@@ -405,7 +405,7 @@ As we plotted, the values for each bubble are encoded by its horizontal position
 
 On one hand, there is a positive best-fit trend line drawn on this plot which indicates a positive relationship between prevalence and death rates across counties, although this relationship is considerably weak. On the other hand, as the values on the horizontal and vertical scale decreases, we can only observe small bubbles on the bottom-left corners. And as the values on the horizontal or vertical scale increases, relatively large bubbles start to appear. To add on, the largest bubble of Los Angeles located on the top-right corner on this graph, indicating its relatively high prevalence and high death rate. These two perspective of findings may coincide with each other, suggesting a positive but weak relationship between outcomes across county.
 
-Combining our findings in part 3 and 4, we can primarily conclude that across counties in California, prevalence and death rates are very weakly correlated.
+Combining our findings in part 3 and 4, we can primarily conclude that across counties in California, `prevalence` and `death rate` are very weakly correlated.
 
 
 
