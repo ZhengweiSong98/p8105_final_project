@@ -87,3 +87,25 @@ After deciding to put our focus on the state of California, the next obstacle an
 Formulating the right regression model and choosing the right variables to draw graphs were challenges as well. Due to lots of multicolinearity in our original data set, analysts had to run multiple model selection to decide which variables to include in the final model. A larger issue was that some originally designed plotting turned out to be just not feasible due to errors from the data set, for example in some cases, the death rate of a county was 100%, which is clearly wrong. It was also a challenge overall to interpret correlations after the  model is built and summarization of the model given using code because most of the correlations aren't perfect, there could be confounders that we haven't considered in the model. 
 
 #### Findings
+
+This investigations finding started off from exploratory analysis, where we first looked at the prevalence across counties. Until November 2022, COVID prevalence in California ranges from 0.094 to 0.386, with the lowest being the county of Modoc and highest being the county of Kings. Majority of the regions had experienced a prevalence between 0.15 to 0.25.
+
+Another parameter we looked at was the death rate across different counties. The county with the lowest death rate in California was Alpine, where the death rate was 0 while the county with the highest death rate was Siskiyou, at about 1.76%. The majority death rate across counties fall within the bound of 0.25% to 1.25%. 
+
+We further looked at the correlation between prevalence and death rates. It is interesting for us to notice that the correlation between these two factors was very low, with a correlation factor of -0.086. Meaning that in general, the disease prevalence in a county doesn't affect the death rate in that county. This is quite counter intuitive as logically, higher disease prevalence means more pressure on the health care system of that county, which is likely to lead to higher death rate as patients not being able to get the medical attention they need.
+
+One possible explanation that we would offer for observing this phenomenon is that places with high disease prevalence may also tend to be places with high population density and better medical system. Thus although the prevalence is high, those counties are still able to control their death rate.
+
+To examine our guess, we decide to take population by county into consideration for a further test on the association between outcomes. The finding of this test shows a relatively weak, but positive relationship between prevalence and death rates. So we still conclude that prevalence and death rate are very weakly correlated. 
+
+To determine if there is a statistically significant relationship between the categorical groups that we considered to put in for our prediction model. Two ANOVA tests were run, one focusing on the predictors for fatality and the other one focusing on prevalence. The ANOVA test for fatality shows that only the variable `vaccinated` isn't significant as a predictor. We consider this finding as suggesting that vaccination, although certainly can help prevent someone from getting COVID, can't affect an individual's chance of dying from COVID.
+
+The ANOVA test for disease prevalence shows that location is the only predictor that is not significant, which is understandable as the location of a county shouldn't be linked to its ability on treating the COVID patients.
+
+For the two MLR models constructed in our Inference Analysis session, we first claim the disease prevalence in each county is a linear combination of four predictor variables, we found unemployment, area of the county, population and amount of tests all positively associated with disease prevalence. 
+
+For the second model, we claim death rate in each county is a linear combination of seven predictor variables. The death rate is positively correlated with whether the county being an inland county, vaccination situation, unemployment rate, area of the county, amount of tests while being negatively correlated with the proportion of labor forces in the population. 
+
+#### Next Steps
+
+After looking back on our investigation, we would suggested future research to try to understand more on the association between socioeconomic factors and COVID prevalence/death rate. According to our models, although vaccine definitely has its value in disease control, it doesn't seem to stand out among all the other variables such as unemployment and proportion of labor forces in the population. Researches should also be done to investigate on how to better protect the non-labor force population, which tends to be our elders in the society since our investigation suggests that lower labor proportion population has higher death rate from COVID.

@@ -297,6 +297,7 @@ Our final model:
 
 ```{r warning = F, message = F}
 mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
+
 mlr_model %>% 
   broom::tidy() %>% 
   mutate(term = str_replace(term, "^location", "Location: ")) %>% 

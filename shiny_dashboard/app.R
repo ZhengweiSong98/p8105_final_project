@@ -1,52 +1,82 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
+library(leaflet)
+library(RColorBrewer)
+library(tidyverse)
 
+#Read in dataset
+map_covid =
+    read_csv("./data/map_data.csv")
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
+ui <- bootstrapPage(
+    tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+    leafletOutput("map", width = "100%", height = "100%"),
+    absolutePanel(top = 10, right = 10,
+                  sliderInput("range", "Magnitudes", min(map_covid$cumulative_cases), max(map_covid$cumulative_cases),
+                              value = range(map_covid$cumulative_cases), step = 0.1
+                  ),
+                  selectInput("colors", "Color Scheme",
+                              rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
+                  ),
+                  checkboxInput("legend", "Show legend", TRUE)
     )
 )
 
-# Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    # Reactive expression for the data subsetted to what the user selected
+    filteredData <- reactive({
+        map_covid[map_covid$cumulative_cases >= input$range[1] & map_covid$cumulative_cases <= input$range[2],]
+    })
 
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
+    # This reactive expression represents the palette function,
+    # which changes as the user makes selections in UI.
+    colorpal <- reactive({
+        colorNumeric(input$colors, map_covid$cumulative_cases)
+    })
+
+    output$map <- renderLeaflet({
+        # Prepare the text for the tooltip:
+        mytext <- paste(
+            "Depth: ", map_covid$county, "<br/>",
+            "Stations: ", map_covid$county, "<br/>",
+            "Magnitude: ", map_covid$county, sep="") %>%
+            lapply(htmltools::HTML)
+
+        # Use leaflet() here, and only include aspects of the map that
+        # won't need to change dynamically (at least, not unless the
+        # entire map is being torn down and recreated).
+        leaflet(map_covid) %>% addTiles() %>%
+            fitBounds(~min(lon), ~min(lat), ~max(lon), ~max(lat))
+    })
+
+    # Incremental changes to the map (in this case, replacing the
+    # circles when a new color is chosen) should be performed in
+    # an observer. Each independent set of things that can change
+    # should be managed in its own observer.
+    observe({
+        pal <- colorpal()
+
+        leafletProxy("map", data = filteredData()) %>%
+            clearShapes() %>%
+            addCircles(radius = ~cumulative_cases/10, weight = 1, color = "#777777",
+                       fillColor = ~pal(cumulative_cases), fillOpacity = 0.7, popup = ~paste(cumulative_cases)
+            )
+    })
+
+    # Use a separate observer to recreate the legend as needed.
+    observe({
+        proxy <- leafletProxy("map", data = map_covid)
+
+        # Remove any existing legend, and only if the legend is
+        # enabled, create a new one.
+        proxy %>% clearControls()
+        if (input$legend) {
+            pal <- colorpal()
+            proxy %>% addLegend(position = "bottomright",
+                                pal = pal, values = ~cumulative_cases
+            )
+        }
     })
 }
 
-# Run the application
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
