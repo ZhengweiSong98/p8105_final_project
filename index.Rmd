@@ -147,11 +147,11 @@ After retrieving the CA_Labor and CA_Land_Area data set from the data sources, f
 For CA_Land_Area data set, separate the counties into costal counties and inland counties first using `mutate()` function, then remove the variable column of `rank`,`state`, and `population`. The resulted data set has 58 observations and 3 variable columns.
 
 In the end, using `left_join()` function to combine the two processed data set into one final data set by county names, the final data set is named as `ca_nonmedical_data` and contains 58 rows and 5 variable columns, including name of the county, county's area in square miles, location type of the county, unemployment and labor force. 
-```{r}
+```{r warning = F, message = F}
 labor_data = read_csv("./data/CA_Labor.csv") %>%
     janitor::clean_names() %>%
     dplyr::select(-employment,-unemployment,-rank) %>%
-    rename(unemployment=unemployment_rate_per_cent)
+    rename(unemployment = unemployment_rate_per_cent)
 
 land_data = read_csv("./data/CA_Land_Area.csv") %>%
     janitor::clean_names() %>%
@@ -166,11 +166,11 @@ ca_nonmedical_data = left_join(land_data, labor_data, by = c("county"))
 
 For the purpose of model building, a data set focused on reflecting covid information such as death rate, total test rate, and population with respect to each county is needed. To do this, use the function `mutate()` and some calculation to produce the death rate and total test rate column for the new data set. Then select the variables of interest including `county_name`, `death_rate`, `test`, `population` and group them by county. The resulted data set is named as `demon_covid`. 
 
-```{r}
+```{r warning = F, message = F}
 demo_covid = demo %>%
      mutate(cumulative_reported_deaths = as.numeric(cumulative_reported_deaths),
             cumulative_cases = as.numeric(cumulative_cases),
-        death_rate = 0.01+cumulative_reported_deaths/population*100,
+        death_rate = 0.01 + cumulative_reported_deaths/population*100,
         test = cumulative_total_tests/population*100) %>%
     dplyr::select(county_name, death_rate, test,population) %>%
     rename(county=county_name) %>%
@@ -185,7 +185,7 @@ demo_covid = demo %>%
 
 To obtain vaccine status of each county, read in the CA_covid19vaccines.csv file and group the data by county, then obtain the total number of fully vaccinated people by using the `sum()` function. Drop all the N/A values and any county besides the 58 counties of interest. The resulted data set includes 58 rows and 2 column of variables.
 
-```{r}
+```{r warning = F, message = F}
 vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
     janitor::clean_names() %>%
     group_by(county) %>%
@@ -200,9 +200,9 @@ vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
 
 ## Hospitalization
 
-This investigation is interested in knowing the hospitalization ability of each county in California. After reading in the CA_Covid19_Hospital.csv data file, group the data by county and find the maximum amount of hospital bed and available icu beds recorded for each county. Then select `county`, `all_hospital_beds`, `icu_available_beds` to form the processed data set, which includes 56 rows and 3 column variables.
+This investigation is interested in knowing the hospitalization ability of each county in California. After reading in the CA_Covid19_Hospital.csv data file, group the data by county and find the maximum amount of hospital bed and available ICU beds recorded for each county. Then select `county`, `all_hospital_beds`, `icu_available_beds` to form the processed data set, which includes 56 rows and 3 column variables.
 
-```{r}
+```{r warning = F, message = F}
 hospital = read_csv("./data/CA_Covid19_Hospital.csv") %>%
     group_by(county) %>%
     summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
@@ -212,8 +212,8 @@ hospital = read_csv("./data/CA_Covid19_Hospital.csv") %>%
 
 ## Final premodel data frame 
 
-After the data pre-processing activities, we are ready to form a final premodel data frame. Combine the `demo_covid`, `vaccine`, `hospital`, and `ca_nonmedical_data` together by using the function `leftjoin()` while binding the data sets by the variable `county`. Then relocate the variable `death rate` to the front and do some math adjustment for other data variables including  `vaccinated`, `labor_rate`, `hospital_bed`, `icu_bed` for the purpose of better visual representation afterwards. Remove some columns of variables as needed. The final premodal dataframe includes 58 rows and 10 columns of variables.
-```{r}
+After the data pre-processing activities, we are ready to form a final pre-model data frame. Combine the `demo_covid`, `vaccine`, `hospital`, and `ca_nonmedical_data` together by using the function `leftjoin()` while binding the data sets by the variable `county`. Then relocate the variable `death rate` to the front and do some math adjustment for other data variables including  `vaccinated`, `labor_rate`, `hospital_bed`, `icu_bed` for the purpose of better visual representation afterwards. Remove some columns of variables as needed. The final pre-modal dataframe includes 58 rows and 10 columns of variables.
+```{r warning = F, message = F}
 ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
 ca_medical_data2 = left_join(ca_medical_data, hospital, by =c("county"))
 ca_premodel_data = left_join(ca_medical_data2, ca_nonmedical_data, by = c("county")) %>%

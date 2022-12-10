@@ -13,7 +13,7 @@
 
 <title>Data Introduction and Further Processing</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,9 +193,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -584,31 +591,15 @@ labor force.</p>
 <pre class="r"><code>labor_data = read_csv(&quot;./data/CA_Labor.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
     dplyr::select(-employment,-unemployment,-rank) %&gt;%
-    rename(unemployment=unemployment_rate_per_cent)</code></pre>
-<pre><code>## Rows: 58 Columns: 6
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (1): County
-## dbl (2): Rank, Unemployment Rate (per cent)
-## num (3): Labor Force, Employment, Unemployment
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>land_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
+    rename(unemployment = unemployment_rate_per_cent)
+
+land_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
     mutate(
         location = ifelse(county %in% c(&quot;Los Angeles&quot;, &quot;Orange&quot;, &quot;San Diego&quot;, &quot;Monterey&quot;, &quot;San Benito&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Santa Cruz&quot;, &quot;Ventura&quot;, &quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Napa&quot;, &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Solano&quot;, &quot;Sonoma&quot;, &quot;Del Norte&quot;, &quot;Humboldt&quot;, &quot;Mendocino&quot;), &quot;costal&quot;, &quot;inland&quot;)) %&gt;%
-    dplyr::select(-rank, -state, -population)</code></pre>
-<pre><code>## Rows: 58 Columns: 5
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (2): County, State
-## dbl (2): Rank, Land Area (sq mi)
-## num (1): Population
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>ca_nonmedical_data = left_join(land_data, labor_data, by = c(&quot;county&quot;))</code></pre>
+    dplyr::select(-rank, -state, -population)
+
+ca_nonmedical_data = left_join(land_data, labor_data, by = c(&quot;county&quot;))</code></pre>
 </div>
 <div id="demographical-covid-data" class="section level2">
 <h2>Demographical covid data</h2>
@@ -623,7 +614,7 @@ resulted data set is named as <code>demon_covid</code>.</p>
 <pre class="r"><code>demo_covid = demo %&gt;%
      mutate(cumulative_reported_deaths = as.numeric(cumulative_reported_deaths),
             cumulative_cases = as.numeric(cumulative_cases),
-        death_rate = 0.01+cumulative_reported_deaths/population*100,
+        death_rate = 0.01 + cumulative_reported_deaths/population*100,
         test = cumulative_total_tests/population*100) %&gt;%
     dplyr::select(county_name, death_rate, test,population) %&gt;%
     rename(county=county_name) %&gt;%
@@ -632,8 +623,6 @@ resulted data set is named as <code>demon_covid</code>.</p>
               test = max(test),
               population = max(population)) %&gt;%
     filter(!county %in% c(&quot;Out of state&quot;,&quot;Unknown&quot;))</code></pre>
-<pre><code>## Warning in max(death_rate, na.rm = T): no non-missing arguments to max;
-## returning -Inf</code></pre>
 </div>
 <div id="vaccine" class="section level2">
 <h2>Vaccine</h2>
@@ -653,22 +642,13 @@ rows and 2 column of variables.</p>
     arrange(county) %&gt;%
     drop_na() %&gt;%
     filter(!county %in% c(&quot;Unknown&quot;, &quot;All CA Counties&quot;, &quot;All CA and Non-CA Counties&quot;,&quot;Outside California&quot;))</code></pre>
-<pre><code>## Rows: 53630 Columns: 23
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr   (2): county, california_flag
-## dbl  (20): total_doses, cumulative_total_doses, pfizer_doses, cumulative_pfi...
-## date  (1): administered_date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 <div id="hospitalization" class="section level2">
 <h2>Hospitalization</h2>
 <p>This investigation is interested in knowing the hospitalization
 ability of each county in California. After reading in the
 CA_Covid19_Hospital.csv data file, group the data by county and find the
-maximum amount of hospital bed and available icu beds recorded for each
+maximum amount of hospital bed and available ICU beds recorded for each
 county. Then select <code>county</code>, <code>all_hospital_beds</code>,
 <code>icu_available_beds</code> to form the processed data set, which
 includes 56 rows and 3 column variables.</p>
@@ -677,20 +657,11 @@ includes 56 rows and 3 column variables.</p>
     summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
               icu_available_beds = max(icu_available_beds,na.rm = T)) %&gt;%
     dplyr::select(county, all_hospital_beds, icu_available_beds)</code></pre>
-<pre><code>## Rows: 55101 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (1): county
-## dbl  (7): hospitalized_covid_confirmed_patients, hospitalized_suspected_covi...
-## date (1): todays_date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 <div id="final-premodel-data-frame" class="section level2">
 <h2>Final premodel data frame</h2>
 <p>After the data pre-processing activities, we are ready to form a
-final premodel data frame. Combine the <code>demo_covid</code>,
+final pre-model data frame. Combine the <code>demo_covid</code>,
 <code>vaccine</code>, <code>hospital</code>, and
 <code>ca_nonmedical_data</code> together by using the function
 <code>leftjoin()</code> while binding the data sets by the variable
@@ -699,7 +670,7 @@ to the front and do some math adjustment for other data variables
 including <code>vaccinated</code>, <code>labor_rate</code>,
 <code>hospital_bed</code>, <code>icu_bed</code> for the purpose of
 better visual representation afterwards. Remove some columns of
-variables as needed. The final premodal dataframe includes 58 rows and
+variables as needed. The final pre-modal dataframe includes 58 rows and
 10 columns of variables.</p>
 <pre class="r"><code>ca_medical_data = left_join(demo_covid, vaccine, by =c(&quot;county&quot;))
 ca_medical_data2 = left_join(ca_medical_data, hospital, by =c(&quot;county&quot;))

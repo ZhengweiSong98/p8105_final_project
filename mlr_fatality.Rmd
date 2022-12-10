@@ -304,7 +304,7 @@ check_model(wls_incidence, check = c("linearity", "qq", "normality", "outliers",
 * The residual standard error changed from 9.224 (in the simple linear regression model) to 1.199 in the weighted LS model. This shows that the predictions from the WLS model are much closer to the actual observations than those from the ordinary LS model.
 * $R^2$ improved in the WLS model. WLS model is able to explain more of the variation in exam scores compared to the OLS model.
 
-## CV
+## Cross Validation
 ```{r warning = F, message = F}
 set.seed(2022)
 # use 10-fold validation and create the training sets
