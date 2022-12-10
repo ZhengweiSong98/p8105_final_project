@@ -293,11 +293,11 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ```
 
 
-## Age vs Death Rate
+## Age, Race, Gender vs Death Rate
 
 ```{r warning = F, message = F}
-
-age %>% 
+age_death =
+   age %>% 
     ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -317,8 +317,8 @@ age %>%
           scale_y_continuous(labels = point)
 
 
-    
-gender %>% 
+gender_death =
+    gender %>% 
     ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -336,8 +336,8 @@ gender %>%
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point)
-
-  race %>%
+race_death =
+    race %>%
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
     mutate(race_group = fct_reorder(race_group, percent_deaths)) %>%
@@ -356,10 +356,17 @@ gender %>%
           axis.title.x = element_text(size = 6),
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5))
+          axis.text.y = element_text(size = 5)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+
+age_death + gender_death + race_death
+
+```
 
 
 
+```{r}
 age %>% 
     mutate(date = factor(date)) %>%
     mutate(text_label = str_c("Date: ", date, 
@@ -401,9 +408,6 @@ gender %>%
            yaxis = list(
            title = "Death Rate"))
 ```
-
-
-
 
 
 
