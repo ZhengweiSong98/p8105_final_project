@@ -24,6 +24,8 @@ library(ggridges)
 library(gridExtra)
 library(scales)
 library(maps)
+library(lattice)
+library(latticeExtra)
 
 
 knitr::opts_chunk$set(
@@ -331,8 +333,36 @@ demo_best_pre_plot + demo_best_dea_plot
 
 ## Association between outcomes across county
 
-```{r}
+```{r warning = F, message = F}
+ demo_asso =   
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population),
+              death_rates = total_deaths/total_cases) %>%
+    ggplot(aes(x = prevalence, y = death_rates)) + 
+	  geom_point(aes(color = county_name, size = population)) + 
+	  geom_smooth(method = lm, se = FALSE, color = "red", size = 0.4, aes(weight = population)) + 
+	  labs(
+	    x = "Prevalence",
+	    y = "Death Rate",
+	    size = "Population",
+	    col = "County",
+	    title = "Associations Between Outcomes Across County"
+	  ) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5))
 
+ggplotly(demo_asso, width = 800, height = 500)
 ```
 
 
