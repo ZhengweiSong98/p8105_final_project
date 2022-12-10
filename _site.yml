@@ -13,16 +13,16 @@ navbar:
         href: graph3.html
     - text: 'Inference Analysis'
       menu:
-      - text: "Multiple Linear Model for Fatality"
-        href: mlr_fatality.html
       - text: "Weighted Least Model for Prevalence"
         href: mlr_new.html
+      - text: "Multiple Linear Model for Fatality"
+        href: mlr_fatality.html
     - text: 'Statistical Analysis'
       menu:
-      - text: "ANOVA Test on MLR Death Cases"
-        href: statistical_test_fatality.html
       - text: "ANOVA Test on MLR Prevalence"
         href: statistical_test_prevelance.html
+      - text: "ANOVA Test on MLR Death Cases"
+        href: statistical_test_fatality.html
     - text: 'Additional Prediction'
       href: shiny_app.html
     - text: 'Project Report'
