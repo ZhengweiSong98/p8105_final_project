@@ -13,7 +13,7 @@
 
 <title>Factors to Death</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -413,6 +406,7 @@ div.tocify {
 </div>
 
 
+<<<<<<< HEAD
 <p>Los Angeles, Orange San Diego Monterey San Benito San Luis Obispo
 Santa Barbara Santa Cruz Ventura Alameda Contra Costa Marin Napa San
 Francisco San Mateo Santa Clara Solano Sonoma Del Norte Humboldt
@@ -673,6 +667,79 @@ interested on whether the death cases are associated with
 <code>area</code>, <code>population</code> and
 <code>testing_cases</code>.</li>
 </ul>
+=======
+<div id="date-cleaning" class="section level2">
+<h2>date cleaning</h2>
+<pre class="r"><code>source(&quot;data_preprocessing_backbone.R&quot;)</code></pre>
+<pre><code>## Loading required package: timechange</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+<pre><code>## Rows: 13267 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (2): demographic_category, demographic_value
+## dbl  (5): total_cases, percent_cases, deaths, percent_deaths, percent_of_ca_...
+## date (1): report_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 62647 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 532 Columns: 24
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (21): unvaccinated_cases, vaccinated_cases, boosted_cases, unvaccinated...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 286 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): AREA, AREA_TYPE
+## dbl  (14): UNVACCINATED_CASES, VACCINATED_CASES, UNVACCINATED_HOSP, VACCINAT...
+## date  (1): DATE
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 607 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (14): unvaccinated_cases, vaccinated_cases, unvaccinated_hosp, vaccinat...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+## Rows: 62647 Columns: 17
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr   (2): area, area_type
+## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
+## date  (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>logistic_cases = age %&gt;%
+    select(total_cases, date) %&gt;%
+    group_by(date) %&gt;%
+    summarize(total_cases=sum(total_cases)) %&gt;%
+    arrange(date) %&gt;%
+    mutate(day = 1:length(date)) %&gt;%
+    dplyr::select(-date) %&gt;%
+    relocate(total_cases)</code></pre>
+>>>>>>> 9e60a84f59421de4a4b9636c60eedb6db9bccc03
 </div>
 <div id="data-description" class="section level2">
 <h2>Data Description</h2>

@@ -13,7 +13,7 @@
 
 <title>Project Report</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -507,28 +500,123 @@ group towards the virus, judging based on the data set we have?</p>
 </div>
 <div id="data" class="section level3">
 <h3>Data</h3>
-<p>All of the data used in this investigation originally came from <a
+<div id="chhs" class="section level4">
+<h4>CHHS</h4>
+<p>A major part of the data used in this investigation originally came
+from <a
 href="https://data.chhs.ca.gov/organization/california-department-of-public-health">California
 Health and Human Service Open Data Portal</a>. This is a website with
-numerous databases, directly held by the department of public health,
-California.</p>
-<p>The two specific datasets that will be used for this investigation
+numerous databases, directly held by the agency of California health and
+human services, abbreviated as CHHS. California health and human service
+is the state agency tasked with administration and oversight of “state
+and federal programs for health care, social services, public assistance
+and rehabilitation” in the U.S. state of California. The agency is
+headed by the Secretary of the California Health and Human Services
+Agency, with headquarters in Sacramento. Many of the laws in the
+California Health and Safety Codes are enforced by it.</p>
+<p>This data portal includes data related to public health activities
+across the state of California. Most of which is collected at the county
+level but there are also data sets that contains data at individual
+level.</p>
+<p>The three specific datasets that will be used for this investigation
 later is listed below, extracted from the site by simply downloading
 them into the R project:</p>
 <p><a
-href="https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state"
-class="uri">https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state</a>
-: This data set focuses at information such as demographic category,
-total cases, case percentage, death, and report date related to COVID-19
-in different counties of the state of California.</p>
+href="https://data.chhs.ca.gov/dataset/covid-19-time-series-metrics-by-county-and-state">First
+data set</a> : This data set focuses at information such as demographic
+category, total cases, case percentage, death, and report date related
+to COVID-19 in different counties of the state of California.</p>
 <p><a
-href="https://data.chhs.ca.gov/dataset/covid-19-post-vaccination-infection-data"
-class="uri">https://data.chhs.ca.gov/dataset/covid-19-post-vaccination-infection-data</a>
-: This data set focuses on the COVID-19 disease information on
-vaccination status, including variables such as vaccinated cases
+href="https://data.chhs.ca.gov/dataset/covid-19-post-vaccination-infection-data">Second
+data set</a> : This data set focuses on the COVID-19 disease information
+on vaccination status, including variables such as vaccinated cases
 vs. unvaccinated cases, vaccinated death vs. unvaccinated death.</p>
-<p>The data cleaning process is being presented in the index page, you
-can go to there by clicking on the button at the upper left corner.</p>
+<p><a
+href="https://data.chhs.ca.gov/dataset/covid-19-hospital-data">Third
+data set</a>: This data set is focused on the hospitalization by county
+in California. Besides recording the amount of people that are
+hospitalized, it offers comparison between the hospitalized COVID
+confirmed patients, and ICU suspected covid patients in the region.</p>
+</div>
+<div id="opendatasoft" class="section level4">
+<h4>Opendatasoft</h4>
+<p>In order to present an interactive map to users that contains
+population infected by time in different counties, analysts referred to
+geographic coordination data online for each county.</p>
+<p>Opendatasoft is a French company that offers data sharing software.
+Based in Paris, it also has a subsidiary in Boston (United States) and
+an office in Nantes(France). Opendatasoft has developed a tool for
+sharing and reusing the data of companies and public administrations.
+Its software lets people organize, share, and visualize any type of
+data. The software can be used by both private companies and public
+entities. The <a
+href="https://public.opendatasoft.com/explore/dataset/us-county-boundaries/table/?disjunctive.statefp&amp;disjunctive.countyfp&amp;disjunctive.name&amp;disjunctive.namelsad&amp;disjunctive.stusab&amp;disjunctive.state_name&amp;sort=stusab&amp;refine.stusab=CA">geographic
+data set</a> this investigation is interested in from Opendatasoft is
+information about US County Boundaries.</p>
+</div>
+<div id="usa.com" class="section level4">
+<h4>USA.com</h4>
+<p>This is a website contains data about states, metro areas, counties,
+cities, zip codes, and area codes information, including population,
+races, income, housing, etc. In this investigation, data extracted from
+this website is about county areas in California through <a
+href="http://www.usa.com/rank/california-state--land-area--county-rank.htm">this
+link</a>.</p>
+</div>
+<div id="employment-development-department" class="section level4">
+<h4>Employment Development Department</h4>
+<p>Since 1935, the Employment Development Department(EDD) had been
+connecting with job seekers and employers in an effort to build the
+economy of Golden State. Mean while it has been collecting data related
+to employment each month by industry data for California and sub-state
+areas. One of its data set is <a
+href="https://www.labormarketinfo.edd.ca.gov/data/industry-employment-and-unemployment-rates-for-counties.html">current
+industry employment and unemployment rates for counties</a>, which could
+produce insightful result through this investigation by connecting data
+like unemployment rate to the prevalence of disease or hospitalization
+rate. A The data cleaning process is being presented in the index page,
+you can go to there by clicking on the button at the upper left
+corner.</p>
+</div>
+</div>
+<div id="inference-analysis-regression" class="section level3">
+<h3>Inference Analysis: Regression</h3>
+<div id="multiple-linear-regression" class="section level4">
+<h4>Multiple linear Regression</h4>
+<p>For model building purpose of this investigation, a multiple linear
+regression model is considered to investigate on hospitalization rate.
+The underlying logic for this model is relatively simple, analysts
+extract data that includes disease prevalence, area, population, and
+tests. The hypothetical multiple linear regression function for this
+particular inference analysis is shown as below:</p>
+<p>disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area
++ B4 * population</p>
+<p>In the above equation, disease prevalence is the desired outcome
+while the amount of tests, unemployment, area, and population are
+predictors. B1, B2, B3, and B4 are the factors for each predictors
+respectively. Under ideal circumstances, we would expect our model to be
+able to predict the death counts in a region, given its number of tests,
+population, and unemployment rate.</p>
+<p>It is necessary to mention that in the original dataset on which this
+model looked at, analysts observed strong correlation within the some
+other data variables such as <code>vaccination</code> and
+<code>labor_rate</code>. After some data exploratory works, some
+right-skewness is noticed so analysts decided to apply natural
+logarithms to each continuous variables.</p>
+<p>Another thing to look at was the correlation between the predictors
+to avoid the potential effect of multicollinearity, which is a
+statistical concept that describes the incidence of several independent
+variables in a model are in fact correlated within themselves. This
+correlation test is later combined with criterion based model selection
+to select which predictors to put in for the final model.</p>
+<p>The three criterion based model selection method are Cp criterion,
+adjusted R squared criterion, and LASSO. The results of these model
+selection method all gave similar predictor size, so in the end the
+analysts chose four predictors to construct the final model as shown in
+the equation above. After the construction of this model, a corss
+validation process is performed to further assess the prediction ability
+of this model.</p>
+</div>
 </div>
 </div>
 
