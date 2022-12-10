@@ -602,7 +602,7 @@ land_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
 ca_nonmedical_data = left_join(land_data, labor_data, by = c(&quot;county&quot;))</code></pre>
 </div>
 <div id="demographical-covid-data" class="section level2">
-<h2>Demographical covid data</h2>
+<h2>Demographical COVID data</h2>
 <p>For the purpose of model building, a data set focused on reflecting
 covid information such as death rate, total test rate, and population
 with respect to each county is needed. To do this, use the function
@@ -624,8 +624,8 @@ resulted data set is named as <code>demon_covid</code>.</p>
               population = max(population)) %&gt;%
     filter(!county %in% c(&quot;Out of state&quot;,&quot;Unknown&quot;))</code></pre>
 </div>
-<div id="vaccine" class="section level2">
-<h2>Vaccine</h2>
+<div id="vaccination" class="section level2">
+<h2>Vaccination</h2>
 <p>To obtain vaccine status of each county, read in the
 CA_covid19vaccines.csv file and group the data by county, then obtain
 the total number of fully vaccinated people by using the

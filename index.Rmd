@@ -162,7 +162,7 @@ land_data = read_csv("./data/CA_Land_Area.csv") %>%
 ca_nonmedical_data = left_join(land_data, labor_data, by = c("county"))
 ```
 
-## Demographical covid data
+## Demographical COVID data
 
 For the purpose of model building, a data set focused on reflecting covid information such as death rate, total test rate, and population with respect to each county is needed. To do this, use the function `mutate()` and some calculation to produce the death rate and total test rate column for the new data set. Then select the variables of interest including `county_name`, `death_rate`, `test`, `population` and group them by county. The resulted data set is named as `demon_covid`. 
 
@@ -181,7 +181,7 @@ demo_covid = demo %>%
     filter(!county %in% c("Out of state","Unknown"))
 ```
 
-## Vaccine 
+## Vaccination
 
 To obtain vaccine status of each county, read in the CA_covid19vaccines.csv file and group the data by county, then obtain the total number of fully vaccinated people by using the `sum()` function. Drop all the N/A values and any county besides the 58 counties of interest. The resulted data set includes 58 rows and 2 column of variables.
 
