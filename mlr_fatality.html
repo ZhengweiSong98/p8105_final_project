@@ -1194,6 +1194,7 @@ all chose the same model with 4 predictors, we recommend this as our
 final model. (The LASSO gave a very similar suggested model, with the
 addition of log area.) Our final model:</p>
 <pre class="r"><code>mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
+
 mlr_model %&gt;% 
   broom::tidy() %&gt;% 
   mutate(term = str_replace(term, &quot;^location&quot;, &quot;Location: &quot;)) %&gt;% 
