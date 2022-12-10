@@ -36,29 +36,6 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-
-Los Angeles, Orange
-San Diego
-Monterey
-San Benito
-San Luis Obispo
-Santa Barbara
-Santa Cruz
-Ventura
-Alameda
-Contra Costa
-Marin
-Napa
-San Francisco
-San Mateo
-Santa Clara
-Solano
-Sonoma
-Del Norte
-Humboldt
-Mendocino
-
-
 ## Data Importing
 ```{r warning = F, message = F}
 source("data_preprocessing_backbone.R")
@@ -99,15 +76,23 @@ vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
     drop_na() %>%
     filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties","Outside California"))
 
+hospital = read_csv("./data/CA_Covid19_Hospital.csv") %>%
+    group_by(county) %>%
+    summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
+              icu_available_beds = max(icu_available_beds,na.rm = T)) %>%
+    dplyr::select(county, all_hospital_beds, icu_available_beds)
+
 ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
-ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county")) %>%
+ca_medical_data2 = left_join(ca_medical_data, hospital, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data2, ca_nonmedical_data, by = c("county")) %>%
     relocate(death_rate) %>%
     mutate(
         vaccinated=fully_vaccinated/population*100,
-        labor_rate = labor_force/population*100
+        labor_rate = labor_force/population*100,
+        hospital_bed = all_hospital_beds/population*100,
+        icu_bed = icu_available_beds/population*100
     )%>%
-    dplyr::select(-fully_vaccinated, -population, -labor_force)
-    
+    dplyr::select(-fully_vaccinated, -population, -labor_force,-all_hospital_beds,-icu_available_beds)
 
 skimr::skim(ca_premodel_data)
 ```
@@ -148,15 +133,35 @@ raw_labor = ca_premodel_data %>%
     ggplot(aes(x = labor_rate)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
+raw_hospital = ca_premodel_data %>%
+    ggplot(aes(x = hospital_bed)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+raw_bed = ca_premodel_data %>%
+    ggplot(aes(x = icu_bed)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
 ca_model_data = ca_premodel_data %>% 
     mutate(ln_tests = log(test),
            ln_area = log(land_area_sq_mi),
-           ln_unemployment = log(unemployment)
+           ln_unemployment = log(unemployment),
+           ln_hospital = log(hospital_bed+0.01),
+           ln_bed = log(icu_bed+0.01)
            ) %>%
-    dplyr::select(-test,-land_area_sq_mi,-unemployment,-county)
+    dplyr::select(-test,-land_area_sq_mi,-unemployment,-county,-hospital_bed,-icu_bed) %>%
+    filter(!ln_hospital %in% NA,
+           !ln_bed %in% NA)
 
 plot_ln_test = ca_model_data %>%
     ggplot(aes(x = ln_tests)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+plot_ln_hospital = ca_model_data %>%
+    ggplot(aes(x = ln_hospital)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+plot_ln_bed = ca_model_data %>%
+    ggplot(aes(x = ln_bed)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
 plot_ln_area = ca_model_data %>%
@@ -167,12 +172,12 @@ plot_ln_unemployment = ca_model_data %>%
     ggplot(aes(x = ln_unemployment)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
-raw_deaths+raw_tests+raw_land+ raw_unemployment+ raw_vaccinated+ raw_labor+ plot_ln_test+ plot_ln_area+ plot_ln_unemployment
+raw_deaths+raw_tests+raw_land+ raw_unemployment+raw_hospital +raw_bed+ raw_vaccinated+ raw_labor+ plot_ln_test+ plot_ln_area+ plot_ln_unemployment+plot_ln_hospital+plot_ln_bed
 
 ca_model_data %>%
     gtsummary::tbl_summary() %>%
     gtsummary::bold_labels() %>%
-    as.tibble() %>% 
+    as.tibble() %>%
     knitr::kable()
 ```
 
@@ -211,9 +216,9 @@ criterion_selected = regsubsets(death_rate ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
 par(mfrow=c(1,2))
-plot(2:7, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
+plot(2:9, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
 abline(0,1)
-plot(2:7, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
+plot(2:9, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
 ```
 
 The plots above show the Cp index and Adjusted 𝑅2 for various numbers of parameters.
@@ -232,7 +237,7 @@ ca_lasso_data = ca_model_data %>% mutate(
 # using cross validation to choose lambda
 lambda_seq = 10^seq(-5, -1, by = .01)
 set.seed(2022)
-cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:7]), ca_lasso_data$death_rate,
+cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:9]), ca_lasso_data$death_rate,
 lambda = lambda_seq, nfolds = 5)
 cv_object
 # plot the CV results
@@ -241,7 +246,7 @@ mean_cv_error = cv_object$cvm) %>%
 ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()
 # refit the lasso model with the "best" lambda
-fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:7]), ca_model_data$death_rate, lambda = cv_object$lambda.min)
+fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:9]), ca_model_data$death_rate, lambda = cv_object$lambda.min)
 coef(fit_bestcv)
 ```
 
@@ -251,7 +256,7 @@ suggested model, with the addition of log area.)
 Our final model:
 
 ```{r warning = F, message = F}
-mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment,data = ca_model_data)
+mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
 summary(mlr_model)
 ```
 
@@ -295,7 +300,7 @@ set.seed(2022)
 # use 10-fold validation and create the training sets
 train = trainControl(method = "cv", number = 10)
 # fit the 4-variables model that we selected as our final model
-model_caret = train(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
+model_caret = train(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
 model_caret
 
 model_caret$resample

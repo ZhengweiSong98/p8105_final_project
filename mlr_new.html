@@ -843,7 +843,7 @@ are applied to each explortory continuous variables.</li>
 <div id="correlation" class="section level2">
 <h2>Correlation</h2>
 <pre class="r"><code>ca_model_data %&gt;% 
-    select(-location) %&gt;%
+    dplyr::select(-location) %&gt;%
     GGally::ggpairs()</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 <ul>
