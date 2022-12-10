@@ -58,7 +58,7 @@ post_stat
 ```
 
 
-## Outcome by county
+## 1. Outcome by county
 
 ```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
@@ -170,7 +170,7 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 
 
 
-## Worst counties for each COVID outcome
+## 2a. Worst counties for each COVID outcome
 
 ```{r warning = F, message = F}
 demo_worst_1 =
@@ -253,7 +253,7 @@ demo_worst_pre_plot + demo_worst_dea_plot
 ```
 
 
-## Best counties for each COVID outcome
+## 2b. Best counties for each COVID outcome
 
 ```{r warning = F, message = F}
 demo_best_1 =
@@ -333,7 +333,7 @@ demo_best_pre_plot + demo_best_dea_plot
 ```
 
 
-## Association between outcomes across county
+## 3. Association between outcomes across county
 
 ```{r warning = F, message = F}
  demo_asso =   
@@ -367,7 +367,7 @@ demo_best_pre_plot + demo_best_dea_plot
 ggplotly(demo_asso, width = 800, height = 500)
 ```
 
-
+## 4. Correlation between outcomes
 ```{r warning = F, message = F}
     demo %>% 
     filter(!county_name %in% "Out of state") %>%

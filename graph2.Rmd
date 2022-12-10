@@ -46,81 +46,8 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 source("data_preprocessing_backbone.R")
 ```
 
-
-## Total Cases vs Age 
-
-```{r warning = F, message = F}
-point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
-grid.arrange(
- 
-    age %>% 
-    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
-    geom_bar(stat = "identity", width = 0.5) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = "none"
-    ) +
-    xlab("Age") +
-    ylab("Total cases") +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point),
-    
-
-    age %>% 
-    ggplot(aes(x = total_cases, fill = age_group)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
-    geom_density(alpha = 0.3, aes(color = age_group)) +
-    scale_color_viridis(discrete = TRUE) +
-    labs(x = "Total cases",
-         y = "Density") +
-    theme(legend.position = "right") +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_x_continuous(labels = point) +
-    scale_y_continuous(labels = point),
-    
-    
-    age %>%
-    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
-    geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = "none"
-    ) +
-    xlab("Age") +
-    ylab("Total cases") +
-        theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point),
-
-
-layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2)
-))
-```
-
+# 1. Total cases
+## 1a. Daily growth rate of total cases by age
 
 ```{r}
 
@@ -129,7 +56,9 @@ age_17 =
   filter(age_group == "0-17") %>% 
   arrange(date) %>% 
   mutate(lag = lag(total_cases)) %>% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
 
 
 age_49 =
@@ -137,127 +66,54 @@ age_49 =
   filter(age_group == "18-49") %>% 
   arrange(date) %>% 
   mutate(lag = lag(total_cases)) %>% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
 
 age_64 = 
   age %>% 
   filter(age_group == "50-64") %>% 
   arrange(date) %>% 
   mutate(lag = lag(total_cases)) %>% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
 
 age_65 =
   age %>% 
   filter(age_group == "65+") %>% 
   arrange(date) %>% 
   mutate(lag = lag(total_cases)) %>% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
 
 age_all = 
     rbind(age_17, age_49, age_64, age_65) %>% 
-    arrange(desc(growth_perc)) %>% 
-    select(date, age_group, total_cases, growth_perc)
+    filter(date != "2020-04-22")
 
-head(age_all) %>% 
-    knitr::kable(
-    caption = "Highest total cases growth rate by age",
-    col.names = c("Date", "Age", "Total cases", "Growth rate"),
-    digits = 2
-  )
 ```
 
 ```{r}
-age_all_low = 
-    rbind(age_17, age_49, age_64, age_65) %>% 
-    arrange(growth_perc) %>% 
-    select(date, age_group, total_cases, growth_perc)
+age_all_1 =
+    rbind(age_17, age_49, age_64, age_65) %>%
+    arrange(growth_perc) %>%
+    select(date, age_group, growth_perc) %>% 
+    filter(date != "2020-12-23")
 
-head(age_all_low) %>% 
+age_all_2 =
+    cbind(age_all, age_all_1)
+
+head(age_all_2) %>%
     knitr::kable(
-    caption = "Lowest total cases growth rate by age",
-    col.names = c("Date", "Age", "Total cases", "Growth rate"),
+    caption = "Highest & Lowest Total Cases Growth Rate by Age",
+    col.names = c("Date", "Age", "Growth rate", "Date", "Age", "Growth rate"),
     digits = 2
   )
 ```
 
 
-## Total Cases vs Gender
-
-```{r warning = F, message = F}
-point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
-grid.arrange(
- 
-    gender %>% 
-    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
-    geom_bar(stat = "identity", width = 0.5) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = "none"
-    ) +
-    xlab("Gender") +
-    ylab("Total cases") +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_y_continuous(labels = point),
-
-
-    gender %>% 
-    ggplot(aes(x = total_cases, fill = gender)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
-    geom_density(alpha = 0.3, aes(color = gender)) +
-    scale_color_viridis(discrete = TRUE) +
-    labs(x = "Total cases",
-         y = "Density") +
-    theme(legend.position = "right") +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_x_continuous(labels = point) +
-    scale_y_continuous(labels = point) +
-    scale_fill_viridis(discrete = TRUE),
-    
-    
-    gender %>%
-    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
-    geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = "none"
-    ) +
-    xlab("Gender") +
-    ylab("Total cases") +
-        theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point),
-
-
-layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2)
-))
-    
-```
+## 1b. Daily growth rate of total cases by gender
 
 ```{r}
 gender_M =
@@ -265,131 +121,295 @@ gender_M =
   filter(gender == "Male") %>% 
   arrange(date) %>% 
   mutate(lag = lag(total_cases)) %>% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+    select(date, gender, growth_perc)
 
 gender_F =
   gender %>% 
   filter(gender == "Female") %>% 
   arrange(date) %>% 
   mutate(lag = lag(total_cases)) %>% 
-  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, gender, growth_perc)
 
 gender_all =
     rbind(gender_M, gender_F) %>%
     arrange(desc(growth_perc)) %>% 
-    select(date, gender, total_cases, growth_perc)
-
-head(gender_all) %>% 
-    knitr::kable(
-    caption = "Highest total cases growth rate by gender",
-    col.names = c("Date", "Gender", "Total cases", "Growth rate"),
-    digits = 2
-  )
-```
-
-```{r}
+    select(date, gender, growth_perc)
 gender_all_1 =
     rbind(gender_M, gender_F) %>%
     arrange(growth_perc) %>% 
-    select(date, gender, total_cases, growth_perc)
-head(gender_all_1) %>% 
+    select(date, gender, growth_perc)
+
+gender_all_2 = 
+    cbind(gender_all, gender_all_1)
+head(gender_all_2) %>% 
     knitr::kable(
-    caption = "Lowest total cases growth rate by gender",
-    col.names = c("Date", "Gender", "Total cases", "Growth rate"),
+    caption = "Highest & Lowest Total Cases Growth Rate by Gender",
+    col.names = c("Date", "Gender", "Growth rate", "Date", "Gender", "Growth rate"),
     digits = 2
   )
 ```
 
-## Total Cases vs Race
-
-```{r warning = F, message = F}
-point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
-grid.arrange(
- 
-    race %>%
-    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
-           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
-    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
-    geom_bar(stat = "identity", width = 0.5) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = "none"
-    ) +
-    xlab("Race") +
-    ylab("Total cases") +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-    scale_y_continuous(labels = point) +
-    theme(axis.title.x = element_blank(),
-         axis.text.x = element_blank(),
-         axis.ticks.x = element_blank()),
-    
 
 
+## 1c. Daily growth rate of total cases by race
+
+```{r}
+race_ia = 
     race %>% 
-    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
-           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
-    ggplot(aes(x = total_cases, fill = race_group)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
-    geom_density(alpha = 0.1, aes(color = race_group)) +
-    scale_color_viridis(discrete = TRUE) +
-    labs(x = "Total cases",
-         y = "Density") +
-    theme(legend.position = "right") +
-    theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) + 
-    xlim(0, 2.5e6) +   
-    ylim(0, 1.5e-5),
-   
-    
-
-
-race %>%
     mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
-           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
-    geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
-    ylim(0, 30000) +
-    scale_fill_viridis(discrete = TRUE) +
-    theme(
-      legend.position = "none"
-    ) +
-    xlab("Race") +
-    ylab("Total cases") +
-        theme(legend.title = element_text(size = 5),
-          legend.key.size = unit(0.3, 'cm'),
-          legend.text = element_text(size = 4)) +
-    theme(
-          axis.title.x = element_text(size = 6),
-          axis.text.x = element_text(size = 5),
-          axis.title.y = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Indian/Alaska") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_asian =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Asian") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_black =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Black") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_latino =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Latino") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_multi =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Multi-Race") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)  
+race_hi =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Hawaiian/Islander") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_white =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "White") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+race_all =
+    rbind(race_ia, race_asian, race_black, race_latino, race_multi, race_hi) %>%
+    arrange(desc(growth_perc)) %>% 
+    select(date, race_group, growth_perc)
+
+race_all_1 =
+    rbind(race_ia, race_asian, race_black, race_latino, race_multi, race_hi) %>%
+    arrange(growth_perc) %>% 
+    select(date, race_group, growth_perc)
+
+race_all_2 =
+    cbind(race_all, race_all_1) 
+head(race_all_2) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Total Cases Growth Rate by Race",
+    col.names = c("Date", "Race", "Growth rate", "Date", "Race", "Growth rate"),
+    digits = 2
+  )
+
+```
+
+# 2. Death Rate
+## 2a. Daily death rate by age
+
+```{r}
+
+age_17_d = 
+  age %>% 
+  filter(age_group == "0-17") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+
+
+
+age_49_d =
+  age %>% 
+  filter(age_group == "18-49") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
  
 
 
-layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(1, 1, 1, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2),
-                      c(3, 3, 3, 2, 2, 2, 2)
-))
-    
+age_64_d = 
+  age %>% 
+  filter(age_group == "50-64") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_65_d =
+  age %>% 
+  filter(age_group == "65+") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_all_d = 
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %>% 
+    arrange(desc(percent_deaths))
+
 ```
+
+```{r}
+age_all_1_d =
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %>%
+    arrange(percent_deaths)
+
+
+age_all_2_d =
+    cbind(age_all_d, age_all_1_d)
+
+head(age_all_2) %>%
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Age",
+    col.names = c("Date", "Age", "Death Percent", "Date", "Age", "Death Percent"),
+    digits = 2
+  )
+```
+
+## 2b. Daily death rate by gender
+
+```{r}
+gender_M_d =
+  gender %>% 
+  filter(gender == "Male") %>% 
+  arrange(date) %>% 
+  select(date, gender, percent_deaths)
+
+gender_F_d =
+  gender %>% 
+  filter(gender == "Female") %>% 
+  arrange(date) %>% 
+  select(date, gender, percent_deaths)
+
+gender_all_d =
+    rbind(gender_M_d, gender_F_d) %>%
+    arrange(desc(percent_deaths)) %>% 
+    select(date, gender, percent_deaths)
+gender_all_d_1 =
+    rbind(gender_M_d, gender_F_d) %>%
+    arrange(percent_deaths) %>% 
+    select(date, gender, percent_deaths)
+
+gender_all_2_d = 
+    cbind(gender_all_d, gender_all_d_1)
+head(gender_all_2_d) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Gender",
+    col.names = c("Date", "Gender", "Death Percent", "Date", "Gender", "Death Percent"),
+    digits = 2
+  )
+```
+
+## 2c. Daily death rate by race
+
+```{r}
+race_ia_d = 
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Indian/Alaska") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_asian_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Asian") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_black_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Black") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_latino_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Latino") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_multi_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Multi-Race") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)  
+race_hi_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Hawaiian/Islander") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_white_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "White") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+
+race_all_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %>%
+    arrange(desc(percent_deaths)) 
+
+race_all_1_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %>% 
+    arrange(percent_deaths)
+
+race_all_2_d =
+    cbind(race_all_d, race_all_1_d) 
+head(race_all_2_d) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Race",
+    col.names = c("Date", "Race", "Death Percent", "Date", "Race", "Death Percent"),
+    digits = 2
+  )
+```
+

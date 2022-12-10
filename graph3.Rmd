@@ -42,3 +42,363 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
+source("data_preprocessing_backbone.R")
+```
+
+
+## Total Cases vs Age 
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    age %>% 
+    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Total cases") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+    
+
+    age %>% 
+    ggplot(aes(x = total_cases, fill = age_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Total cases",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point),
+    
+    
+    age %>%
+    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Total cases") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+```
+
+## Total Cases vs Gender
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    gender %>% 
+    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Total cases") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point),
+
+
+    gender %>% 
+    ggplot(aes(x = total_cases, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Total cases",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+    scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %>%
+    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Total cases") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+    
+```
+
+## Total Cases vs Race
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    race %>%
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
+    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Total cases") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point) +
+    theme(axis.title.x = element_blank(),
+         axis.text.x = element_blank(),
+         axis.ticks.x = element_blank()),
+    
+
+
+    race %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
+    ggplot(aes(x = total_cases, fill = race_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Total cases",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) + 
+    xlim(0, 2.5e6) +   
+    ylim(0, 1.5e-5),
+   
+    
+
+
+race %>%
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    ylim(0, 30000) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Total cases") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+ 
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+    
+```
+
+
+
+
+
+
+
+
+[Text] Note: the red line of boxplot is median
+
+## Gender vs Total Cases
+
+
+
+
+
+
+
+
+(table for race and demo have not finished yet)
+
+
+
+
+
+[Text]
+
+
+
+
+## Age vs Death Rate
+
+```{r warning = F, message = F}
+age %>% 
+    mutate(date = factor(date)) %>%
+    mutate(text_label = str_c("Date: ", date, 
+                              "\n Age: ", age_group,
+                              "\n Death(%): ", percent_deaths)) %>%
+    plot_ly(y = ~percent_deaths, 
+          x = ~date, 
+          color = ~age_group, 
+          width = 950,
+          height = 300, 
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 3),
+          colors = "inferno",
+          text = ~ text_label) %>%
+    layout(xaxis = list(
+           title = "Date",
+           tickangle = 60),
+           yaxis = list(
+           title = "Death Rate"))
+```
+
+
+
+
+```{r warning = F, message = F}
+gender %>% 
+    mutate(date = factor(date)) %>%
+    mutate(text_label = str_c("Date: ", date, 
+                              "\n Gender: ", gender,
+                              "\n Death(%): ", percent_deaths)) %>%
+    plot_ly(y = ~percent_deaths, 
+          x = ~date, 
+          color = ~gender, 
+          width = 950,
+          height = 300, 
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 3),
+          colors = "viridis",
+          text = ~ text_label) %>%
+    layout(xaxis = list(
+           title = "Date",
+           tickangle = 60),
+           yaxis = list(
+           title = "Death Rate"))
+```
+
+[Text]
+
+
+## Race vs Death Rate 
+
+```{r warning = F, message = F}
+race %>% 
+    mutate(date = factor(date)) %>%
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(text_label = str_c("Date: ", date, 
+                              "\n Race: ", race_group,
+                              "\n Death(%): ", percent_deaths)) %>%
+    plot_ly(y = ~percent_deaths, 
+          x = ~date, 
+          color = ~race_group, 
+          width = 950,
+          height = 300, 
+          type = "scatter",
+          mode = "markers",
+          marker = list(size = 3),
+          colors = "inferno",
+          text = ~ text_label) %>%
+    layout(xaxis = list(
+           title = "Date",
+           tickangle = 60),
+           yaxis = list(
+           title = "Death Rate"))
+```
+
