@@ -46,21 +46,23 @@ source("data_preprocessing_backbone.R")
 ```
 
 
-## Total Cases vs Age 
+## Prevalence vs Age 
 
 ```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
     age %>% 
-    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
+    group_by(age_group) %>%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = age_group, y = prevalence, fill = age_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
     ) +
     xlab("Age") +
-    ylab("Total cases") +
+    ylab("Prevalence") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -73,11 +75,12 @@ grid.arrange(
     
 
     age %>% 
-    ggplot(aes(x = total_cases, fill = age_group)) +
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = prevalence, fill = age_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
     geom_density(alpha = 0.3, aes(color = age_group)) +
     scale_color_viridis(discrete = TRUE) +
-    labs(x = "Total cases",
+    labs(x = "Prevalence",
          y = "Density") +
     theme(legend.position = "right") +
     theme(legend.title = element_text(size = 5),
@@ -93,15 +96,17 @@ grid.arrange(
     
     
     age %>%
-    ggplot(aes(x = age_group, y = total_cases, fill = age_group)) +
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920),
+           median_prevalence = mean(prevalence)) %>%  # California total population = 38066920
+    ggplot(aes(x = age_group, y = prevalence, fill = age_group)) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(age$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    geom_hline(yintercept = age$median_prevalence, color = "red", size = 0.4, lty = "dashed") +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
     ) +
     xlab("Age") +
-    ylab("Total cases") +
+    ylab("Prevalence") +
         theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -120,21 +125,23 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ))
 ```
 
-## Total Cases vs Gender
+## Prevalence vs Gender
 
 ```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
     gender %>% 
-    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    group_by(gender) %>%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = gender, y = prevalence, fill = gender)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
     ) +
     xlab("Gender") +
-    ylab("Total cases") +
+    ylab("Prevalence") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -147,11 +154,12 @@ grid.arrange(
 
 
     gender %>% 
-    ggplot(aes(x = total_cases, fill = gender)) +
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = prevalence, fill = gender)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.3, aes(color = gender)) +
     scale_color_viridis(discrete = TRUE) +
-    labs(x = "Total cases",
+    labs(x = "Prevalence",
          y = "Density") +
     theme(legend.position = "right") +
     theme(legend.title = element_text(size = 5),
@@ -168,15 +176,16 @@ grid.arrange(
     
     
     gender %>%
-    ggplot(aes(x = gender, y = total_cases, fill = gender)) +
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920 
+    ggplot(aes(x = gender, y = prevalence, fill = gender)) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(gender$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    geom_hline(yintercept = median(gender$prevalence, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
     ) +
     xlab("Gender") +
-    ylab("Total cases") +
+    ylab("Prevalence") +
         theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -198,24 +207,26 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
     
 ```
 
-## Total Cases vs Race
+## Prevalence vs Race
 
 ```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 grid.arrange(
  
     race %>%
+    group_by(race_group) %>%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
-    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
+    mutate(race_group = fct_reorder(race_group, prevalence)) %>%
+    ggplot(aes(x = race_group, y = prevalence, fill = race_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
     ) +
     xlab("Race") +
-    ylab("Total cases") +
+    ylab("Prevalence") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -232,14 +243,15 @@ grid.arrange(
 
 
     race %>% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920 
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %>%
-    ggplot(aes(x = total_cases, fill = race_group)) +
+    mutate(race_group = fct_reorder(race_group, prevalence)) %>%
+    ggplot(aes(x = prevalence, fill = race_group)) +
     geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
     geom_density(alpha = 0.1, aes(color = race_group)) +
     scale_color_viridis(discrete = TRUE) +
-    labs(x = "Total cases",
+    labs(x = "Prevalence",
          y = "Density") +
     theme(legend.position = "right") +
     theme(legend.title = element_text(size = 5),
@@ -250,26 +262,27 @@ grid.arrange(
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) + 
-    xlim(0, 2.5e6) +   
-    ylim(0, 1.5e-5),
+          ylim(0, 5000) +
+          xlim(0, 0.0035),
    
     
 
 
 race %>%
-    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %>% 
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
-    ggplot(aes(x = race_group, y = total_cases, fill = race_group)) +
+    ggplot(aes(x = race_group, y = prevalence, fill = race_group)) +
     geom_boxplot(alpha = 0.5) +
-    geom_hline(yintercept = median(race$total_cases, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    geom_hline(yintercept = median(race$prevalence, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
     ylim(0, 30000) +
     scale_fill_viridis(discrete = TRUE) +
     theme(
       legend.position = "none"
     ) +
     xlab("Race") +
-    ylab("Total cases") +
+    ylab("Prevalence") +
         theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -293,11 +306,13 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ```
 
 
-## Age, Race, Gender vs Death Rate
+## Death Rate vs Age, Gender, Race
 
 ```{r warning = F, message = F}
 age_death =
-   age %>% 
+    age %>% 
+    group_by(age_group) %>%
+    summarise(percent_deaths = mean(percent_deaths)/100) %>%
     ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -316,9 +331,10 @@ age_death =
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point)
 
-
 gender_death =
     gender %>% 
+    group_by(gender) %>%
+    summarise(percent_deaths = mean(percent_deaths)/100) %>%
     ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -336,8 +352,11 @@ gender_death =
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point)
+
 race_death =
     race %>%
+    group_by(race_group) %>%
+    summarise(percent_deaths = mean(percent_deaths)/100) %>%
     mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
            "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
     mutate(race_group = fct_reorder(race_group, percent_deaths)) %>%
