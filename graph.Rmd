@@ -62,131 +62,156 @@ point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
     
 demo_plot = demo %>%
     filter(!county_name %in% "Out of state") %>%
-    group_by(county_name) %>% 
+    group_by(county_name, population) %>% 
     summarize(total_cases = sum(reported_cases),
-              total_deaths = sum(reported_deaths)) %>% 
-    mutate(county_name = fct_reorder(county_name, total_cases)) %>% 
-    ggplot(aes(x = county_name, y = total_cases, color = county_name)) +
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>% 
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>% 
+    ggplot(aes(x = reorder(county_name, prevalence), y = prevalence, color = county_name)) +
     geom_point(alpha = 1) +
     theme(
       legend.position = "none"
     ) +
-    xlab("County") +
-    ylab("Total cases") +
+    labs(x = "County",
+         y = "Prevalence",
+         title = "Prevalence Across County") +
     theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
     scale_y_continuous(labels = point)
-    # theme(
-    #       axis.title.x = element_text(size = 6),
-    #       axis.text.x = element_text(size = 5),
-    #       axis.title.y = element_text(size = 6),
-    #       axis.text.y = element_text(size = 5)) +
-    #       scale_y_continuous(labels = point)
+
 ggplotly(demo_plot, width = 800, height = 500)
-```
 
 
-```{r}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
     
-    demo %>% 
+    demo %>%
     filter(!county_name %in% "Out of state") %>%
-    group_by(county_name) %>% 
+    group_by(county_name, population) %>% 
     summarize(total_cases = sum(reported_cases),
-              total_deaths = sum(reported_deaths)) %>% 
-    mutate(county_name = fct_reorder(county_name, total_cases)) %>%
-    ggplot(aes(x = total_cases, fill = county_name)) +
-    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
-    geom_density(alpha = 0.5, aes(color = county_name)) +
-    labs(x = "Total cases",
-         y = "Density") +
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>% 
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>%
+    ggplot(aes(x = prevalence, fill = county_name)) +
+    geom_histogram(alpha = 0.7) +
+    labs(x = "Prevalence",
+         y = "Count") +
     theme(
       legend.position = "bottom"
     ) + 
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
-   theme(
+    theme(
           axis.title.x = element_text(size = 6),
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point) +
           scale_x_continuous(labels = point)
-
 ```
 
-## Worst counties for each COVID outcome
 
-```{r}
-demo_worst =
-    demo %>% 
-    group_by(county_name, ) %>% 
-    summarize(total_cases = sum(reported_cases),
-              total_deaths = sum(reported_deaths)) %>%
-    select(county_name, total_cases) %>% 
-    arrange(desc(total_cases)) 
 
-    head(demo_worst, 10) %>% 
-    knitr::kable(
-    caption = "Worst countries for each COVID outcome",
-    col.names = c("County", "Total cases"),
-    digits = 2
-  )
-```
-
-## Best counties for each COVID outcome
-
-```{r}
-demo_best =
-    demo %>% 
-    group_by(county_name, ) %>% 
-    summarize(total_cases = sum(reported_cases),
-              total_deaths = sum(reported_deaths)) %>%
-    select(county_name, total_cases) %>% 
-    arrange(total_cases)
-
-    head(demo_best, 10) %>% 
-    knitr::kable(
-    caption = "Best countries for each COVID outcome",
-    col.names = c("County", "Total cases"),
-    digits = 2
-  )
-```
-
-```{r, warning = F, message = F}
+```{r warning = F, message = F}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
 
-demo_worst_p =
-    demo_worst %>% 
-    filter(total_cases >= 256191) %>% 
-    ggplot(aes(x = county_name, y = total_cases, fill = county_name)) +
-    geom_bar(stat = "identity", width = 0.5) +
+demo_plot_1 = demo %>%
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rate = total_deaths / total_cases) %>% 
+    mutate(county_name = fct_reorder(county_name, death_rate)) %>% 
+    ggplot(aes(x = county_name, y = death_rate, color = county_name)) +
+    geom_point(alpha = 1) +
     theme(
       legend.position = "none"
     ) +
-    xlab("") +
-    ylab("Total cases") +
+    labs(x = "County",
+         y = "Death Rate",
+         title = "Death Rate Across County") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(labels = point)
+
+ggplotly(demo_plot_1, width = 800, height = 500)
+
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+    
+ demo %>%
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rate = total_deaths / total_cases) %>% 
+    mutate(county_name = fct_reorder(county_name, death_rate)) %>%
+    ggplot(aes(x = death_rate, fill = county_name)) +
+    geom_histogram(alpha = 0.7) +
+    labs(x = "Death Rate",
+         y = "Count") +
+    theme(
+      legend.position = "bottom"
+    ) + 
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1))+
     theme(
           axis.title.x = element_text(size = 6),
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point) 
+          scale_y_continuous(labels = point) +
+          scale_x_continuous(labels = point)
+```
 
-demo_best_p =
-    demo_best %>% 
-    filter(total_cases <= 5385) %>% 
-    ggplot(aes(x = county_name, y = total_cases, fill = county_name)) +
+
+
+
+
+## Worst counties for each COVID outcome
+
+```{r warning = F, message = F}
+demo_worst_1 =
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>%
+    select(county_name, prevalence) %>% 
+    arrange(desc(prevalence)) %>% 
+    head(10)
+
+demo_worst_2 = 
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rates = total_deaths/total_cases) %>%
+    select(county_name, death_rates) %>% 
+    arrange(desc(death_rates)) %>% 
+    head(10)
+
+cbind(demo_worst_1, demo_worst_2) %>% 
+    knitr::kable(digits = 4,
+                 caption = "Worst counties for each COVID outcome",
+                 col.names = c("County for Prevalence", "Prevelence", "County for Death Rate", "Death Rate"))
+
+
+
+```
+
+```{r warning = F, message = F}
+demo_worst_pre_plot =
+    demo_worst_1 %>%
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>%
+    ggplot(aes(x = reorder(county_name, prevalence, decreasing = T), y = prevalence, fill = county_name)) +
     geom_bar(stat = "identity", width = 0.5) +
     theme(
       legend.position = "none"
     ) +
-    xlab("") +
-    ylab("Total cases") +
+    labs(x = '',
+         y = "Prevalence",
+         title = "Worst Prevalence") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -198,8 +223,125 @@ demo_best_p =
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point)
 
-demo_worst_p + demo_best_p
+demo_worst_dea_plot =
+    demo_worst_2 %>%
+    mutate(county_name = fct_reorder(county_name, death_rates)) %>%
+    ggplot(aes(x = reorder(county_name, death_rates, decreasing = T), y = death_rates, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = '',
+         y = "Death Rate",
+         title = "Worst Death Rate") + 
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_worst_pre_plot + demo_worst_dea_plot
 ```
+
+
+## Best counties for each COVID outcome
+
+```{r warning = F, message = F}
+demo_best_1 =
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>%
+    select(county_name, prevalence) %>% 
+    arrange(prevalence) %>% 
+    head(10)
+
+demo_best_2 = 
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rates = total_deaths/total_cases) %>%
+    select(county_name, death_rates) %>% 
+    arrange(death_rates) %>% 
+    head(10)
+
+cbind(demo_best_1, demo_best_2) %>% 
+    knitr::kable(digits = 4,
+                 caption = "Best counties for each COVID outcome",
+                 col.names = c("County for Prevalence", "Prevelence", "County for Death Rate", "Death Rate"))
+```
+
+```{r warning = F, message = F}
+demo_best_pre_plot =
+    demo_best_1 %>% 
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>%
+    ggplot(aes(x = reorder(county_name, prevalence, decreasing = F), y = prevalence, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = '',
+         y = "Prevalence",
+         title = "Best Prevalence") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_best_dea_plot =
+    demo_best_2 %>% 
+    mutate(county_name = fct_reorder(county_name, death_rates)) %>% 
+    ggplot(aes(x = reorder(county_name, death_rates, decreasing = F), y = death_rates, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+     labs(x = '',
+         y = "Death Rate",
+         title = "Best Death Rate") + 
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_best_pre_plot + demo_best_dea_plot
+```
+
+
+## Association between outcomes across county
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
 
 
 ## Age vs Total Cases
@@ -461,7 +603,7 @@ head(gender_all_1) %>%
   )
 ```
 
-[Text]
+
 
 
 ## Race vs Total Cases
