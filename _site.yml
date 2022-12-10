@@ -1,7 +1,7 @@
 name: "Our Website Settings"
 output_dir: "."
 navbar:
-  title: "Home: Data Description"
+  title: "Home"
   right:
     - text: 'Exploratory analyses'
       menu:
