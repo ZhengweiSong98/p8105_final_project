@@ -363,13 +363,13 @@ div.tocify {
       <a href="mlr_death.html">Multiple Linear Model for death cases</a>
     </li>
     <li>
-      <a href="cases_by_time.html">Confirmed cases by time</a>
+      <a href="mlr_fatality.html">Multiple Linear Model for fatality</a>
     </li>
     <li>
       <a href="violation_covid.html">Lowess Model for vaccination rate</a>
     </li>
     <li>
-      <a href="mlr_new.html">Multiple Linear Model for Incidence</a>
+      <a href="mlr_new.html">Multiple Linear Model for Prevalence</a>
     </li>
   </ul>
 </li>
@@ -581,9 +581,48 @@ href="https://www.labormarketinfo.edd.ca.gov/data/industry-employment-and-unempl
 industry employment and unemployment rates for counties</a>, which could
 produce insightful result through this investigation by connecting data
 like unemployment rate to the prevalence of disease or hospitalization
-rate.</p>
-<p>The data cleaning process is being presented in the index page, you
-can go to there by clicking on the button at the upper left corner.</p>
+rate. A The data cleaning process is being presented in the index page,
+you can go to there by clicking on the button at the upper left
+corner.</p>
+</div>
+</div>
+<div id="inference-analysis-regression" class="section level3">
+<h3>Inference Analysis: Regression</h3>
+<div id="multiple-linear-regression" class="section level4">
+<h4>Multiple linear Regression</h4>
+<p>For model building purpose of this investigation, a multiple linear
+regression model is considered to investigate on hospitalization rate.
+The underlying logic for this model is relatively simple, analysts
+extract data that includes disease prevalence, area, population, and
+tests. The hypothetical multiple linear regression function for this
+particular inference analysis is shown as below:</p>
+<p>disease prevalence = B0 + B1 * tests + B2 * unemployment + B3 * area
++ B4 * population</p>
+<p>In the above equation, disease prevalence is the desired outcome
+while the amount of tests, unemployment, area, and population are
+predictors. B1, B2, B3, and B4 are the factors for each predictors
+respectively. Under ideal circumstances, we would expect our model to be
+able to predict the death counts in a region, given its number of tests,
+population, and unemployment rate.</p>
+<p>It is necessary to mention that in the original dataset on which this
+model looked at, analysts observed strong correlation within the some
+other data variables such as <code>vaccination</code> and
+<code>labor_rate</code>. After some data exploratory works, some
+right-skewness is noticed so analysts decided to apply natural
+logarithms to each continuous variables.</p>
+<p>Another thing to look at was the correlation between the predictors
+to avoid the potential effect of multicollinearity, which is a
+statistical concept that describes the incidence of several independent
+variables in a model are in fact correlated within themselves. This
+correlation test is later combined with criterion based model selection
+to select which predictors to put in for the final model.</p>
+<p>The three criterion based model selection method are Cp criterion,
+adjusted R squared criterion, and LASSO. The results of these model
+selection method all gave similar predictor size, so in the end the
+analysts chose four predictors to construct the final model as shown in
+the equation above. After the construction of this model, a corss
+validation process is performed to further assess the prediction ability
+of this model.</p>
 </div>
 </div>
 </div>

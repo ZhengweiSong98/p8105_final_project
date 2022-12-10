@@ -30,7 +30,7 @@ age =
     age_df %>%
     janitor::clean_names() %>%
     filter(demographic_category == "Age Group") %>%
-    select(report_date,
+    dplyr::select(report_date,
             demographic_value,
             total_cases,
             deaths,
@@ -45,7 +45,7 @@ race =
     age_df %>%
     janitor::clean_names() %>%
     filter(demographic_category == "Race Ethnicity") %>%
-    select(report_date,
+    dplyr::select(report_date,
            demographic_value,
            total_cases,
            deaths,
@@ -60,7 +60,7 @@ gender =
     age_df %>%
     janitor::clean_names() %>%
     filter(demographic_category == "Gender") %>%
-    select(report_date,
+    dplyr::select(report_date,
            demographic_value,
            total_cases,
            deaths,
@@ -81,7 +81,7 @@ stat_12 = stat_12[-(1:6),]
 stat_12 =
     stat_12 %>%
     arrange(date, decreasing = F) %>%
-    select(-c(area_type, area))
+    dplyr::select(-c(area_type, area))
 
 
 
@@ -90,14 +90,14 @@ stat_16 =
     stat_16 %>%
     janitor::clean_names() %>%
     arrange(date, decreasing = F) %>%
-    select(-c(area_type, area))
+    dplyr::select(-c(area_type, area))
 
 post_stat = post_stat[-(1:6),]
 post_stat =
     post_stat %>%
     janitor::clean_names() %>%
     arrange(date, decreasing = F) %>%
-    select(-c(area_type, area))
+    dplyr::select(-c(area_type, area))
 
 ## dataset of demo
 

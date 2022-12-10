@@ -1,5 +1,5 @@
 ---
-title: "MLR prevalence"
+title: "Factors to Death"
 output: 
   html_document: 
     toc: yes
@@ -36,6 +36,29 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
+
+Los Angeles, Orange
+San Diego
+Monterey
+San Benito
+San Luis Obispo
+Santa Barbara
+Santa Cruz
+Ventura
+Alameda
+Contra Costa
+Marin
+Napa
+San Francisco
+San Mateo
+Santa Clara
+Solano
+Sonoma
+Del Norte
+Humboldt
+Mendocino
+
+
 ## Data Importing
 ```{r warning = F, message = F}
 source("data_preprocessing_backbone.R")
@@ -44,35 +67,25 @@ labor_data = read_csv("./data/CA_Labor.csv") %>%
     dplyr::select(-employment,-unemployment,-rank) %>%
     rename(unemployment=unemployment_rate_per_cent)
 
-population_data = read_csv("./data/CA_Land_Area.csv") %>%
+land_data = read_csv("./data/CA_Land_Area.csv") %>%
     janitor::clean_names() %>%
-    dplyr::select(-rank, -state) %>%
     mutate(
-        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) %>%
+    dplyr::select(-rank, -state, -population)
 
-geo_data = read_csv("./data/ca_boundaries.csv") %>%
-    janitor::clean_names() %>%
-    dplyr::select(name, intptlat, intptlon) %>%
-    rename(county=name)
-
-ca_joining_data = left_join(population_data, labor_data, by = c("county"))
-ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c("county"))
-
-ca_nonmedical_data = ca_nonmedical_data %>%
-    mutate(labor_rate = labor_force/population*100) %>%
-    dplyr::select(-labor_force)
+ca_nonmedical_data = left_join(land_data, labor_data, by = c("county"))
 
 demo_covid = demo %>%
-    mutate(cumulative_deaths= as.numeric(population),
-           cumulative_cases = as.numeric(cumulative_cases),
-        prevalence=cumulative_cases/population*100,
-        test = cumulative_total_tests/population*100,
-        ) %>%
-    dplyr::select(county_name, prevalence, test, population) %>%
+     mutate(cumulative_reported_deaths= as.numeric(cumulative_reported_deaths),
+            cumulative_cases = as.numeric(cumulative_cases),
+        death_rate = 0.01+cumulative_reported_deaths/population*100,
+        test = cumulative_total_tests/population*100) %>%
+    dplyr::select(county_name, death_rate, test,population) %>%
     rename(county=county_name) %>%
     group_by(county) %>%
-    summarize(prevalence=max(prevalence),
-              test = max(test)) %>%
+    summarize(death_rate=max(death_rate,na.rm = T),
+              test = max(test),
+              population = max(population)) %>%
     filter(!county %in% c("Out of state","Unknown"))
 
 vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
@@ -84,13 +97,17 @@ vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
             ) %>%
     arrange(county) %>%
     drop_na() %>%
-    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties"))
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties","Outside California"))
 
 ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
 ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county")) %>%
+    relocate(death_rate) %>%
     mutate(
-        vaccination=fully_vaccinated/population*100) %>%
-    dplyr::select(-fully_vaccinated)
+        vaccinated=fully_vaccinated/population*100,
+        labor_rate = labor_force/population*100
+    )%>%
+    dplyr::select(-fully_vaccinated, -population, -labor_force)
+    
 
 skimr::skim(ca_premodel_data)
 ```
@@ -100,61 +117,57 @@ skimr::skim(ca_premodel_data)
 ## Data Description
 ```{r warning = F, message = F, fig.width = 16, fig.height = 10}
 point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
-rawplot_prevalence = ca_premodel_data %>%
-    ggplot(aes(x = prevalence)) +
+raw_deaths = ca_premodel_data %>%
+    ggplot(aes(x = death_rate)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
     scale_y_continuous(labels = point)
 
-rawplot_unemployment = ca_premodel_data %>%
+raw_tests = ca_premodel_data %>%
+    ggplot(aes(x = test)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+raw_land = ca_premodel_data %>%
+    ggplot(aes(x = land_area_sq_mi)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+raw_unemployment= ca_premodel_data %>%
     ggplot(aes(x = unemployment)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
     scale_y_continuous(labels = point) +
     scale_x_continuous(labels = point)
 
-rawplot_labor = ca_premodel_data %>%
-    ggplot(aes(x = labor_rate)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
-    scale_y_continuous(labels = point) +
-    scale_x_continuous(labels = point)
-
-rawplot_population = ca_premodel_data %>%
-    ggplot(aes(x = population)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
-    scale_y_continuous(labels = point) +
-    scale_x_continuous(labels = point)
-
-plot_area = ca_premodel_data %>%
-    ggplot(aes(x = land_area_sq_mi)) +
+raw_vaccinated = ca_premodel_data %>%
+    ggplot(aes(x = vaccinated)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
-plot_test = ca_premodel_data %>%
-    ggplot(aes(x = test)) +
+raw_labor = ca_premodel_data %>%
+    ggplot(aes(x = labor_rate)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
 ca_model_data = ca_premodel_data %>% 
-    mutate(ln_unemployment = log(unemployment),
+    mutate(ln_tests = log(test),
            ln_area = log(land_area_sq_mi),
-           ln_population = log(population),
-           ln_test = log(test)) %>%
-    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)
+           ln_unemployment = log(unemployment)
+           ) %>%
+    dplyr::select(-test,-land_area_sq_mi,-unemployment,-county)
 
 plot_ln_test = ca_model_data %>%
-    ggplot(aes(x = ln_test)) +
-    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
-
-plot_ln_unemployment = ca_model_data %>%
-    ggplot(aes(x = ln_unemployment)) +
+    ggplot(aes(x = ln_tests)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
 plot_ln_area = ca_model_data %>%
     ggplot(aes(x = ln_area)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
-plot_ln_population = ca_model_data %>%
-    ggplot(aes(x = ln_population)) +
+plot_ln_unemployment = ca_model_data %>%
+    ggplot(aes(x = ln_unemployment)) +
     geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
 
-(rawplot_prevalence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)
+raw_deaths+raw_tests+raw_land+ raw_unemployment+ raw_vaccinated+ raw_labor+ plot_ln_test+ plot_ln_area+ plot_ln_unemployment
 
 ca_model_data %>%
     gtsummary::tbl_summary() %>%
@@ -168,7 +181,7 @@ ca_model_data %>%
 ## Correlation
 ```{r warning = F, message = F}
 ca_model_data %>% 
-    select(-location) %>%
+    dplyr::select(-location) %>%
     GGally::ggpairs()
 ```
 
@@ -176,9 +189,9 @@ ca_model_data %>%
 
 ## Modelling Fit
 ```{r warning = F, message = F}
-reg_full = lm(prevalence ~ ., data = ca_model_data)
+reg_full = lm(death_rate ~ ., data = ca_model_data)
 
-reg_intercept = lm(prevalence ~ 1, data = ca_model_data)
+reg_intercept = lm(death_rate ~ 1, data = ca_model_data)
 ```
 
 ## Model Selection
@@ -194,13 +207,13 @@ step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
 
 # Use criterion-based procedures to guide your selection of the ‘best subset’
 # chosen using SSE/RSS (smaller is better)
-criterion_selected = regsubsets(prevalence ~ ., data = ca_model_data)
+criterion_selected = regsubsets(death_rate ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
 par(mfrow=c(1,2))
-plot(2:8, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
+plot(2:7, criterion_plot$cp, xlab="No. of parameters", ylab="Cp Statistic")
 abline(0,1)
-plot(2:8, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
+plot(2:7, criterion_plot$adjr2, xlab="No. of parameters", ylab="Adj R2")
 ```
 
 The plots above show the Cp index and Adjusted 𝑅2 for various numbers of parameters.
@@ -217,9 +230,9 @@ Use the LASSO method to perform variable selection. Make sure you choose the
 ca_lasso_data = ca_model_data %>% mutate(
     location=ifelse(location =="costal", 1,0))
 # using cross validation to choose lambda
-lambda_seq = 10^seq(-5, 0, by = .01)
+lambda_seq = 10^seq(-5, -1, by = .01)
 set.seed(2022)
-cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence,
+cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:7]), ca_lasso_data$death_rate,
 lambda = lambda_seq, nfolds = 5)
 cv_object
 # plot the CV results
@@ -228,7 +241,7 @@ mean_cv_error = cv_object$cvm) %>%
 ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()
 # refit the lasso model with the "best" lambda
-fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
+fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:7]), ca_model_data$death_rate, lambda = cv_object$lambda.min)
 coef(fit_bestcv)
 ```
 
@@ -238,7 +251,7 @@ suggested model, with the addition of log area.)
 Our final model:
 
 ```{r warning = F, message = F}
-mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment,data = ca_model_data)
 summary(mlr_model)
 ```
 
@@ -264,11 +277,11 @@ var_fitted <- sd_function$fitted.values^2
 
 wt <- 1/var_fitted
 
-wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+wls_incidence <- lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment,data = ca_model_data, weights = wt)
 
-summary(wls_prevalence)
+summary(wls_incidence)
 check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
-check_model(wls_prevalence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
+check_model(wls_incidence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 ```
 
 * Ordinary Least Squares violates normal assumption
@@ -282,20 +295,19 @@ set.seed(2022)
 # use 10-fold validation and create the training sets
 train = trainControl(method = "cv", number = 10)
 # fit the 4-variables model that we selected as our final model
-model_caret = train(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
+model_caret = train(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
 model_caret
 
 model_caret$resample
 ```
 
-* From the output above, the overall RMSE (root mean squared error) is 3.115, which would mean our MSE is 9.701. Our MAE (mean absolute error) is 2.594. These measures show that this model is doing a good job at predicting responses for “new” data points. Additionally, the variance for these measures is relatively small, showing that these estimates are probably pretty close to the true predictive ability.
+* From the output above, the overall RMSE (root mean squared error) is 0.081, which would mean our MSE is 0.007. Our MAE (mean absolute error) is 0.066. These measures show that this model is doing a good job at predicting responses for “new” data points. Additionally, the variance for these measures is relatively small, showing that these estimates are probably pretty close to the true predictive ability.
 
 ## Conclusion
 
-* We employed automatic search procedures, criterion based approaches, and the LASSO tech-
-nique to select a final model:
+* We employed automatic search procedures, criterion based approaches, and the LASSO tech-nique to select a final model:
 
-$\hat{Prevalence}=-69.049+9.251*ln(unemployment)+1.495*ln(area)+0.642*ln(population)+9.389*ln(test)$
+$\hat{Death\;Rate}=-0.572+0.079*ln(location=inland)+0.002*vaccinated-0.004*labor\;rate+0.066*ln(test)+0.034*ln(area)+0.073*ln(unemployment)$
 
 * From this model, we can see that as the murder rate and average number of freezing days (frost) increase, the predicted life expectancy decreases, while increases in high school graduations and (log) population were associated with an increase in expected life expectancy.
 Overall, from our 10-fold cross validation, we see that our model has pretty good predictive ability for new points. However, this model was only built on data from the US, so it should not be used to predict life expectancy in other locations. Additionally, we noticed that Hawaii was a potential influential point – by exploring Hawaii’s role in our model, we may have slightly different conclusions.

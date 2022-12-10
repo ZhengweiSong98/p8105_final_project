@@ -11,7 +11,7 @@
 
 
 
-<title>MLR Incidence</title>
+<title>MLR prevalence</title>
 
 <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -363,13 +363,13 @@ div.tocify {
       <a href="mlr_death.html">Multiple Linear Model for death cases</a>
     </li>
     <li>
-      <a href="cases_by_time.html">Confirmed cases by time</a>
+      <a href="mlr_fatality.html">Multiple Linear Model for fatality</a>
     </li>
     <li>
       <a href="violation_covid.html">Lowess Model for vaccination rate</a>
     </li>
     <li>
-      <a href="mlr_new.html">Multiple Linear Model for Incidence</a>
+      <a href="mlr_new.html">Multiple Linear Model for Prevalence</a>
     </li>
   </ul>
 </li>
@@ -408,7 +408,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">MLR Incidence</h1>
+<h1 class="title toc-ignore">MLR prevalence</h1>
 
 </div>
 
@@ -423,7 +423,9 @@ labor_data = read_csv(&quot;./data/CA_Labor.csv&quot;) %&gt;%
 
 population_data = read_csv(&quot;./data/CA_Land_Area.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
-    dplyr::select(-rank, -state)
+    dplyr::select(-rank, -state) %&gt;%
+    mutate(
+        location = ifelse(county %in% c(&quot;Los Angeles&quot;, &quot;Orange&quot;, &quot;San Diego&quot;, &quot;Monterey&quot;, &quot;San Benito&quot;, &quot;San Luis Obispo&quot;, &quot;Santa Barbara&quot;, &quot;Santa Cruz&quot;, &quot;Ventura&quot;, &quot;Alameda&quot;, &quot;Contra Costa&quot;, &quot;Marin&quot;, &quot;Napa&quot;, &quot;San Francisco&quot;, &quot;San Mateo&quot;, &quot;Santa Clara&quot;, &quot;Solano&quot;, &quot;Sonoma&quot;, &quot;Del Norte&quot;, &quot;Humboldt&quot;, &quot;Mendocino&quot;), &quot;costal&quot;, &quot;inland&quot;)) 
 
 geo_data = read_csv(&quot;./data/ca_boundaries.csv&quot;) %&gt;%
     janitor::clean_names() %&gt;%
@@ -440,12 +442,13 @@ ca_nonmedical_data = ca_nonmedical_data %&gt;%
 demo_covid = demo %&gt;%
     mutate(cumulative_deaths= as.numeric(population),
            cumulative_cases = as.numeric(cumulative_cases),
-        incidence=cumulative_cases/population*100,
-        test = cumulative_total_tests/population*100) %&gt;%
-    dplyr::select(county_name, incidence, test, population) %&gt;%
+        prevalence=cumulative_cases/population*100,
+        test = cumulative_total_tests/population*100,
+        ) %&gt;%
+    dplyr::select(county_name, prevalence, test, population) %&gt;%
     rename(county=county_name) %&gt;%
     group_by(county) %&gt;%
-    summarize(incidence=max(incidence),
+    summarize(prevalence=max(prevalence),
               test = max(test)) %&gt;%
     filter(!county %in% c(&quot;Out of state&quot;,&quot;Unknown&quot;))
 
@@ -480,7 +483,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">Number of columns</td>
-<td align="left">10</td>
+<td align="left">11</td>
 </tr>
 <tr class="even">
 <td align="left">_______________________</td>
@@ -492,7 +495,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 </tr>
 <tr class="even">
 <td align="left">character</td>
-<td align="left">1</td>
+<td align="left">2</td>
 </tr>
 <tr class="odd">
 <td align="left">numeric</td>
@@ -543,6 +546,16 @@ skimr::skim(ca_premodel_data)</code></pre>
 <td align="right">58</td>
 <td align="right">0</td>
 </tr>
+<tr class="even">
+<td align="left">location</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
@@ -577,7 +590,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">incidence</td>
+<td align="left">prevalence</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">22.53</td>
@@ -696,7 +709,7 @@ skimr::skim(ca_premodel_data)</code></pre>
 </tbody>
 </table>
 <ul>
-<li>The data includes 58 observations and 10 variables. Now we are
+<li>The data includes 58 observations and 11 variables. Now we are
 interested on whether the death cases are associated with
 <code>area</code>, <code>population</code> and
 <code>testing_cases</code>.</li>
@@ -705,8 +718,8 @@ interested on whether the death cases are associated with
 <div id="data-description" class="section level2">
 <h2>Data Description</h2>
 <pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
-rawplot_incidence = ca_premodel_data %&gt;%
-    ggplot(aes(x = incidence)) +
+rawplot_prevalence = ca_premodel_data %&gt;%
+    ggplot(aes(x = prevalence)) +
     geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8) +
     scale_y_continuous(labels = point)
 
@@ -759,7 +772,7 @@ plot_ln_population = ca_model_data %&gt;%
     ggplot(aes(x = ln_population)) +
     geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
 
-(rawplot_incidence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)</code></pre>
+(rawplot_prevalence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
 <pre class="r"><code>ca_model_data %&gt;%
     gtsummary::tbl_summary() %&gt;%
@@ -775,30 +788,42 @@ plot_ln_population = ca_model_data %&gt;%
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><strong>incidence</strong></td>
+<td align="left"><strong>prevalence</strong></td>
 <td align="left">23 (20, 25)</td>
 </tr>
 <tr class="even">
+<td align="left"><strong>location</strong></td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">costal</td>
+<td align="left">21 (36%)</td>
+</tr>
+<tr class="even">
+<td align="left">inland</td>
+<td align="left">37 (64%)</td>
+</tr>
+<tr class="odd">
 <td align="left"><strong>labor_rate</strong></td>
 <td align="left">47 (42, 50)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><strong>vaccination</strong></td>
 <td align="left">65 (55, 76)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>ln_unemployment</strong></td>
 <td align="left">1.94 (1.79, 2.11)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><strong>ln_area</strong></td>
 <td align="left">7.34 (6.87, 8.15)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>ln_population</strong></td>
 <td align="left">12.10 (10.76, 13.39)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><strong>ln_test</strong></td>
 <td align="left">5.74 (5.63, 6.00)</td>
 </tr>
@@ -806,15 +831,17 @@ plot_ln_population = ca_model_data %&gt;%
 </table>
 <ul>
 <li>The cleaned data includes 58 states and
-<code>ncol(ca_model_data)</code> including incidence, labor_rate,
-vaccination, ln_unemployment, ln_area, ln_population, ln_test. The data
-is extremely right-skewed and the natural logarithms are applied to each
-explortory continuous variables.</li>
+<code>ncol(ca_model_data)</code> including prevalence, location,
+labor_rate, vaccination, ln_unemployment, ln_area, ln_population,
+ln_test. The data is extremely right-skewed and the natural logarithms
+are applied to each explortory continuous variables.</li>
 </ul>
 </div>
 <div id="correlation" class="section level2">
 <h2>Correlation</h2>
-<pre class="r"><code>ca_model_data %&gt;% GGally::ggpairs()</code></pre>
+<pre class="r"><code>ca_model_data %&gt;% 
+    select(-location) %&gt;%
+    GGally::ggpairs()</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 <ul>
 <li>The correlation between predictors are highly correlated, which is
@@ -824,9 +851,9 @@ population in the area empirically.</li>
 </div>
 <div id="modelling-fit" class="section level2">
 <h2>Modelling Fit</h2>
-<pre class="r"><code>reg_full = lm(incidence ~ ., data = ca_model_data)
+<pre class="r"><code>reg_full = lm(prevalence ~ ., data = ca_model_data)
 
-reg_intercept = lm(incidence ~ 1, data = ca_model_data)</code></pre>
+reg_intercept = lm(prevalence ~ 1, data = ca_model_data)</code></pre>
 </div>
 <div id="model-selection" class="section level2">
 <h2>Model Selection</h2>
@@ -834,47 +861,47 @@ reg_intercept = lm(incidence ~ 1, data = ca_model_data)</code></pre>
 step(reg_intercept, direction=&#39;forward&#39;, scope=formula(reg_full),trace=0)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = incidence ~ ln_test + ln_unemployment + ln_area + 
-##     ln_population, data = ca_model_data)
+## lm(formula = prevalence ~ ln_test + ln_unemployment + ln_area + 
+##     ln_population + location, data = ca_model_data)
 ## 
 ## Coefficients:
 ##     (Intercept)          ln_test  ln_unemployment          ln_area  
-##        -69.0486           9.3890           9.2513           1.4949  
-##   ln_population  
-##          0.6422</code></pre>
+##        -71.4474           9.8152           8.0663           1.3412  
+##   ln_population   locationinland  
+##          0.8201           1.9559</code></pre>
 <pre class="r"><code>#backwards elimination
 step(reg_full, direction=&#39;backward&#39;, scope=formula(reg_full),trace=0)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = incidence ~ ln_unemployment + ln_area + ln_population + 
-##     ln_test, data = ca_model_data)
+## lm(formula = prevalence ~ location + ln_unemployment + ln_area + 
+##     ln_population + ln_test, data = ca_model_data)
 ## 
 ## Coefficients:
-##     (Intercept)  ln_unemployment          ln_area    ln_population  
-##        -69.0486           9.2513           1.4949           0.6422  
-##         ln_test  
-##          9.3890</code></pre>
+##     (Intercept)   locationinland  ln_unemployment          ln_area  
+##        -71.4474           1.9559           8.0663           1.3412  
+##   ln_population          ln_test  
+##          0.8201           9.8152</code></pre>
 <pre class="r"><code>#stepwise Selection
 step(reg_full, direction = &quot;both&quot;, scope=formula(reg_full),trace=0)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = incidence ~ ln_unemployment + ln_area + ln_population + 
-##     ln_test, data = ca_model_data)
+## lm(formula = prevalence ~ location + ln_unemployment + ln_area + 
+##     ln_population + ln_test, data = ca_model_data)
 ## 
 ## Coefficients:
-##     (Intercept)  ln_unemployment          ln_area    ln_population  
-##        -69.0486           9.2513           1.4949           0.6422  
-##         ln_test  
-##          9.3890</code></pre>
+##     (Intercept)   locationinland  ln_unemployment          ln_area  
+##        -71.4474           1.9559           8.0663           1.3412  
+##   ln_population          ln_test  
+##          0.8201           9.8152</code></pre>
 <pre class="r"><code># Use criterion-based procedures to guide your selection of the ‘best subset’
 # chosen using SSE/RSS (smaller is better)
-criterion_selected = regsubsets(incidence ~ ., data = ca_model_data)
+criterion_selected = regsubsets(prevalence ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
 # plot of Cp and Adj-R2 as functions of parameters
 par(mfrow=c(1,2))
-plot(2:7, criterion_plot$cp, xlab=&quot;No. of parameters&quot;, ylab=&quot;Cp Statistic&quot;)
+plot(2:8, criterion_plot$cp, xlab=&quot;No. of parameters&quot;, ylab=&quot;Cp Statistic&quot;)
 abline(0,1)
-plot(2:7, criterion_plot$adjr2, xlab=&quot;No. of parameters&quot;, ylab=&quot;Adj R2&quot;)</code></pre>
+plot(2:8, criterion_plot$adjr2, xlab=&quot;No. of parameters&quot;, ylab=&quot;Adj R2&quot;)</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
 <p>The plots above show the Cp index and Adjusted 𝑅2 for various numbers
 of parameters. When choosing a model based on Cp criterion, we want to
@@ -887,20 +914,22 @@ the model with 5 parameters (4 predictors), which has the lowest value
 for Cp</p>
 <p>Use the LASSO method to perform variable selection. Make sure you
 choose the “best lambda” to use and show how you determined this</p>
-<pre class="r"><code># using cross validation to choose lambda
+<pre class="r"><code>ca_lasso_data = ca_model_data %&gt;% mutate(
+    location=ifelse(location ==&quot;costal&quot;, 1,0))
+# using cross validation to choose lambda
 lambda_seq = 10^seq(-5, 0, by = .01)
 set.seed(2022)
-cv_object &lt;- cv.glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence,
+cv_object &lt;- cv.glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence,
 lambda = lambda_seq, nfolds = 5)
 cv_object</code></pre>
 <pre><code>## 
-## Call:  cv.glmnet(x = as.matrix(ca_model_data[2:6]), y = ca_model_data$incidence,      lambda = lambda_seq, nfolds = 5) 
+## Call:  cv.glmnet(x = as.matrix(ca_lasso_data[2:8]), y = ca_lasso_data$prevalence,      lambda = lambda_seq, nfolds = 5) 
 ## 
 ## Measure: Mean-Squared Error 
 ## 
 ##     Lambda Index Measure    SE Nonzero
-## min 0.6457    20   24.55 4.641       3
-## 1se 1.0000     1   25.60 5.500       2</code></pre>
+## min 0.2818    56   11.76 3.542       5
+## 1se 0.9550     3   15.21 5.401       4</code></pre>
 <pre class="r"><code># plot the CV results
 tibble(lambda = cv_object$lambda,
 mean_cv_error = cv_object$cvm) %&gt;%
@@ -908,44 +937,47 @@ ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 <pre class="r"><code># refit the lasso model with the &quot;best&quot; lambda
-fit_bestcv &lt;- glmnet(as.matrix(ca_model_data[2:6]), ca_model_data$incidence, lambda = cv_object$lambda.min)
+fit_bestcv &lt;- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
 coef(fit_bestcv)</code></pre>
-<pre><code>## 6 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+<pre><code>## 8 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                          s0
-## (Intercept)     -2.83454214
-## labor_rate      -0.00302513
-## vaccination      .         
-## ln_unemployment  5.77485635
-## ln_area          .         
-## ln_population    1.17966212</code></pre>
+## (Intercept)     -59.1417976
+## location         -0.8839241
+## labor_rate        .        
+## vaccination       .        
+## ln_unemployment   7.6199353
+## ln_area           1.1308352
+## ln_population     0.6371415
+## ln_test           8.7671091</code></pre>
 <p>Since the stepwise selection techniques and the criterion techniques
 all chose the same model with 4 predictors, we recommend this as our
 final model. (The LASSO gave a very similar suggested model, with the
 addition of log area.) Our final model:</p>
-<pre class="r"><code>mlr_model = lm(incidence~ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+<pre class="r"><code>mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
 summary(mlr_model)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = incidence ~ ln_test + ln_unemployment + ln_area + 
-##     ln_population, data = ca_model_data)
+## lm(formula = prevalence ~ location + ln_test + ln_unemployment + 
+##     ln_area + ln_population, data = ca_model_data)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -6.8469 -2.1735  0.0286  1.9947  9.2223 
+## -8.2803 -2.0061  0.0117  1.4590  8.6650 
 ## 
 ## Coefficients:
 ##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -69.0486     8.1404  -8.482 1.91e-11 ***
-## ln_test           9.3890     1.1234   8.358 3.01e-11 ***
-## ln_unemployment   9.2513     1.7631   5.247 2.76e-06 ***
-## ln_area           1.4949     0.4735   3.157  0.00263 ** 
-## ln_population     0.6422     0.2554   2.514  0.01499 *  
+## (Intercept)     -71.4474     8.0974  -8.823 6.52e-12 ***
+## locationinland    1.9559     1.1080   1.765  0.08339 .  
+## ln_test           9.8152     1.1277   8.703 1.00e-11 ***
+## ln_unemployment   8.0663     1.8547   4.349 6.39e-05 ***
+## ln_area           1.3412     0.4725   2.839  0.00645 ** 
+## ln_population     0.8201     0.2700   3.038  0.00372 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 3.155 on 53 degrees of freedom
-## Multiple R-squared:  0.7224, Adjusted R-squared:  0.7014 
-## F-statistic: 34.47 on 4 and 53 DF,  p-value: 3.603e-14</code></pre>
+## Residual standard error: 3.094 on 52 degrees of freedom
+## Multiple R-squared:  0.7381, Adjusted R-squared:  0.7129 
+## F-statistic:  29.3 on 5 and 52 DF,  p-value: 5.172e-14</code></pre>
 <ul>
 <li>As the interaction term has p-value &lt; 0.05, we can conclude that
 ln(population) and ln(total_tests) have significant interaction at 0.05
@@ -974,34 +1006,35 @@ var_fitted &lt;- sd_function$fitted.values^2
 
 wt &lt;- 1/var_fitted
 
-wls_incidence &lt;- lm(incidence~ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+wls_prevalence &lt;- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
 
-summary(wls_incidence)</code></pre>
+summary(wls_prevalence)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = incidence ~ ln_test + ln_unemployment + ln_area + 
-##     ln_population, data = ca_model_data, weights = wt)
+## lm(formula = prevalence ~ location + ln_test + ln_unemployment + 
+##     ln_area + ln_population, data = ca_model_data, weights = wt)
 ## 
 ## Weighted Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -2.7040 -0.9482 -0.0203  0.8140  3.5440 
+## -3.2974 -0.8230 -0.0490  0.5594  3.3144 
 ## 
 ## Coefficients:
 ##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     -69.5696     8.0886  -8.601 1.24e-11 ***
-## ln_test           9.4508     1.1359   8.320 3.46e-11 ***
-## ln_unemployment   9.0369     1.7924   5.042 5.73e-06 ***
-## ln_area           1.4795     0.4707   3.143  0.00274 ** 
-## ln_population     0.7003     0.2555   2.741  0.00833 ** 
+## (Intercept)     -72.6964     8.0293  -9.054 2.87e-12 ***
+## locationinland    2.0958     1.1001   1.905 0.062304 .  
+## ln_test          10.0014     1.1447   8.737 8.87e-12 ***
+## ln_unemployment   7.6726     1.8812   4.079 0.000156 ***
+## ln_area           1.3436     0.4646   2.892 0.005581 ** 
+## ln_population     0.8894     0.2661   3.342 0.001544 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 1.326 on 53 degrees of freedom
-## Multiple R-squared:  0.7356, Adjusted R-squared:  0.7157 
-## F-statistic: 36.87 on 4 and 53 DF,  p-value: 1.002e-14</code></pre>
+## Residual standard error: 1.335 on 52 degrees of freedom
+## Multiple R-squared:  0.7577, Adjusted R-squared:  0.7344 
+## F-statistic: 32.52 on 5 and 52 DF,  p-value: 7.085e-15</code></pre>
 <pre class="r"><code>check_model(mlr_model, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
-<pre class="r"><code>check_model(wls_incidence, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
+<pre class="r"><code>check_model(wls_prevalence, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
 <p><img src="mlr_new_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
 <ul>
 <li>Ordinary Least Squares violates normal assumption</li>
@@ -1021,12 +1054,12 @@ more of the variation in exam scores compared to the OLS model.</li>
 # use 10-fold validation and create the training sets
 train = trainControl(method = &quot;cv&quot;, number = 10)
 # fit the 4-variables model that we selected as our final model
-model_caret = train(incidence~ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = &#39;lm&#39;, na.action = na.pass)
+model_caret = train(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = &#39;lm&#39;, na.action = na.pass)
 model_caret</code></pre>
 <pre><code>## Linear Regression 
 ## 
 ## 58 samples
-##  4 predictor
+##  5 predictor
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
@@ -1034,21 +1067,21 @@ model_caret</code></pre>
 ## Resampling results:
 ## 
 ##   RMSE      Rsquared   MAE     
-##   3.114563  0.7260751  2.593705
+##   3.079446  0.7261623  2.558792
 ## 
 ## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
 <pre class="r"><code>model_caret$resample</code></pre>
-<pre><code>##        RMSE  Rsquared      MAE Resample
-## 1  3.280702 0.6815173 2.838143   Fold01
-## 2  3.401562 0.6765707 3.271787   Fold02
-## 3  1.522824 0.8621392 1.131554   Fold03
-## 4  2.120258 0.9443245 1.899383   Fold04
-## 5  1.836400 0.9766780 1.518833   Fold05
-## 6  3.687199 0.4015162 3.143141   Fold06
-## 7  2.484725 0.8407829 1.897638   Fold07
-## 8  3.257643 0.8783562 2.609566   Fold08
-## 9  4.942543 0.7580452 3.965481   Fold09
-## 10 4.611778 0.2408208 3.661528   Fold10</code></pre>
+<pre><code>##        RMSE   Rsquared      MAE Resample
+## 1  2.825007 0.76359260 2.519925   Fold01
+## 2  3.190194 0.71590015 2.853202   Fold02
+## 3  1.433165 0.88045483 1.304306   Fold03
+## 4  1.979195 0.92212958 1.704161   Fold04
+## 5  1.933953 0.96590869 1.669703   Fold05
+## 6  3.339120 0.53507207 2.909027   Fold06
+## 7  3.306837 0.71923646 2.572679   Fold07
+## 8  3.019968 0.87696581 2.490659   Fold08
+## 9  4.714584 0.78563673 3.646323   Fold09
+## 10 5.052439 0.09672592 3.917936   Fold10</code></pre>
 <ul>
 <li>From the output above, the overall RMSE (root mean squared error) is
 3.115, which would mean our MSE is 9.701. Our MAE (mean absolute error)
@@ -1065,7 +1098,7 @@ probably pretty close to the true predictive ability.</li>
 and the LASSO tech- nique to select a final model:</li>
 </ul>
 <p><span
-class="math inline">\(life\_exp=-69.049+9.251*ln(unemployment)+1.495*ln(area)+0.642*ln(population)+9.389*ln(test)\)</span></p>
+class="math inline">\(\hat{Prevalence}=-69.049+9.251*ln(unemployment)+1.495*ln(area)+0.642*ln(population)+9.389*ln(test)\)</span></p>
 <ul>
 <li>From this model, we can see that as the murder rate and average
 number of freezing days (frost) increase, the predicted life expectancy

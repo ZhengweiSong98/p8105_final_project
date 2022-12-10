@@ -13,7 +13,7 @@
 
 <title>Factors to Death</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,9 +193,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -356,13 +363,13 @@ div.tocify {
       <a href="mlr_death.html">Multiple Linear Model for death cases</a>
     </li>
     <li>
-      <a href="cases_by_time.html">Confirmed cases by time</a>
+      <a href="mlr_fatality.html">Multiple Linear Model for fatality</a>
     </li>
     <li>
       <a href="violation_covid.html">Lowess Model for vaccination rate</a>
     </li>
     <li>
-      <a href="mlr_new.html">Multiple Linear Model for Incidence</a>
+      <a href="mlr_new.html">Multiple Linear Model for Prevalence</a>
     </li>
   </ul>
 </li>
@@ -406,7 +413,6 @@ div.tocify {
 </div>
 
 
-<<<<<<< HEAD
 <p>Los Angeles, Orange San Diego Monterey San Benito San Luis Obispo
 Santa Barbara Santa Cruz Ventura Alameda Contra Costa Marin Napa San
 Francisco San Mateo Santa Clara Solano Sonoma Del Norte Humboldt
@@ -667,79 +673,6 @@ interested on whether the death cases are associated with
 <code>area</code>, <code>population</code> and
 <code>testing_cases</code>.</li>
 </ul>
-=======
-<div id="date-cleaning" class="section level2">
-<h2>date cleaning</h2>
-<pre class="r"><code>source(&quot;data_preprocessing_backbone.R&quot;)</code></pre>
-<pre><code>## Loading required package: timechange</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre><code>## Rows: 13267 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (2): demographic_category, demographic_value
-## dbl  (5): total_cases, percent_cases, deaths, percent_deaths, percent_of_ca_...
-## date (1): report_date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 62647 Columns: 17
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr   (2): area, area_type
-## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
-## date  (1): date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 532 Columns: 24
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr   (2): area, area_type
-## dbl  (21): unvaccinated_cases, vaccinated_cases, boosted_cases, unvaccinated...
-## date  (1): date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 286 Columns: 17
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr   (2): AREA, AREA_TYPE
-## dbl  (14): UNVACCINATED_CASES, VACCINATED_CASES, UNVACCINATED_HOSP, VACCINAT...
-## date  (1): DATE
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 607 Columns: 17
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr   (2): area, area_type
-## dbl  (14): unvaccinated_cases, vaccinated_cases, unvaccinated_hosp, vaccinat...
-## date  (1): date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 62647 Columns: 17
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr   (2): area, area_type
-## dbl  (14): population, cases, cumulative_cases, deaths, cumulative_deaths, t...
-## date  (1): date
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>logistic_cases = age %&gt;%
-    select(total_cases, date) %&gt;%
-    group_by(date) %&gt;%
-    summarize(total_cases=sum(total_cases)) %&gt;%
-    arrange(date) %&gt;%
-    mutate(day = 1:length(date)) %&gt;%
-    dplyr::select(-date) %&gt;%
-    relocate(total_cases)</code></pre>
->>>>>>> 9e60a84f59421de4a4b9636c60eedb6db9bccc03
 </div>
 <div id="data-description" class="section level2">
 <h2>Data Description</h2>
@@ -795,7 +728,7 @@ plot_ln_unemployment = ca_model_data %&gt;%
     geom_density(fill = &quot;#69b3a2&quot;, color = &quot;#e9ecef&quot;, alpha = .8)
 
 raw_deaths+raw_tests+raw_land+ raw_unemployment+ raw_vaccinated+ raw_labor+ plot_ln_test+ plot_ln_area+ plot_ln_unemployment</code></pre>
-<p><img src="cases_by_time_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<p><img src="mlr_fatality_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
 <pre class="r"><code>ca_model_data %&gt;%
     gtsummary::tbl_summary() %&gt;%
     gtsummary::bold_labels() %&gt;%
@@ -860,7 +793,7 @@ explortory continuous variables.</li>
 <pre class="r"><code>ca_model_data %&gt;% 
     dplyr::select(-location) %&gt;%
     GGally::ggpairs()</code></pre>
-<p><img src="cases_by_time_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p><img src="mlr_fatality_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 <ul>
 <li>The correlation between predictors are highly correlated, which is
 more than 0.95. This is because testing count may associate with
@@ -920,7 +853,7 @@ par(mfrow=c(1,2))
 plot(2:7, criterion_plot$cp, xlab=&quot;No. of parameters&quot;, ylab=&quot;Cp Statistic&quot;)
 abline(0,1)
 plot(2:7, criterion_plot$adjr2, xlab=&quot;No. of parameters&quot;, ylab=&quot;Adj R2&quot;)</code></pre>
-<p><img src="cases_by_time_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p><img src="mlr_fatality_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
 <p>The plots above show the Cp index and Adjusted 𝑅2 for various numbers
 of parameters. When choosing a model based on Cp criterion, we want to
 choose a model for which 𝐶𝑝 ≤ 𝑝, where 𝑝 is the number of parameters.
@@ -953,7 +886,7 @@ tibble(lambda = cv_object$lambda,
 mean_cv_error = cv_object$cvm) %&gt;%
 ggplot(aes(x = lambda, y = mean_cv_error)) +
 geom_point()</code></pre>
-<p><img src="cases_by_time_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p><img src="mlr_fatality_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 <pre class="r"><code># refit the lasso model with the &quot;best&quot; lambda
 fit_bestcv &lt;- glmnet(as.matrix(ca_lasso_data[2:7]), ca_model_data$death_rate, lambda = cv_object$lambda.min)
 coef(fit_bestcv)</code></pre>
@@ -1053,9 +986,9 @@ summary(wls_incidence)</code></pre>
 ## Multiple R-squared:  0.4563, Adjusted R-squared:  0.3923 
 ## F-statistic: 7.134 on 6 and 51 DF,  p-value: 1.481e-05</code></pre>
 <pre class="r"><code>check_model(mlr_model, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
-<p><img src="cases_by_time_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p><img src="mlr_fatality_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
 <pre class="r"><code>check_model(wls_incidence, check = c(&quot;linearity&quot;, &quot;qq&quot;, &quot;normality&quot;, &quot;outliers&quot;, &quot;homogeneity&quot;, &quot;vif&quot;))</code></pre>
-<p><img src="cases_by_time_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
+<p><img src="mlr_fatality_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
 <ul>
 <li>Ordinary Least Squares violates normal assumption</li>
 <li>The coefficient estimate for the <code>ln_population</code>
