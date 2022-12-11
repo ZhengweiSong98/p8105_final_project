@@ -13,7 +13,7 @@
 
 <title>Outcome by Demographics</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -419,6 +412,26 @@ div.tocify {
 </div>
 
 
+<p>Summarizing data by key demographic variables provides a
+comprehensive characterization of the outbreak, such as geographic
+distribution (place) and the populations (persons) affected by the
+disease. Characterization of the outbreak by person provides a
+description of whom the case-patients are and who is at risk of COVID.
+Person characteristics that are usually described include both host
+characteristics (age, gender, race and medical status) and possible
+exposures (occupations, physical activities, medications, tobacco, and
+drugs). Both of these influence susceptibility to disease and
+opportunities for exposure.</p>
+<p>The three most commonly described host characteristics are age,
+gender, and race because they are easily collected information and
+because they are often closely related to exposure and to the risk of
+disease. Epidemiological studies often use inclusion or exclusion
+criteria that explicitly restrict study populations to a specific subset
+for each of these variables. Then, the following cstratification
+analysis may be possibly used to reduce bias.</p>
+<p>In this project, we found it interesting to discuss the different
+COVID responses under different host characteristics (age, gender, and
+race) of the population at risk in California.</p>
 <div id="total-cases" class="section level1">
 <h1>1. Total cases</h1>
 <div id="a.-daily-growth-rate-of-total-cases-by-age"
