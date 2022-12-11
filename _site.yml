@@ -13,9 +13,9 @@ navbar:
         href: graph3.html
     - text: 'Inference Analysis'
       menu:
-      - text: "Weighted Least Model for Prevalence"
+      - text: "Multiple linear & Weighted least model for Prevalence"
         href: mlr_new.html
-      - text: "Multiple Linear Model for Fatality"
+      - text: "Multiple linear & Weighted least model for Death Rate"
         href: mlr_fatality.html
     - text: 'Statistical Analysis'
       menu:
@@ -27,6 +27,8 @@ navbar:
       href: https://zhengweisong.shinyapps.io/shiny_dashboard/
     - text: 'References'
       href: references.html
+    - icon: fa-solid fa-video
+      href: https://github.com/charksong/p8105_final_project
     - icon: fa-github fa-lg
       href: https://github.com/charksong/p8105_final_project
 output:
