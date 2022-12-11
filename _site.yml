@@ -23,8 +23,6 @@ navbar:
         href: statistical_test_prevelance.html
       - text: "ANOVA Test on MLR Death Cases"
         href: statistical_test_fatality.html
-    - text: 'Additional Prediction'
-      href: shiny_app.html
     - text: 'Project Report'
       href: project_report.html
     - text: 'Shiny'

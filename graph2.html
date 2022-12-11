@@ -13,7 +13,7 @@
 
 <title>Outcome by Demographics</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -383,9 +376,6 @@ div.tocify {
   </ul>
 </li>
 <li>
-  <a href="shiny_app.html">Additional Prediction</a>
-</li>
-<li>
   <a href="project_report.html">Project Report</a>
 </li>
 <li>
@@ -422,8 +412,31 @@ div.tocify {
 </div>
 
 
+<p>Summarizing data by key demographic variables provides a
+comprehensive characterization of the outbreak, such as geographic
+distribution (place) and the populations (persons) affected by the
+disease. Characterization of the outbreak by person provides a
+description of whom the case-patients are and who is at risk of COVID.
+Person characteristics that are usually described include both host
+characteristics (age, gender, race and medical status) and possible
+exposures (occupations, physical activities, medications, tobacco, and
+drugs). Both of these influence susceptibility to disease and
+opportunities for exposure.</p>
+<p>The three most commonly described host characteristics are age,
+gender, and race because they are easily collected information and
+because they are often closely related to exposure and to the risk of
+disease. Epidemiological studies often use inclusion or exclusion
+criteria that explicitly restrict study populations to a specific subset
+for each of these variables. Then, the following cstratification
+analysis may be possibly used to reduce bias.</p>
+<p>In this project, we found it interesting to discuss the different
+COVID responses under different host characteristics (age, gender, and
+race) of the population at risk in California.</p>
 <div id="total-cases" class="section level1">
 <h1>1. Total cases</h1>
+<p>In the first section, we would like to discuss the daily growth rate
+in the number of infection cases among different demographic
+subgroups.</p>
 <div id="a.-daily-growth-rate-of-total-cases-by-age"
 class="section level2">
 <h2>1a. Daily growth rate of total cases by age</h2>
@@ -545,6 +558,18 @@ head(age_all_2) %&gt;%
 </tr>
 </tbody>
 </table>
+<p>Generally, we find that the young people aged of 0-17 experiences the
+top 6 daily increase in the infection cases of above 5 times the prior
+day volumn in April. However, the elder people aged from 50 to 65+ have
+the lowest and negative growth rate in number of daily cases. Put it
+specifically, the number of daily new cases among people from age group
+of 50-64 and 65+ even decreases slightly by 17% at the end of June.
+Based on this preliminary observation, younger people tend to have
+higher daily increase in the infection case number, which suggests that
+the young are more vulnerable in the face of COVID attack. This finding
+looks reasonable to us as it may be attributed to the more active
+in-person interactions, weaker immune system, wider physical activity
+range, and etc. among the teenagers.</p>
 </div>
 <div id="b.-daily-growth-rate-of-total-cases-by-gender"
 class="section level2">
@@ -646,6 +671,11 @@ Gender</caption>
 </tr>
 </tbody>
 </table>
+<p>Among the highest and lowest case growth rate by gender, both male
+and female subgroups show almost equal appearances with very closed rate
+values in our summary tables. This observation suggests that the daily
+growth rate of infection cases at the extreme ends does not
+differentiate much by gender.</p>
 </div>
 <div id="c.-daily-growth-rate-of-total-cases-by-race"
 class="section level2">
@@ -803,10 +833,19 @@ head(race_all_2) %&gt;%
 </tr>
 </tbody>
 </table>
+<p>The subgroup of Multi-race shows extremely high (~60 x in growth) and
+abnormally low (~ - 360x drop) growth rates in daily detective cases.
+The Indian/Alaska subgroup faces the similar problem as Multi-race
+group. This finding raises our attention to the disparities existed in
+pandemic responses across racial and ethnical subgroups. In other words,
+there is a great possibility that Multi-race and Indian/Alaska people
+may experience more vulnerable and unstable COVID protections.</p>
 </div>
 </div>
 <div id="death-rate" class="section level1">
 <h1>2. Death Rate</h1>
+<p>In the second section, we would like to discuss the daily death rate
+among different demographic subgroups.</p>
 <div id="a.-daily-death-rate-by-age" class="section level2">
 <h2>2a. Daily death rate by age</h2>
 <pre class="r"><code>age_17_d = 

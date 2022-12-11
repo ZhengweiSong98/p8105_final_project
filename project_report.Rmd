@@ -7,6 +7,54 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
+```{r include = F}
+library(tidyverse)
+library(tidytext)  
+library(ggplot2)
+library(httr)
+library(rvest)
+library(lubridate)
+library(plotly)
+library(patchwork)
+library(lmtest)
+library(hrbrthemes)
+library(viridis)
+library(ggridges)
+library(gridExtra)
+library(scales)
+library(maps)
+library(lattice)
+library(corrplot)
+library(latticeExtra)
+
+
+knitr::opts_chunk$set(
+ echo = TRUE,
+ warning = FALSE,
+ fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+```{r include = F, message = F, warning = F}
+source("data_preprocessing_backbone.R")
+## data imported
+age
+race
+gender
+demo
+stat_12
+stat_16
+post_stat
+```
 ## P8105：Final Project Report
 #### Runze Cui (rc3521), Zhengwei Song (zs2539), Shangsi Lin (sl5232), Yunxi Yang (yy3297), Jiahe Deng (jd3924)
 ### Introduction
@@ -32,7 +80,7 @@ Through analyzing extracted dataset, it is the hope of this investigation to fin
 #### Initial questions
 Our initial questions is how does different factors(e.g. Race, Age, Demographic factor, gender) influence on the hospitalization and disease odds for an individual or social group in the state of California. Particularly, does different sex groups have difference in their vaccination rate? In what parts of California tend to have the highest prevalence of the disease? How does the hospitalization rate differs among each racial group? Are teenagers being considered as a vulnerable group towards the virus, judging based on the data set we have? 
 
-### Data 
+### Data Source
 
 #### CHHS
 A major part of the data used in this investigation originally came from [California Health and Human Service Open Data Portal](https://data.chhs.ca.gov/organization/california-department-of-public-health). This is a website with numerous databases, directly held by the agency of California health and human services, abbreviated as CHHS. California health and human service is the state agency tasked with administration and oversight of "state and federal programs for health care, social services, public assistance and rehabilitation" in the U.S. state of California. The agency is headed by the Secretary of the California Health and Human Services Agency, with headquarters in Sacramento. Many of the laws in the California Health and Safety Codes are enforced by it. 
@@ -59,11 +107,1167 @@ This is a website contains data about states, metro areas, counties, cities, zip
 
 #### Employment Development Department
 Since 1935, the Employment Development Department(EDD) had been connecting with job seekers and employers in an effort to build the economy of Golden State. Mean while it has been collecting data related to employment each month by industry data for California and sub-state areas. One of its data set is [current industry employment and unemployment rates for counties](https://www.labormarketinfo.edd.ca.gov/data/industry-employment-and-unemployment-rates-for-counties.html), which could produce insightful result through this investigation by connecting data like unemployment rate to the prevalence of disease or hospitalization rate. 
-A
+
+### Data Cleaning
 The data cleaning process is being presented in the index page, you can go to there by clicking on the button at the upper left corner.
 
+### Exploratory Analysis
+#### Outcomes by County
+
+Start our exploration of the data set by focusing on two variables of interest: COVID `prevalence` and `death rate`. These two variables are being hypothesized to have correlation with other demographic variables such as age, gender, race, unemployment rate, etc.
+
+##### Prevalence across county
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+    
+demo_plot = demo %>%
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>% 
+    ungroup() %>% 
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>% 
+    ggplot(aes(x = county_name, y = prevalence, color = county_name)) +
+    geom_point(alpha = 1) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = "County",
+         y = "Prevalence",
+         title = "Prevalence Across County") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(labels = point)
+
+ggplotly(demo_plot, width = 800, height = 500)
+```
+
+Until November 2022 (information given by data source), we can observe that the COVID prevalence ranges from as low as 0.094 to nearly 0.386  by county in California, suggesting a roughly 4.1x difference between the minimum and maximum. As a new study from the Centers for Disease Control and Prevention (CDC) revealed, the percentage of Americans who have been infected with COVID-19 is approximately 30% in November 2022. Taking the prevalence of 30% as the baseline for further comparisons, it is worth noticing that around 80% of counties in California have a moderate level of prevalence falling between around 16% to 29%, and around 10% of counties show a quite low prevalence below 15%. Only 6 out of 58 counties in California shows prevalence of above 30%. The COVID infection in California seems relatively controllable to a large extent compared to the general prevalence level across the United States. As for the prevalence differences, it may be caused by some other differentiable factors across counties, and we would like to further discuss about it in later parts.
+
+##### Death Rate across County
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+
+demo_plot_1 = demo %>%
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rate = total_deaths / total_cases) %>% 
+    mutate(county_name = fct_reorder(county_name, death_rate)) %>% 
+    ggplot(aes(x = county_name, y = death_rate, color = county_name)) +
+    geom_point(alpha = 1) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = "County",
+         y = "Death Rate",
+         title = "Death Rate Across County") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_y_continuous(labels = point)
+
+ggplotly(demo_plot_1, width = 800, height = 500)
+```
+
+We can observe that the death rates range from as low as 0.00% to 1.76% by county in California. The density graph suggests a quite centralized distribution of death rates across counties, that most counties’ death rates fall between 0.25% to 1.25%. As for the minimum value from this data set, there is so far no recorded death so as 0% death rate in Alpine. As for the maximum, Siskiyou’s recorded death rate is 1.76% in November 2022, which is a little bit higher than the average country-wide death rate of 1.09% (data reported by [John Hopkins University’s Coronavirus Resource Center](https://coronavirus.jhu.edu/data/mortality)). Considering the difference shown in death rates across counties, we will investigate the associations between this outcome variable and other potential factors in the following section.
+
+#### 2. Worst & Best conuties for outcomes
+
+##### Worst counties for each COVID outcome
+
+Furthermore, we zoom in on the pandemic responses and extract the 10 worst COVID outcome results, i.e. highest prevalence and highest death rates, in corresponding counties, and plot them as bar charts for a more straightforward visualization.
+
+```{r warning = F, message = F}
+demo_worst_1 =
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>%
+    select(county_name, prevalence) %>% 
+    arrange(desc(prevalence)) %>% 
+    head(10)
+
+demo_worst_2 = 
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rates = total_deaths/total_cases) %>%
+    select(county_name, death_rates) %>% 
+    arrange(desc(death_rates)) %>% 
+    head(10)
+
+cbind(demo_worst_1, demo_worst_2) %>% 
+    knitr::kable(digits = 4,
+                 caption = "Worst counties for each COVID outcome",
+                 col.names = c("County for Prevalence", "Prevelence", "County for Death Rate", "Death Rate"))
+
+
+
+```
+
+```{r warning = F, message = F}
+demo_worst_pre_plot =
+    demo_worst_1 %>%
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>%
+    ggplot(aes(x = reorder(county_name, prevalence, decreasing = T), y = prevalence, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = '',
+         y = "Prevalence",
+         title = "Worst Prevalence") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_worst_dea_plot =
+    demo_worst_2 %>%
+    mutate(county_name = fct_reorder(county_name, death_rates)) %>%
+    ggplot(aes(x = reorder(county_name, death_rates, decreasing = T), y = death_rates, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = '',
+         y = "Death Rate",
+         title = "Worst Death Rate") + 
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_worst_pre_plot + demo_worst_dea_plot
+```
+
+##### Best counties for each COVID outcome
+
+Also, we extract the 10 best covid outcome results, i.e. lowest prevalence and lowest death rates, in corresponding counties.
+
+```{r warning = F, message = F}
+demo_best_1 =
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population)) %>%
+    select(county_name, prevalence) %>% 
+    arrange(prevalence) %>% 
+    head(10)
+
+demo_best_2 = 
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              death_rates = total_deaths/total_cases) %>%
+    select(county_name, death_rates) %>% 
+    arrange(death_rates) %>% 
+    head(10)
+
+cbind(demo_best_1, demo_best_2) %>% 
+    knitr::kable(digits = 4,
+                 caption = "Best counties for each COVID outcome",
+                 col.names = c("County for Prevalence", "Prevelence", "County for Death Rate", "Death Rate"))
+```
+
+```{r warning = F, message = F}
+demo_best_pre_plot =
+    demo_best_1 %>% 
+    mutate(county_name = fct_reorder(county_name, prevalence)) %>%
+    ggplot(aes(x = reorder(county_name, prevalence, decreasing = F), y = prevalence, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+    labs(x = '',
+         y = "Prevalence",
+         title = "Best Prevalence") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_best_dea_plot =
+    demo_best_2 %>% 
+    mutate(county_name = fct_reorder(county_name, death_rates)) %>% 
+    ggplot(aes(x = reorder(county_name, death_rates, decreasing = F), y = death_rates, fill = county_name)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    theme(
+      legend.position = "none"
+    ) +
+     labs(x = '',
+         y = "Death Rate",
+         title = "Best Death Rate") + 
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+demo_best_pre_plot + demo_best_dea_plot
+```
+
+From the above tables and bar charts, Kings County responses to COVID with highest prevalence of 38.64%, and Siskiyou responses to covid with highest death rate of 1.76%. In comparison, Modoc has the lowest prevalence of 9.45% in California, and Alpine has no recorded death until November 2022. Upon observations, two out of ten counties with top prevalence, Imperial and Tuolumne, also have top death rates. And two out of ten counties with lowest prevalence, Alpine and Colusa, also have lowest death rates. While to be highlighted here, Siskiyou County has one of the lowest prevalence but the highest death rate among all counties. This preliminary observation indicates that it is hard to obtain an apparent relationship between the prevalence and death rates. Further steps are required to take in order to explore the associations and correlations between our two outcome variables, COVID prevalence and death rates.
+
+##### Associations between outcomes across county
+
+To find out the associations between two outcomes across counties, we decide to use bubble chart to visualize relationships between three numeric variables, death rates, prevalence proportion, and the population size for each county.
+
+```{r warning = F, message = F}
+ demo_asso =   
+    demo %>% 
+    filter(!county_name %in% "Out of state") %>%
+    group_by(county_name, population) %>% 
+    summarize(total_cases = sum(reported_cases),
+              total_deaths = sum(reported_deaths),
+              prevalence = total_cases/mean(population),
+              death_rates = total_deaths/total_cases) %>%
+    ggplot(aes(x = prevalence, y = death_rates)) + 
+	  geom_point(aes(color = county_name, size = population)) + 
+	  geom_smooth(method = lm, se = FALSE, color = "red", size = 0.4, aes(weight = population)) + 
+	  labs(
+	    x = "Prevalence",
+	    y = "Death Rate",
+	    size = "Population",
+	    col = "County",
+	    title = "Associations Between Outcomes Across County"
+	  ) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5))
+
+ggplotly(demo_asso, width = 800, height = 500)
+```
+
+As we plotted, the values for each bubble are encoded by its horizontal position on the x-axis of prevalence, its vertical position on the y-axis of death rates, and the size of the bubble depends on the population size. The color of each bubble represent different counties in California to provide a visual sense.  
+
+On one hand, there is a positive best-fit trend line drawn on this plot which indicates a positive relationship between prevalence and death rates across counties, although this relationship is considerably weak. On the other hand, as the values on the horizontal and vertical scale decreases, we can only observe small bubbles on the bottom-left corners. And as the values on the horizontal or vertical scale increases, relatively large bubbles start to appear. To add on, the largest bubble of Los Angeles located on the top-right corner on this graph, indicating its relatively high prevalence and high death rate. These two perspective of findings may coincide with each other, suggesting a positive but weak relationship between outcomes across county.
+
+#### Outcome by Demographic
+##### Total cases : Daily growth rate of total cases by age
+
+```{r}
+
+age_17 = 
+  age %>% 
+  filter(age_group == "0-17") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
+
+
+age_49 =
+  age %>% 
+  filter(age_group == "18-49") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
+
+age_64 = 
+  age %>% 
+  filter(age_group == "50-64") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
+
+age_65 =
+  age %>% 
+  filter(age_group == "65+") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, age_group, growth_perc) 
+
+
+age_all = 
+    rbind(age_17, age_49, age_64, age_65) %>% 
+    filter(date != "2020-04-22")
+
+```
+
+```{r}
+age_all_1 =
+    rbind(age_17, age_49, age_64, age_65) %>%
+    arrange(growth_perc) %>%
+    select(date, age_group, growth_perc) %>% 
+    filter(date != "2020-12-23")
+
+age_all_2 =
+    cbind(age_all, age_all_1)
+
+head(age_all_2) %>%
+    knitr::kable(
+    caption = "Highest & Lowest Total Cases Growth Rate by Age",
+    col.names = c("Date", "Age", "Growth rate", "Date", "Age", "Growth rate"),
+    digits = 2
+  )
+```
+
+
+##### Total Cases; Daily growth rate of total cases by gender
+
+```{r}
+gender_M =
+  gender %>% 
+  filter(gender == "Male") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+    select(date, gender, growth_perc)
+
+gender_F =
+  gender %>% 
+  filter(gender == "Female") %>% 
+  arrange(date) %>% 
+  mutate(lag = lag(total_cases)) %>% 
+  mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100) %>% 
+  select(date, gender, growth_perc)
+
+gender_all =
+    rbind(gender_M, gender_F) %>%
+    arrange(desc(growth_perc)) %>% 
+    select(date, gender, growth_perc)
+gender_all_1 =
+    rbind(gender_M, gender_F) %>%
+    arrange(growth_perc) %>% 
+    select(date, gender, growth_perc)
+
+gender_all_2 = 
+    cbind(gender_all, gender_all_1)
+head(gender_all_2) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Total Cases Growth Rate by Gender",
+    col.names = c("Date", "Gender", "Growth rate", "Date", "Gender", "Growth rate"),
+    digits = 2
+  )
+```
+
+
+
+##### Total cases: Daily growth rate of total cases by race
+
+```{r}
+race_ia = 
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Indian/Alaska") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_asian =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Asian") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_black =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Black") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_latino =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Latino") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_multi =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Multi-Race") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)  
+race_hi =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Hawaiian/Islander") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+race_white =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "White") %>% 
+    arrange(date) %>% 
+    mutate(lag = lag(total_cases)) %>% 
+    mutate(growth_perc = (((total_cases - lag) / total_cases)) * 100)
+
+race_all =
+    rbind(race_ia, race_asian, race_black, race_latino, race_multi, race_hi) %>%
+    arrange(desc(growth_perc)) %>% 
+    select(date, race_group, growth_perc)
+
+race_all_1 =
+    rbind(race_ia, race_asian, race_black, race_latino, race_multi, race_hi) %>%
+    arrange(growth_perc) %>% 
+    select(date, race_group, growth_perc)
+
+race_all_2 =
+    cbind(race_all, race_all_1) 
+head(race_all_2) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Total Cases Growth Rate by Race",
+    col.names = c("Date", "Race", "Growth rate", "Date", "Race", "Growth rate"),
+    digits = 2
+  )
+
+```
+
+##### Death Rate:Daily death rate by age
+
+```{r}
+
+age_17_d = 
+  age %>% 
+  filter(age_group == "0-17") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+
+
+
+age_49_d =
+  age %>% 
+  filter(age_group == "18-49") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_64_d = 
+  age %>% 
+  filter(age_group == "50-64") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_65_d =
+  age %>% 
+  filter(age_group == "65+") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_all_d = 
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %>% 
+    arrange(desc(percent_deaths))
+
+```
+
+```{r}
+age_all_1_d =
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %>%
+    arrange(percent_deaths)
+
+
+age_all_2_d =
+    cbind(age_all_d, age_all_1_d)
+
+head(age_all_2) %>%
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Age",
+    col.names = c("Date", "Age", "Death Percent", "Date", "Age", "Death Percent"),
+    digits = 2
+  )
+```
+
+##### Death Rate: Daily death rate by gender
+
+```{r}
+gender_M_d =
+  gender %>% 
+  filter(gender == "Male") %>% 
+  arrange(date) %>% 
+  select(date, gender, percent_deaths)
+
+gender_F_d =
+  gender %>% 
+  filter(gender == "Female") %>% 
+  arrange(date) %>% 
+  select(date, gender, percent_deaths)
+
+gender_all_d =
+    rbind(gender_M_d, gender_F_d) %>%
+    arrange(desc(percent_deaths)) %>% 
+    select(date, gender, percent_deaths)
+gender_all_d_1 =
+    rbind(gender_M_d, gender_F_d) %>%
+    arrange(percent_deaths) %>% 
+    select(date, gender, percent_deaths)
+
+gender_all_2_d = 
+    cbind(gender_all_d, gender_all_d_1)
+head(gender_all_2_d) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Gender",
+    col.names = c("Date", "Gender", "Death Percent", "Date", "Gender", "Death Percent"),
+    digits = 2
+  )
+```
+
+##### Death Rate: Daily death rate by race
+
+```{r}
+race_ia_d = 
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Indian/Alaska") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_asian_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Asian") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_black_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Black") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_latino_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Latino") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_multi_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Multi-Race") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)  
+race_hi_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Hawaiian/Islander") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_white_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "White") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+
+race_all_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %>%
+    arrange(desc(percent_deaths)) 
+
+race_all_1_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %>% 
+    arrange(percent_deaths)
+
+race_all_2_d =
+    cbind(race_all_d, race_all_1_d) 
+head(race_all_2_d) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Race",
+    col.names = c("Date", "Race", "Death Percent", "Date", "Race", "Death Percent"),
+    digits = 2
+  )
+```
+
+#### Associations between predictors and outcomes
+
+##### Prevalence vs Age 
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    age %>% 
+    group_by(age_group) %>%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = age_group, y = prevalence, fill = age_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Prevalence") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+    
+
+    age %>% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = prevalence, fill = age_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Prevalence",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point),
+    
+    
+    age %>%
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920),
+           median_prevalence = mean(prevalence)) %>%  # California total population = 38066920
+    ggplot(aes(x = age_group, y = prevalence, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = age$median_prevalence, color = "red", size = 0.4, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Prevalence") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+```
+
+##### Prevalence vs Gender
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    gender %>% 
+    group_by(gender) %>%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = gender, y = prevalence, fill = gender)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Prevalence") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point),
+
+
+    gender %>% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    ggplot(aes(x = prevalence, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Prevalence",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+    scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %>%
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920 
+    ggplot(aes(x = gender, y = prevalence, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(gender$prevalence, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Prevalence") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+    
+```
+
+##### Prevalence vs Race
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
+    race %>%
+    group_by(race_group) %>%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %>%
+    ggplot(aes(x = race_group, y = prevalence, fill = race_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Prevalence") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point) +
+    theme(axis.title.x = element_blank(),
+         axis.text.x = element_blank(),
+         axis.ticks.x = element_blank()),
+    
+
+
+    race %>% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %>%
+    ggplot(aes(x = prevalence, fill = race_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Prevalence",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) + 
+          ylim(0, 5000) +
+          xlim(0, 0.0035),
+   
+    
+
+
+race %>%
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %>%  # California total population = 38066920 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    ggplot(aes(x = race_group, y = prevalence, fill = race_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(race$prevalence, na.rm = T), color = "red", size = 0.4, lty = "dashed") +
+    ylim(0, 30000) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Prevalence") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+ 
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+    
+```
+
+
+##### Death Rate vs Age, Gender, Race
+
+```{r warning = F, message = F}
+age_death =
+    age %>% 
+    group_by(age_group) %>%
+    summarise(percent_deaths = mean(percent_deaths)/100) %>%
+    ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Percent Deaths") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+gender_death =
+    gender %>% 
+    group_by(gender) %>%
+    summarise(percent_deaths = mean(percent_deaths)/100) %>%
+    ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Percent Deaths") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point)
+
+race_death =
+    race %>%
+    group_by(race_group) %>%
+    summarise(percent_deaths = mean(percent_deaths)/100) %>%
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %>%
+    ggplot(aes(x = race_group, y = percent_deaths, fill = race_group)) +
+    geom_bar(stat = "identity", width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Percent Death") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+
+age_death + gender_death + race_death
+
+```
+
+
+
+```{r}
+# age %>% 
+#     mutate(date = factor(date)) %>%
+#     mutate(text_label = str_c("Date: ", date, 
+#                               "\n Age: ", age_group,
+#                               "\n Death(%): ", percent_deaths)) %>%
+#     plot_ly(y = ~percent_deaths, 
+#           x = ~date, 
+#           color = ~age_group, 
+#           width = 950,
+#           height = 300, 
+#           type = "scatter",
+#           mode = "markers",
+#           marker = list(size = 3),
+#           colors = "inferno",
+#           text = ~ text_label) %>%
+#     layout(xaxis = list(
+#            title = "Date",
+#            tickangle = 60),
+#            yaxis = list(
+#            title = "Death Rate"))
+# gender %>% 
+#     mutate(date = factor(date)) %>%
+#     mutate(text_label = str_c("Date: ", date, 
+#                               "\n Gender: ", gender,
+#                               "\n Death(%): ", percent_deaths)) %>%
+#     plot_ly(y = ~percent_deaths, 
+#           x = ~date, 
+#           color = ~gender, 
+#           width = 950,
+#           height = 300, 
+#           type = "scatter",
+#           mode = "markers",
+#           marker = list(size = 3),
+#           colors = "viridis",
+#           text = ~ text_label) %>%
+#     layout(xaxis = list(
+#            title = "Date",
+#            tickangle = 60),
+#            yaxis = list(
+#            title = "Death Rate"))
+```
+
+```{r include = F}
+
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+population_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-rank, -state) %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
+
+geo_data = read_csv("./data/ca_boundaries.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(name, intptlat, intptlon) %>%
+    rename(county=name)
+
+ca_joining_data = left_join(population_data, labor_data, by = c("county"))
+ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c("county"))
+
+ca_nonmedical_data = ca_nonmedical_data %>%
+    mutate(labor_rate = labor_force/population*100) %>%
+    dplyr::select(-labor_force)
+
+demo_covid = demo %>%
+    mutate(cumulative_deaths= as.numeric(population),
+           cumulative_cases = as.numeric(cumulative_cases),
+           prevalence=cumulative_cases/population*100,
+           test = cumulative_total_tests/population*100,
+    ) %>%
+    dplyr::select(county_name, prevalence, test, population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(prevalence=max(prevalence),
+              test = max(test)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+    ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties"))
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county")) %>%
+    mutate(
+        vaccination=fully_vaccinated/population*100) %>%
+    dplyr::select(-c(fully_vaccinated, intptlat, intptlon))
+
+
+
+
+
+
+
+
+
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+land_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) %>%
+    dplyr::select(-rank, -state, -population)
+
+ca_nonmedical_data = left_join(land_data, labor_data, by = c("county"))
+
+demo_covid = demo %>%
+     mutate(cumulative_reported_deaths= as.numeric(cumulative_reported_deaths),
+            cumulative_cases = as.numeric(cumulative_cases),
+        death_rate = 0.01+cumulative_reported_deaths/population*100,
+        test = cumulative_total_tests/population*100) %>%
+    dplyr::select(county_name, death_rate, test,population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(death_rate=max(death_rate,na.rm = T),
+              test = max(test),
+              population = max(population)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties","Outside California"))
+
+hospital = read_csv("./data/CA_Covid19_Hospital.csv") %>%
+    group_by(county) %>%
+    summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
+              icu_available_beds = max(icu_available_beds,na.rm = T)) %>%
+    dplyr::select(county, all_hospital_beds, icu_available_beds)
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_medical_data2 = left_join(ca_medical_data, hospital, by =c("county"))
+ca_premodel_data2 = left_join(ca_medical_data2, ca_nonmedical_data, by = c("county")) %>%
+    relocate(death_rate) %>%
+    mutate(
+        vaccinated=fully_vaccinated/population*100,
+        labor_rate = labor_force/population*100,
+        hospital_bed = all_hospital_beds/population*100,
+        icu_bed = icu_available_beds/population*100
+    ) %>% 
+    dplyr::select(-fully_vaccinated, -population, -labor_force,-all_hospital_beds,-icu_available_beds)
+
+
+
+ca_premodel_data_1 =
+    ca_premodel_data %>% 
+    select(prevalence)
+
+ca_model_comp_df =
+    cbind(ca_premodel_data_1, ca_premodel_data2) %>% 
+    as.tibble()
+```
+
+Looking at the result figures of exploratory analysis above, we can observe many interesting things about our data set. To start with, For the Prevalence vs. Age graph, we can see that the age group 18-49 has the highest prevalence, followed by 50-64, followed by 0-17 and ends with the age group of 65+. For the graph of Prevalence vs. Gender, although female tend to have a higher prevalence according to the graph, the difference between the two gender is really not that large. When considering the graph of Prevalence vs. Race, we see that Latino people have significantly higher prevalence compared to other races. 
+
+One of the most insightful graph we obtained is the graph of Death Rate vs. Age. In this graph we see that although the 65+ age group previously had relatively low disease prevalence, they still have significantly higher death rate compared to other age groups. This finding suggests that the elder citizens are especially vulnerable to COVID. For the graph of Death Rate vs. Gender, we find males to have higher death rate than female. Lastly, for the graph of Death Rate vs. Race, it followed the pattern we previously observed in the Prevalence vs. Race graph, which is reasonable.
+
+
 ### Inference Analysis: Regression
-#### Multiple linear Regression 
+#### Multiple linear Regression for prevalence
 
 For model building purpose of this investigation, a multiple linear regression model is considered to investigate on hospitalization rate. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, location and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
 
@@ -76,6 +1280,12 @@ It is necessary to mention that in the original dataset on which this model look
 Another thing to look at was the correlation between the predictors to avoid the potential effect of multicollinearity, which is a statistical concept that describes the incidence of  several independent variables in a model are in fact correlated within themselves. This correlation test is later combined with criterion based model selection to select which predictors to put in for the final model.
 
 The three criterion based model selection method are Cp criterion, adjusted R squared criterion, and LASSO. The results of these model selection method all gave similar predictor size, so in the end the analysts chose four predictors to construct the final model as shown in the equation above. After the construction of this model, a corss validation process is performed to further assess the prediction ability of this model.
+
+### Statistical test
+
+The Statistical test used in this investigation is Analysis of Variance(ANOVA), which is used to determine if there is a statistically significant difference between categorical groups. After checking that there are no relationship between the subjects, groups of interest have equal sample size, dependent variable is normally distributed, population variances are equal, the ANOVA test can be conducted to our linear regression together with an F-test to determine whether the variable fits the data as well as the model. 
+
+In total, two ANOVA tests are performed, one on the MLR model for disease Prevalence and one on the MLR model for death cases.
 
 ### Discussion
 #### Project Obstacle
