@@ -11,7 +11,7 @@ ui <- bootstrapPage(
     tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
     leafletOutput("map", width = "100%", height = "100%"),
     absolutePanel(top = 10, right = 10,
-                  sliderInput("range", "Magnitudes", min(map_covid$cumulative_cases), max(map_covid$cumulative_cases),
+                  sliderInput("range", "Total Cases", min(map_covid$cumulative_cases), max(map_covid$cumulative_cases),
                               value = range(map_covid$cumulative_cases), step = 0.1
                   ),
                   selectInput("colors", "Color Scheme",
@@ -35,12 +35,7 @@ server <- function(input, output, session) {
     })
 
     output$map <- renderLeaflet({
-        # Prepare the text for the tooltip:
-        mytext <- paste(
-            "Depth: ", map_covid$county, "<br/>",
-            "Stations: ", map_covid$county, "<br/>",
-            "Magnitude: ", map_covid$county, sep="") %>%
-            lapply(htmltools::HTML)
+
 
         # Use leaflet() here, and only include aspects of the map that
         # won't need to change dynamically (at least, not unless the
@@ -54,12 +49,20 @@ server <- function(input, output, session) {
     # an observer. Each independent set of things that can change
     # should be managed in its own observer.
     observe({
+        # Prepare the text for the tooltip:
+        mytext <- paste(
+            "County: ", map_covid$county, "<br/>",
+            "Unemployment Rate(%): ", map_covid$unemployment, "<br/>",
+            "ICU Beds per 100 people: ", map_covid$icu_bed*100, "<br/>",
+            "Death Rate(%): ", map_covid$death_rate, sep="") %>%
+            lapply(htmltools::HTML)
+
         pal <- colorpal()
 
         leafletProxy("map", data = filteredData()) %>%
             clearShapes() %>%
             addCircles(radius = ~cumulative_cases/10, weight = 1, color = "#777777",
-                       fillColor = ~pal(cumulative_cases), fillOpacity = 0.7, popup = ~paste(cumulative_cases)
+                       fillColor = ~pal(cumulative_cases), fillOpacity = 0.7, popup = ~paste(cumulative_cases), label = mytext
             )
     })
 
@@ -73,7 +76,7 @@ server <- function(input, output, session) {
         if (input$legend) {
             pal <- colorpal()
             proxy %>% addLegend(position = "bottomright",
-                                pal = pal, values = ~cumulative_cases
+                                pal = pal, values = ~cumulative_cases, title = "Toal Cases"
             )
         }
     })

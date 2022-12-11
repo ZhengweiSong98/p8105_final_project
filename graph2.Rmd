@@ -48,11 +48,14 @@ source("data_preprocessing_backbone.R")
 
 Summarizing data by key demographic variables provides a comprehensive characterization of the outbreak, such as geographic distribution (place) and the populations (persons) affected by the disease. Characterization of the outbreak by person provides a description of whom the case-patients are and who is at risk of COVID. Person characteristics that are usually described include both host characteristics (age, gender, race and medical status) and possible exposures (occupations, physical activities, medications, tobacco, and drugs). Both of these influence susceptibility to disease and opportunities for exposure. 
 
-The three most commonly described host characteristics are age, gender, and race because they are easily collected information and because they are often closely related to exposure and to the risk of disease. Epidemiological studies often use inclusion or exclusion criteria that explicitly restrict study populations to a specific subset for each of these variables. Then, the following stratification analysis may be possibly used to reduce bias.
+The three most commonly described host characteristics are age, gender, and race because they are easily collected information and because they are often closely related to exposure and to the risk of disease. Epidemiological studies often use inclusion or exclusion criteria that explicitly restrict study populations to a specific subset for each of these variables. Then, the following cstratification analysis may be possibly used to reduce bias.
 
 In this project, we found it interesting to discuss the different COVID responses under different host characteristics (age, gender, and race) of the population at risk in California. 
 
 # 1. Total cases
+
+In the first section, we would like to discuss the daily growth rate in the number of infection cases among different demographic subgroups.
+
 ## 1a. Daily growth rate of total cases by age
 
 ```{r}
@@ -118,6 +121,7 @@ head(age_all_2) %>%
   )
 ```
 
+Generally, we find that the young people aged of 0-17 experiences the top 6 daily increase in the infection cases of above 5 times the prior day volumn in April. However, the elder people aged from 50 to 65+ have the lowest and negative growth rate in number of daily cases. Put it specifically, the number of daily new cases among people from age group of 50-64 and 65+ even decreases slightly by 17% at the end of June. Based on this preliminary observation, younger people tend to have higher daily increase in the infection case number, which suggests that the young are more vulnerable in the face of COVID attack. This finding looks reasonable to us as it may be attributed to the more active in-person interactions, weaker immune system, wider physical activity range, and etc. among the teenagers.
 
 ## 1b. Daily growth rate of total cases by gender
 
@@ -157,7 +161,7 @@ head(gender_all_2) %>%
   )
 ```
 
-
+Among the highest and lowest case growth rate by gender, both male and female subgroups show almost equal appearances with very closed rate values in our summary tables. This observation suggests that the daily growth rate of infection cases at the extreme ends does not differentiate much by gender.
 
 ## 1c. Daily growth rate of total cases by race
 
@@ -247,7 +251,12 @@ head(race_all_2) %>%
 
 ```
 
+The subgroup of Multi-race shows extremely high (~60 x in growth) and abnormally low (~ - 360x drop) growth rates in daily detective cases.  The Indian/Alaska subgroup faces the similar problem as Multi-race group. This finding raises our attention to the disparities existed in pandemic responses across racial and ethnical subgroups. In other words, there is a great possibility that Multi-race and Indian/Alaska people may experience more vulnerable and unstable COVID protections.
+
 # 2. Death Rate
+
+In the second section, we would like to discuss the daily death rate among different demographic subgroups.
+
 ## 2a. Daily death rate by age
 
 ```{r}
@@ -306,6 +315,8 @@ head(age_all_2) %>%
     digits = 2
   )
 ```
+
+
 
 ## 2b. Daily death rate by gender
 
