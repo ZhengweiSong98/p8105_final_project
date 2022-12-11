@@ -52,7 +52,7 @@ The three most commonly described host characteristics are age, gender, and race
 
 In this project, we found it interesting to discuss the different COVID responses under different host characteristics (age, gender, and race) of the population at risk in California. 
 
-<<<<<<< HEAD
+
 
 
 ## Prevalence vs Age 

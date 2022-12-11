@@ -1,0 +1,16 @@
+---
+title: "References"
+output: html_document
+---
+
+1.Mortality analyses. Johns Hopkins Coronavirus Resource Center. (n.d.). Retrieved December 10, 2022, from https://coronavirus.jhu.edu/data/mortality 
+
+2.Full article: Racism and nationalism during and beyond the COVID-19 ... (n.d.). Retrieved December 11, 2022, from https://www.tandfonline.com/doi/full/10.1080/01419870.2020.1851382 
+
+3.Disparities in outcomes among COVID-19 patients in a large health care ... (n.d.). Retrieved December 11, 2022, from https://www.healthaffairs.org/doi/10.1377/hlthaff.2020.00598 
+
+4.Monod, M., Blenkinsop, A., Xi, X., Hebert, D., Bershan, S., Tietze, S., Baguelin, M., Bradley, V. C., Chen, Y., Coupland, H., Filippi, S., Ish-Horowicz, J., McManus, M., Mellan, T., Gandy, A., Hutchinson, M., Unwin, H. J., van Elsland, S. L., Vollmer, M. A., … Ratmann, O. (2021). Age groups that sustain resurging covid-19 epidemics in the United States. Science, 371(6536). https://doi.org/10.1126/science.abe8372 
+
+5.Little, C., Alsen, M., Barlow, J., Naymagon, L., Tremblay, D., Genden, E., Trosman, S., Iavicoli, L., &amp; van Gerwen, M. (2021). The impact of socioeconomic status on the clinical outcomes of COVID-19; a retrospective cohort study. Journal of Community Health, 46(4), 794–802. https://doi.org/10.1007/s10900-020-00944-3 
+
+6.León, T. M., Dorabawila, V., Nelson, L., Lutterloh, E., Bauer, U. E., Backenson, B., Bassett, M. T., Henry, H., Bregman, B., Midgley, C. M., Myers, J. F., Plumb, I. D., Reese, H. E., Zhao, R., Briggs-Hagen, M., Hoefer, D., Watt, J. P., Silk, B. J., Jain, S., &amp; Rosenberg, E. S. (2022). Covid-19 cases and hospitalizations by covid-19 vaccination status and previous COVID-19 diagnosis — California and New York, May–November 2021. MMWR. Morbidity and Mortality Weekly Report, 71(4), 125–131. https://doi.org/10.15585/mmwr.mm7104e1 
