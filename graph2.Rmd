@@ -581,13 +581,11 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 
 
 ## 3
-=======
-# 1. Total cases
 
 In the first section, we would like to discuss the daily growth rate in the number of infection cases among different demographic subgroups.
 
 ## 1a. Daily growth rate of total cases by age
->>>>>>> ebe5d68739ca08689a61299dbb30b7da5f2b6a3c
+
 
 ```{r}
 
