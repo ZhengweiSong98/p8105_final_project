@@ -13,7 +13,7 @@
 
 <title>Statistical test: Prevelance</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -419,11 +412,27 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code>library(readr)
-library(tidyr)
-library(tidyverse)
-library(dplyr)
-library(ggplot2)</code></pre>
+<p>Analysis of Variance (ANOVA) is a statistical test used to determine
+if there is a statistically significant difference between categorical
+groups. In general, we expect that there are one or more group might be
+influential on the dependent variable, while the other group treated as
+control group.</p>
+<p>Before conducting the test, we need to check the test assumption:
+<span class="math inline">\(\bullet\)</span> no relationship between the
+subjects. <span class="math inline">\(\bullet\)</span> different groups
+must have equal sample sizes. <span
+class="math inline">\(\bullet\)</span> dependent variable is normally
+distributed. <span class="math inline">\(\bullet\)</span> Population
+variances must be equal(Homogeneity of variance)</p>
+<p>These assumptions were <a href="mlr_new.html">checked</a>, and our
+model for prevelance meet these requirement. Then, we conduct ANOVA test
+to our model, and uses the F-test to determine whether the variables
+fits the data as well as our model. If that F-statics are sufficiently
+large, or P-values are significantly small，then we can conclude that
+our model fits the data better than the intercept-only model，and there
+are coefficients not equal to zero. But, if we fail to reject the null
+hypothesis, it means that all the coefficients are simultaneously zero,
+and the intercept-only model is better than our model.</p>
 <p>ANOVA test for model <span class="math display">\[Prevalence =
 location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+
 \epsilon_i\]</span></p>
@@ -432,6 +441,12 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 \beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}\]</span>
 <span class="math display">\[H_1 = At\ least\ one\ \beta\: is\ not\ zero
 \]</span></p>
+<p>For model for prevalence, we decided to use weighted least square
+regression. And fit the model by weighted least square is better than
+unweighted. Since our error variance is unknown, we need to estimate the
+standard deviation function and the weight. In a weighted fit, less
+weight is given to the less precise measurements and more weight to more
+precise measurements.</p>
 <pre class="r"><code>mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
 sd_function &lt;- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
 
@@ -457,7 +472,8 @@ class="math inline">\(ln(area)\)</span>,<span
 class="math inline">\(ln(population)\)</span> are statistically
 significant, which means their p-value smaller than 0.05. Only variable
 <span class="math inline">\(location\)</span> has p-value greater than
-0.05.</p>
+0.05. But its p-value=0.068913 still can considred as small. So we
+decide to keep it in our model.</p>
 
 
 
