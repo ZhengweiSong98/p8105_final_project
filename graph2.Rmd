@@ -48,7 +48,7 @@ source("data_preprocessing_backbone.R")
 
 Summarizing data by key demographic variables provides a comprehensive characterization of the outbreak, such as geographic distribution (place) and the populations (persons) affected by the disease. Characterization of the outbreak by person provides a description of whom the case-patients are and who is at risk of COVID. Person characteristics that are usually described include both host characteristics (age, gender, race and medical status) and possible exposures (occupations, physical activities, medications, tobacco, and drugs). Both of these influence susceptibility to disease and opportunities for exposure. 
 
-The three most commonly described host characteristics are age, gender, and race because they are easily collected information and because they are often closely related to exposure and to the risk of disease. Epidemiological studies often use inclusion or exclusion criteria that explicitly restrict study populations to a specific subset for each of these variables. Then, the following cstratification analysis may be possibly used to reduce bias.
+The three most commonly described host characteristics are age, gender, and race because they are easily collected information and because they are often closely related to exposure and to the risk of disease. Epidemiological studies often use inclusion or exclusion criteria that explicitly restrict study populations to a specific subset for each of these variables. Then, the following stratification analysis may be possibly used to reduce bias.
 
 In this project, we found it interesting to discuss the different COVID responses under different host characteristics (age, gender, and race) of the population at risk in California. 
 
