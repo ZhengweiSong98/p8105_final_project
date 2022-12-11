@@ -89,7 +89,7 @@ skimr::skim(ca_premodel_data)
 
 ### Background
 
-* We were curious about what medical and non-medical factors were associated with infection rates, so we collected labor force data, population data as non-medical data for each county in California, using the percentage value of the largest labor force to population over a three-year range as an important indicator of local economic conditions, in addition to unemployment rate data, which is the ratio of the unemployed population divided by the labor force. Also, we collected COVID infection death data, vaccination data from each county, and defined the mortality rate as $\frac{number\ of\ deaths}{maximum\ total\ population}$ over 2020-2022, the infection rate (prevalence) as $\frac{total\ cases}{maximum\ total\ population}$ over 2020-2022, and the vaccination rate as $\frac{fully\ vaccinated\ population}{maximum\ total\ population}$ over the three-year period.
+* We were curious about what medical and non-medical factors were associated with infection rates or prevalence, so we collected labor force data, population data as non-medical data for each county in California, using the percentage value of the largest labor force to population over a three-year range as an important indicator of local economic conditions, in addition to unemployment rate data, which is the ratio of the unemployed population divided by the labor force. Also, we collected COVID infection death data, vaccination data from each county, and defined the infection rate (prevalence) as $\frac{total\ cases}{maximum\ total\ population}$ over 2020-2022, and the vaccination rate as $\frac{fully\ vaccinated\ population}{maximum\ total\ population}$ over the three-year period.
 
 ### Data processing
 
@@ -166,13 +166,13 @@ ca_model_data %>%
     knitr::kable()
 ```
 
-* The cleaned data includes `r nrow(ca_model_data)` states and `ncol(ca_model_data)` including `r names(ca_model_data)`. For those variables whose data is extremely right-skewed and the natural logarithms are applied to each exploratory continuous variables. By the plots and summary table we can see all the variables are almost bell-shaped, so in the modelling dataset we deleted the original variables that need to be transformed, keep the transformed variables, and delete the county variable because the county variable itself does not play a role in the model.
+* The cleaned data includes `r nrow(ca_model_data)` states and `r ncol(ca_model_data)` variables including `r names(ca_model_data)`. For those variables whose data is extremely right-skewed and the natural logarithms are applied to each exploratory continuous variables. By the plots and summary table we can see all the variables are almost bell-shaped, so in the modelling dataset we deleted the original variables that need to be transformed, keep the transformed variables, and delete the county variable because the county variable itself does not play a role in the model.
 
 ### Correlation
 ```{r warning = F, message = F}
 ca_model_data %>% 
     dplyr::select(-location) %>%
-    GGally::ggpairs()
+    GGally::ggpairs(upper = list(continuous = GGally::wrap("cor", size = 3)))
 ```
 
 * The overall correlation and covariance between the independent variables are not obvious, but among them we can see that there is a large trend of correlation and covariance between `vaccination` and `labor_rate`, implying that including that including both of these variables in the model could result in poor coefficient estimation and inflated standard errors (due to multicollinearity). Our model selection techniques are able to figure this out.
@@ -191,13 +191,22 @@ reg_intercept = lm(prevalence ~ 1, data = ca_model_data)
 ### Automatic and Criterion Model selection Methods
 ```{r warning = F, message = F}
 #forward Selection
-step(reg_intercept, direction='forward', scope=formula(reg_full),trace=0)
+step(reg_intercept, direction='forward', scope=formula(reg_full),trace=0) %>%
+    broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 
 #backwards elimination
-step(reg_full, direction='backward', scope=formula(reg_full),trace=0)
+step(reg_full, direction='backward', scope=formula(reg_full),trace=0) %>%
+    broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 
 #stepwise Selection
-step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
+step(reg_full, direction = "both", scope=formula(reg_full),trace=0) %>%
+    broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
 
 # Use criterion-based procedures to guide your selection of the ‘best subset’
 # chosen using SSE/RSS (smaller is better)
@@ -340,7 +349,7 @@ model_caret$resample
 
 * We employed automatic search procedures, criterion based approaches, and the LASSO technique to select a final model:
 
-$\hat{prevalence}=-71.4474+1.9559*I(location=inland)+8.0663*ln(unemployment)+1.3412*ln(area)+0.8201*ln(population)+9.8152*ln(test)$
+$\hat{prevalence}=-71.4474+1.9559*I(location=inland)+8.0663*ln(unemploy)+1.3412*ln(area)+0.8201*ln(population)+9.8152*ln(test)$
 
 * From this model, we can see that as the while the location is inland, unemployment, land area, population and test participation increases, the predicted prevalence increases. This is probably because inland counties, counties with high unemployment generally have poor economy so that poor medical conditions, which may finally lead to increased prevalence; while the large size of the county and the high population of the county may lead to increased prevalence due to dense population, but still needs further investigation. In addition, the high prevalence is from increased test participation is somewhat surprising, but it may be because more potential positive patients are able to be detected.
 
