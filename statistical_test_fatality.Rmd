@@ -85,7 +85,14 @@ ca_model_data = ca_premodel_data %>%
 
 ```
 
-For ferality model, the test assumptions for ANOVA test are [checked](mlr_fatality.html)
+Before conducting the ANOVA test, we need to check the test assumption:
+
+$\bullet$ no relationship between the subjects.
+$\bullet$ different groups must have equal sample sizes.
+$\bullet$ dependent variable is normally distributed.
+$\bullet$ Population variances must be equal(Homogeneity of variance)
+
+For our fatality model, the test assumptions are [checked](mlr_fatality.html)
 ANOVA test for model $$death\ rate = location\beta_{location}+vaccinated\beta_{vaccinated}+labor\ rate\beta_{labor\ rate}+ln(tests)\beta_{ln(test)}+ln(area)\beta_{ln(area)}+ln(unemployment)\beta){ln(unemployment)}+ln(bed)\beta_{ln(bed)}+\epsilon_i$$
 
 Then, we conduct a hypothesis test for fatality.

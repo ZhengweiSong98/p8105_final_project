@@ -376,9 +376,6 @@ div.tocify {
   </ul>
 </li>
 <li>
-  <a href="shiny_app.html">Additional Prediction</a>
-</li>
-<li>
   <a href="project_report.html">Project Report</a>
 </li>
 <li>
@@ -415,7 +412,15 @@ div.tocify {
 </div>
 
 
-<p>For ferality model, the test assumptions for ANOVA test are <a
+<p>Before conducting the ANOVA test, we need to check the test
+assumption:</p>
+<p><span class="math inline">\(\bullet\)</span> no relationship between
+the subjects. <span class="math inline">\(\bullet\)</span> different
+groups must have equal sample sizes. <span
+class="math inline">\(\bullet\)</span> dependent variable is normally
+distributed. <span class="math inline">\(\bullet\)</span> Population
+variances must be equal(Homogeneity of variance)</p>
+<p>For our fatality model, the test assumptions are <a
 href="mlr_fatality.html">checked</a> ANOVA test for model <span
 class="math display">\[death\ rate =
 location\beta_{location}+vaccinated\beta_{vaccinated}+labor\
