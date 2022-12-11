@@ -306,13 +306,16 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ```
 
 
-## Death Rate vs Age, Gender, Race
+## Death Rate vs Age
+
 
 ```{r warning = F, message = F}
-age_death =
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
     age %>% 
     group_by(age_group) %>%
-    summarise(percent_deaths = mean(percent_deaths)/100) %>%
+    summarize(percent_deaths = mean(percent_deaths)/100) %>% 
     ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -320,7 +323,7 @@ age_death =
       legend.position = "none"
     ) +
     xlab("Age") +
-    ylab("Percent Deaths") +
+    ylab("Death Rate") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -329,12 +332,67 @@ age_death =
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point)
+          scale_y_continuous(labels = point),
+    
 
-gender_death =
+    age %>% 
+    ggplot(aes(x = percent_deaths, fill = age_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Death Rtae",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+        ylim(0, 0.75),
+    
+    
+    age %>%
+    ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Age") +
+    ylab("Death Rate") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+```
+
+
+## Death Rate vs Gender
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
     gender %>% 
     group_by(gender) %>%
-    summarise(percent_deaths = mean(percent_deaths)/100) %>%
+    summarize(percent_deaths = mean(percent_deaths)/100) %>% 
     ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
     geom_bar(stat = "identity", width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -342,7 +400,7 @@ gender_death =
       legend.position = "none"
     ) +
     xlab("Gender") +
-    ylab("Percent Deaths") +
+    ylab("Death Rate") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -351,9 +409,67 @@ gender_death =
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point)
+    scale_y_continuous(labels = point),
 
-race_death =
+
+    gender %>% 
+    ggplot(aes(x = percent_deaths, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Death Rate",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+    scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %>%
+    ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Gender") +
+    ylab("Death Rate") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
+    
+```
+
+
+## Death Rate vs Race
+
+```{r warning = F, message = F}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+grid.arrange(
+ 
     race %>%
     group_by(race_group) %>%
     summarise(percent_deaths = mean(percent_deaths)/100) %>%
@@ -367,7 +483,7 @@ race_death =
       legend.position = "none"
     ) +
     xlab("Race") +
-    ylab("Percent Death") +
+    ylab("Death Rate") +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, 'cm'),
           legend.text = element_text(size = 4)) +
@@ -376,57 +492,102 @@ race_death =
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+    
 
 
-age_death + gender_death + race_death
+    race %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %>%
+    ggplot(aes(x = percent_deaths, fill = race_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = "Death Rate",
+         y = "Density") +
+    theme(legend.position = "right") +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) + 
+          ylim(0, 2),
+   
+    
+
+
+race %>%
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>% 
+    ggplot(aes(x = race_group, y = percent_deaths, fill = race_group)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = "none"
+    ) +
+    xlab("Race") +
+    ylab("Death Rate") +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, 'cm'),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+ 
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))
 
 ```
 
 
 
-```{r}
-# age %>% 
-#     mutate(date = factor(date)) %>%
-#     mutate(text_label = str_c("Date: ", date, 
-#                               "\n Age: ", age_group,
-#                               "\n Death(%): ", percent_deaths)) %>%
-#     plot_ly(y = ~percent_deaths, 
-#           x = ~date, 
-#           color = ~age_group, 
-#           width = 950,
-#           height = 300, 
-#           type = "scatter",
-#           mode = "markers",
-#           marker = list(size = 3),
-#           colors = "inferno",
-#           text = ~ text_label) %>%
-#     layout(xaxis = list(
-#            title = "Date",
-#            tickangle = 60),
-#            yaxis = list(
-#            title = "Death Rate"))
-# gender %>% 
-#     mutate(date = factor(date)) %>%
-#     mutate(text_label = str_c("Date: ", date, 
-#                               "\n Gender: ", gender,
-#                               "\n Death(%): ", percent_deaths)) %>%
-#     plot_ly(y = ~percent_deaths, 
-#           x = ~date, 
-#           color = ~gender, 
-#           width = 950,
-#           height = 300, 
-#           type = "scatter",
-#           mode = "markers",
-#           marker = list(size = 3),
-#           colors = "viridis",
-#           text = ~ text_label) %>%
-#     layout(xaxis = list(
-#            title = "Date",
-#            tickangle = 60),
-#            yaxis = list(
-#            title = "Death Rate"))
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r include = F}
 
@@ -556,6 +717,7 @@ ca_model_comp_df =
     cbind(ca_premodel_data_1, ca_premodel_data2) %>% 
     as.tibble()
 ```
+
 
 
 

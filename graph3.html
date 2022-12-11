@@ -13,7 +13,7 @@
 
 <title>Association Between Predictors and Outcomes</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,9 +193,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -665,12 +672,14 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ))</code></pre>
 <p><img src="graph3_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
 </div>
-<div id="death-rate-vs-age-gender-race" class="section level2">
-<h2>Death Rate vs Age, Gender, Race</h2>
-<pre class="r"><code>age_death =
+<div id="death-rate-vs-age" class="section level2">
+<h2>Death Rate vs Age</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
     age %&gt;% 
     group_by(age_group) %&gt;%
-    summarise(percent_deaths = mean(percent_deaths)/100) %&gt;%
+    summarize(percent_deaths = mean(percent_deaths)/100) %&gt;% 
     ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
     geom_bar(stat = &quot;identity&quot;, width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -678,7 +687,7 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
       legend.position = &quot;none&quot;
     ) +
     xlab(&quot;Age&quot;) +
-    ylab(&quot;Percent Deaths&quot;) +
+    ylab(&quot;Death Rate&quot;) +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, &#39;cm&#39;),
           legend.text = element_text(size = 4)) +
@@ -687,12 +696,65 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point)
+          scale_y_continuous(labels = point),
+    
 
-gender_death =
+    age %&gt;% 
+    ggplot(aes(x = percent_deaths, fill = age_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Death Rtae&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+        ylim(0, 0.75),
+    
+    
+    age %&gt;%
+    ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Age&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph3_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+</div>
+<div id="death-rate-vs-gender" class="section level2">
+<h2>Death Rate vs Gender</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
     gender %&gt;% 
     group_by(gender) %&gt;%
-    summarise(percent_deaths = mean(percent_deaths)/100) %&gt;%
+    summarize(percent_deaths = mean(percent_deaths)/100) %&gt;% 
     ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
     geom_bar(stat = &quot;identity&quot;, width = 0.5) +
     scale_fill_viridis(discrete = TRUE) +
@@ -700,7 +762,7 @@ gender_death =
       legend.position = &quot;none&quot;
     ) +
     xlab(&quot;Gender&quot;) +
-    ylab(&quot;Percent Deaths&quot;) +
+    ylab(&quot;Death Rate&quot;) +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, &#39;cm&#39;),
           legend.text = element_text(size = 4)) +
@@ -709,9 +771,63 @@ gender_death =
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-          scale_y_continuous(labels = point)
+    scale_y_continuous(labels = point),
 
-race_death =
+    gender %&gt;% 
+    ggplot(aes(x = percent_deaths, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Death Rate&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+    scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %&gt;%
+    ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Gender&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph3_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+</div>
+<div id="death-rate-vs-race" class="section level2">
+<h2>Death Rate vs Race</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
     race %&gt;%
     group_by(race_group) %&gt;%
     summarise(percent_deaths = mean(percent_deaths)/100) %&gt;%
@@ -725,7 +841,7 @@ race_death =
       legend.position = &quot;none&quot;
     ) +
     xlab(&quot;Race&quot;) +
-    ylab(&quot;Percent Death&quot;) +
+    ylab(&quot;Death Rate&quot;) +
     theme(legend.title = element_text(size = 5),
           legend.key.size = unit(0.3, &#39;cm&#39;),
           legend.text = element_text(size = 4)) +
@@ -734,51 +850,65 @@ race_death =
           axis.text.x = element_text(size = 5),
           axis.title.y = element_text(size = 6),
           axis.text.y = element_text(size = 5)) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1))
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+    
+
+    race %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %&gt;%
+    ggplot(aes(x = percent_deaths, fill = race_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Death Rate&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) + 
+          ylim(0, 2),
+   
+    
 
 
-age_death + gender_death + race_death</code></pre>
-<p><img src="graph3_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
-<pre class="r"><code># age %&gt;% 
-#     mutate(date = factor(date)) %&gt;%
-#     mutate(text_label = str_c(&quot;Date: &quot;, date, 
-#                               &quot;\n Age: &quot;, age_group,
-#                               &quot;\n Death(%): &quot;, percent_deaths)) %&gt;%
-#     plot_ly(y = ~percent_deaths, 
-#           x = ~date, 
-#           color = ~age_group, 
-#           width = 950,
-#           height = 300, 
-#           type = &quot;scatter&quot;,
-#           mode = &quot;markers&quot;,
-#           marker = list(size = 3),
-#           colors = &quot;inferno&quot;,
-#           text = ~ text_label) %&gt;%
-#     layout(xaxis = list(
-#            title = &quot;Date&quot;,
-#            tickangle = 60),
-#            yaxis = list(
-#            title = &quot;Death Rate&quot;))
-# gender %&gt;% 
-#     mutate(date = factor(date)) %&gt;%
-#     mutate(text_label = str_c(&quot;Date: &quot;, date, 
-#                               &quot;\n Gender: &quot;, gender,
-#                               &quot;\n Death(%): &quot;, percent_deaths)) %&gt;%
-#     plot_ly(y = ~percent_deaths, 
-#           x = ~date, 
-#           color = ~gender, 
-#           width = 950,
-#           height = 300, 
-#           type = &quot;scatter&quot;,
-#           mode = &quot;markers&quot;,
-#           marker = list(size = 3),
-#           colors = &quot;viridis&quot;,
-#           text = ~ text_label) %&gt;%
-#     layout(xaxis = list(
-#            title = &quot;Date&quot;,
-#            tickangle = 60),
-#            yaxis = list(
-#            title = &quot;Death Rate&quot;))</code></pre>
+race %&gt;%
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    ggplot(aes(x = race_group, y = percent_deaths, fill = race_group)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Race&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+ 
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph3_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
 </div>
 
 
