@@ -111,7 +111,7 @@ skimr::skim(ca_premodel_data)
 * COVID data: daily covid infection death data for each county, I divided the total number of infections by the population as the death rate and the total number of tests by the population as the nucleic acid detection rate, and finally the county was used as the county, and the largest value over three years was taken as the indicator for that county.
 * Vaccine data: Similar to COVID data, the number of full vaccination completions divided by the total population was extracted as the vaccination rate, and the largest value over three years was taken as the indicator for that county.
 * Hospital data: The maximum number of beds and the maximum number of available ICU beds in each county over three years were taken as two potentially important medical indicators.
-* The above data were combined to obtain pre-modeling pre-modelling data, including `r names(ca_premodel_data)`. This pre-modelling data includes `r nrow(ca_premodel_data)` observations and `r ncol(ca_premodel_data)` variables, without empty cells in each variables. Now we are interested on whether the death cases are associated with these selected variables.
+* The above data were combined to obtain pre-modeling pre-modelling data, including `r names(ca_premodel_data)`. This pre-modelling data includes `r nrow(ca_premodel_data)` observations and `r ncol(ca_premodel_data)` variables, and two cells in each `hospital_bed`, `icu_bed`. Now we are interested on whether the death cases are associated with these selected variables.
 
 ## Data Description
 ```{r warning = F, message = F, fig.width = 16, fig.height = 10}
@@ -195,7 +195,6 @@ ca_model_data %>%
     knitr::kable()
 ```
 
-
 * The cleaned data includes `r nrow(ca_model_data)` states and `r ncol(ca_model_data)` variables including `r names(ca_model_data)`. For those variables whose data is extremely right-skewed and the natural logarithms are applied to each exploratory continuous variables. By the plots and summary table we can see all the variables are almost bell-shaped, so in the modelling dataset we deleted the original variables that need to be transformed, keep the transformed variables, and delete the county variable because the county variable itself does not play a role in the model.
 
 ## Correlation
@@ -264,7 +263,6 @@ cp_fe_p_2 =
     theme(legend.position = "none")
 
 cp_fe_p_1 + cp_fe_p_2
-
 ```
 
 * By the two automatic model selection models: backward elimination and stepwise selection, we got the same result containing eight parameters (seven predictors):
