@@ -28,7 +28,7 @@ navbar:
     - text: 'References'
       href: references.html
     - icon: fa-solid fa-video
-      href: https://github.com/charksong/p8105_final_project
+      href: https://drive.google.com/drive/folders/1mVJoEhhzgxXjnNu5GFzoDl4wDcUOu1y3?usp=sharing
     - icon: fa-github fa-lg
       href: https://github.com/charksong/p8105_final_project
 output:
