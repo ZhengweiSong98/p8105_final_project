@@ -13,7 +13,7 @@
 
 <title>Outcome by Demographics</title>
 
-<script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,9 +193,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -432,7 +439,7 @@ may be possibly used to reduce bias.</p>
 <p>In this project, we found it interesting to discuss the different
 COVID responses under different host characteristics (age, gender, and
 race) of the population at risk in California.</p>
-<<<<<<< HEAD
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <div id="prevalence-vs-age" class="section level2">
 <h2>Prevalence vs Age</h2>
 <pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
@@ -921,9 +928,9 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 ))</code></pre>
 <p><img src="graph2_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
 </div>
-<div id="section" class="section level2">
-<h2>3</h2>
-=======
+<div id="section" class="section level1">
+<h1>## 3</h1>
+</div>
 <div id="total-cases" class="section level1">
 <h1>1. Total cases</h1>
 <p>In the first section, we would like to discuss the daily growth rate
@@ -932,7 +939,21 @@ subgroups.</p>
 <div id="a.-daily-growth-rate-of-total-cases-by-age"
 class="section level2">
 <h2>1a. Daily growth rate of total cases by age</h2>
->>>>>>> ebe5d68739ca08689a61299dbb30b7da5f2b6a3c
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>ebe5d68739ca08689a61299dbb30b7da5f2b6a3c</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <pre class="r"><code>age_17 = 
   age %&gt;% 
   filter(age_group == &quot;0-17&quot;) %&gt;% 
@@ -1326,6 +1347,10 @@ head(race_all_2) %&gt;%
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div id="head" class="section level1">
+<h1>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</h1>
 <p>The subgroup of Multi-race shows extremely high (~60 x in growth) and
 abnormally low (~ - 360x drop) growth rates in daily detective cases.
 The Indian/Alaska subgroup faces the similar problem as Multi-race
@@ -1333,9 +1358,6 @@ group. This finding raises our attention to the disparities existed in
 pandemic responses across racial and ethnical subgroups. In other words,
 there is a great possibility that Multi-race and Indian/Alaska people
 may experience more vulnerable and unstable COVID protections.</p>
-</div>
-<<<<<<< HEAD
-=======
 </div>
 <div id="death-rate" class="section level1">
 <h1>2. Death Rate</h1>
@@ -1697,9 +1719,23 @@ head(race_all_2_d) %&gt;%
 </tr>
 </tbody>
 </table>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>ebe5d68739ca08689a61299dbb30b7da5f2b6a3c</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 </div>
 </div>
->>>>>>> ebe5d68739ca08689a61299dbb30b7da5f2b6a3c
 
 
 
