@@ -417,9 +417,15 @@ Outcomes</h1>
 </div>
 
 
-<div id="outcomes-vs-test-participation-rate-by-county"
-class="section level2">
-<h2>Outcomes vs Test participation rate by county</h2>
+<p>After exploring our outcomes geographically by county, as well as the
+results on key demographic figures(age, gender, race), we proceeded with
+next step to include all potential predictors and then determine which
+predictors among our large data set, were significantly associated with
+our outcome variables, <code>prevalence</code> and
+<code>death rate</code>, at 5% significance level.</p>
+<div id="correlation-matrix-between-predictors-and-outcomes"
+class="section level1">
+<h1>1. Correlation Matrix between predictors and outcomes</h1>
 <pre class="r"><code>ca_model_comp_df %&gt;%
     select(-county) %&gt;%
 GGally::ggpairs(upper = list(continuous = GGally::wrap(&quot;cor&quot;, size = 2))) +
@@ -433,10 +439,30 @@ GGally::ggpairs(upper = list(continuous = GGally::wrap(&quot;cor&quot;, size = 2
           axis.text.y = element_text(size = 5)) +
           scale_y_continuous(labels = point)</code></pre>
 <p><img src="graph3_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>Associations between Predictors and Outcomes After exploring our
+outcomes geographically by county, as well as the results on key
+demographic figures(age, gender, race), we proceeded with next step to
+include all potential predictors and then determine which predictors
+among our large data set, were significantly associated with our outcome
+variables, <code>prevalence</code> and <code>death rate</code>, at 5%
+significance level.</p>
+<p>This correlated matrix plot clearly illustrates the relationship
+between each variables and our possible outcomes. Besides, there is no
+abnormal multicollinearity indicating our data is reasonable for further
+regressions. Since the LS estimate and big likelihood function may be
+distorted by the variable with abnormally high correlation and lose the
+predictive ability and accuracy.</p>
+<p>In the correlation matrix above, we find out that the correlates of
+worse outcomes: * Variables highly correlated with highest prevalence:
+unemployment % , test participation % * Variables highly correlated with
+highest death rates: unemployment %, land area</p>
+<p>The following graphs explore the associations between the selected
+highly-correlated predictors and each outcome variables across
+county.</p>
 </div>
 <div id="association-between-prevalence-and-selected-predictors"
-class="section level2">
-<h2>Association between prevalence and selected predictors</h2>
+class="section level1">
+<h1>2. Association between prevalence and selected predictors</h1>
 <pre class="r"><code>pre_best_1 =   
     ca_model_comp_df %&gt;% 
     mutate(county = factor(county)) %&gt;% 
@@ -468,7 +494,6 @@ pre_best_2 =
 
 pre_best_1 + pre_best_2</code></pre>
 <p><img src="graph3_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
-</div>
 <div id="association-between-death-rate-and-selected-predictors"
 class="section level2">
 <h2>Association between death rate and selected predictors</h2>
@@ -503,6 +528,7 @@ pre_best_4 =
 
 pre_best_3 + pre_best_4</code></pre>
 <p><img src="graph3_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+</div>
 </div>
 
 

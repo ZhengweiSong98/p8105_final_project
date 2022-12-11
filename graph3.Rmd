@@ -45,8 +45,9 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 source("data_preprocessing_backbone.R")
 ```
 
+After exploring our outcomes geographically by county, as well as the results on key demographic figures(age, gender, race), we proceeded with next step to include all potential predictors and then determine which predictors among our large data set, were significantly associated with our outcome variables, `prevalence` and `death rate`, at 5% significance level.
 
-
+# 1. Correlation Matrix between predictors and outcomes
 
 ```{r include = F}
 
@@ -177,7 +178,7 @@ ca_model_comp_df =
     as.tibble()
 ```
 
-## Outcomes vs Test participation rate by county
+
 
 ```{r warning = F, message = F}
 ca_model_comp_df %>%
@@ -194,8 +195,20 @@ GGally::ggpairs(upper = list(continuous = GGally::wrap("cor", size = 2))) +
           scale_y_continuous(labels = point)
 ```
 
+Associations between Predictors and Outcomes
+After exploring our outcomes geographically by county, as well as the results on key demographic figures(age, gender, race), we proceeded with next step to include all potential predictors and then determine which predictors among our large data set, were significantly associated with our outcome variables, `prevalence` and `death rate`, at 5% significance level.
 
-## Association between prevalence and selected predictors
+This correlated matrix plot clearly illustrates the relationship between each variables and our possible outcomes. Besides, there is no abnormal multicollinearity indicating our data is reasonable for further regressions. Since the LS estimate and big likelihood function may be distorted by the variable with abnormally high correlation and lose the predictive ability and accuracy.
+
+
+In the correlation matrix above, we find out that the correlates of worse outcomes:
+* Variables highly correlated with highest prevalence: unemployment % , test participation % 
+* Variables highly correlated with highest death rates: unemployment %, land area
+
+
+The following graphs explore the associations between the selected highly-correlated predictors and each outcome variables across county.
+
+# 2. Association between prevalence and selected predictors
 
 ```{r warning = F, message = F}
 pre_best_1 =   
