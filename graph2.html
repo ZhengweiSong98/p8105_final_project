@@ -434,16 +434,501 @@ gender, and race because they are easily collected information and
 because they are often closely related to exposure and to the risk of
 disease. Epidemiological studies often use inclusion or exclusion
 criteria that explicitly restrict study populations to a specific subset
-for each of these variables. Then, the following cstratification
-analysis may be possibly used to reduce bias.</p>
+for each of these variables. Then, the following stratification analysis
+may be possibly used to reduce bias.</p>
 <p>In this project, we found it interesting to discuss the different
 COVID responses under different host characteristics (age, gender, and
 race) of the population at risk in California.</p>
-<div id="total-cases" class="section level1">
-<h1>1. Total cases</h1>
-<div id="a.-daily-growth-rate-of-total-cases-by-age"
-class="section level2">
-<h2>1a. Daily growth rate of total cases by age</h2>
+<div id="prevalence-vs-age" class="section level2">
+<h2>Prevalence vs Age</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    age %&gt;% 
+    group_by(age_group) %&gt;%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920
+    ggplot(aes(x = age_group, y = prevalence, fill = age_group)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Age&quot;) +
+    ylab(&quot;Prevalence&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+    
+
+    age %&gt;% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920
+    ggplot(aes(x = prevalence, fill = age_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Prevalence&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point),
+    
+    
+    age %&gt;%
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920),
+           median_prevalence = mean(prevalence)) %&gt;%  # California total population = 38066920
+    ggplot(aes(x = age_group, y = prevalence, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = age$median_prevalence, color = &quot;red&quot;, size = 0.4, lty = &quot;dashed&quot;) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Age&quot;) +
+    ylab(&quot;Prevalence&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph2_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+</div>
+<div id="prevalence-vs-gender" class="section level2">
+<h2>Prevalence vs Gender</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    gender %&gt;% 
+    group_by(gender) %&gt;%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920
+    ggplot(aes(x = gender, y = prevalence, fill = gender)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Gender&quot;) +
+    ylab(&quot;Prevalence&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point),
+
+    gender %&gt;% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920
+    ggplot(aes(x = prevalence, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Prevalence&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+    scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %&gt;%
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920 
+    ggplot(aes(x = gender, y = prevalence, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(gender$prevalence, na.rm = T), color = &quot;red&quot;, size = 0.4, lty = &quot;dashed&quot;) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Gender&quot;) +
+    ylab(&quot;Prevalence&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph2_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+</div>
+<div id="prevalence-vs-race" class="section level2">
+<h2>Prevalence vs Race</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    race %&gt;%
+    group_by(race_group) %&gt;%
+    summarise(prevalence = sum(total_cases)/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %&gt;%
+    ggplot(aes(x = race_group, y = prevalence, fill = race_group)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Race&quot;) +
+    ylab(&quot;Prevalence&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point) +
+    theme(axis.title.x = element_blank(),
+         axis.text.x = element_blank(),
+         axis.ticks.x = element_blank()),
+    
+
+    race %&gt;% 
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %&gt;%
+    ggplot(aes(x = prevalence, fill = race_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Prevalence&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) + 
+          ylim(0, 5000) +
+          xlim(0, 0.0035),
+   
+    
+
+
+race %&gt;%
+    mutate(prevalence = total_cases/(mean(percent_of_ca_population)*38066920)) %&gt;%  # California total population = 38066920 
+    mutate(race_group = fct_reorder(race_group, prevalence)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    ggplot(aes(x = race_group, y = prevalence, fill = race_group)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_hline(yintercept = median(race$prevalence, na.rm = T), color = &quot;red&quot;, size = 0.4, lty = &quot;dashed&quot;) +
+    ylim(0, 30000) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Race&quot;) +
+    ylab(&quot;Prevalence&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+ 
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph2_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+</div>
+<div id="death-rate-vs-age" class="section level2">
+<h2>Death Rate vs Age</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    age %&gt;% 
+    group_by(age_group) %&gt;%
+    summarize(percent_deaths = mean(percent_deaths)/100) %&gt;% 
+    ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Age&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+    
+
+    age %&gt;% 
+    ggplot(aes(x = percent_deaths, fill = age_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 50) +
+    geom_density(alpha = 0.3, aes(color = age_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Death Rtae&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+        ylim(0, 0.75),
+    
+    
+    age %&gt;%
+    ggplot(aes(x = age_group, y = percent_deaths, fill = age_group)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Age&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph2_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+</div>
+<div id="death-rate-vs-gender" class="section level2">
+<h2>Death Rate vs Gender</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    gender %&gt;% 
+    group_by(gender) %&gt;%
+    summarize(percent_deaths = mean(percent_deaths)/100) %&gt;% 
+    ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Gender&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_y_continuous(labels = point),
+
+    gender %&gt;% 
+    ggplot(aes(x = percent_deaths, fill = gender)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.3, aes(color = gender)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Death Rate&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    scale_x_continuous(labels = point) +
+    scale_y_continuous(labels = point) +
+    scale_fill_viridis(discrete = TRUE),
+    
+    
+    gender %&gt;%
+    ggplot(aes(x = gender, y = percent_deaths, fill = gender)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Gender&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point),
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph2_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+</div>
+<div id="death-rate-vs-race" class="section level2">
+<h2>Death Rate vs Race</h2>
+<pre class="r"><code>point &lt;- format_format(big.mark = &quot; &quot;, decimal.mark = &quot;,&quot;, scientific = FALSE)
+grid.arrange(
+ 
+    race %&gt;%
+    group_by(race_group) %&gt;%
+    summarise(percent_deaths = mean(percent_deaths)/100) %&gt;%
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %&gt;%
+    ggplot(aes(x = race_group, y = percent_deaths, fill = race_group)) +
+    geom_bar(stat = &quot;identity&quot;, width = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Race&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+    
+
+    race %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %&gt;%
+    ggplot(aes(x = percent_deaths, fill = race_group)) +
+    geom_histogram(aes(y = ..density..), alpha = 0.5, bins = 30) +
+    geom_density(alpha = 0.1, aes(color = race_group)) +
+    scale_color_viridis(discrete = TRUE) +
+    labs(x = &quot;Death Rate&quot;,
+         y = &quot;Density&quot;) +
+    theme(legend.position = &quot;right&quot;) +
+    theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) + 
+          ylim(0, 2),
+   
+    
+
+
+race %&gt;%
+    mutate(race_group = fct_reorder(race_group, percent_deaths)) %&gt;% 
+    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
+           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;% 
+    ggplot(aes(x = race_group, y = percent_deaths, fill = race_group, color = &quot;transparent&quot;)) +
+    geom_boxplot(alpha = 0.5) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(
+      legend.position = &quot;none&quot;
+    ) +
+    xlab(&quot;Race&quot;) +
+    ylab(&quot;Death Rate&quot;) +
+        theme(legend.title = element_text(size = 5),
+          legend.key.size = unit(0.3, &#39;cm&#39;),
+          legend.text = element_text(size = 4)) +
+    theme(
+          axis.title.x = element_text(size = 6),
+          axis.text.x = element_text(size = 5),
+          axis.title.y = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+          scale_y_continuous(labels = point) +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)),
+ 
+
+
+layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(1, 1, 1, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2),
+                      c(3, 3, 3, 2, 2, 2, 2)
+))</code></pre>
+<p><img src="graph2_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+</div>
+<div id="section" class="section level2">
+<h2>3</h2>
 <pre class="r"><code>age_17 = 
   age %&gt;% 
   filter(age_group == &quot;0-17&quot;) %&gt;% 
@@ -820,367 +1305,6 @@ head(race_all_2) %&gt;%
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div id="death-rate" class="section level1">
-<h1>2. Death Rate</h1>
-<div id="a.-daily-death-rate-by-age" class="section level2">
-<h2>2a. Daily death rate by age</h2>
-<pre class="r"><code>age_17_d = 
-  age %&gt;% 
-  filter(age_group == &quot;0-17&quot;) %&gt;% 
-  arrange(date) %&gt;% 
-  select(date, age_group, percent_deaths) 
-
-
-
-age_49_d =
-  age %&gt;% 
-  filter(age_group == &quot;18-49&quot;) %&gt;% 
-  arrange(date) %&gt;% 
-  select(date, age_group, percent_deaths) 
- 
-
-
-age_64_d = 
-  age %&gt;% 
-  filter(age_group == &quot;50-64&quot;) %&gt;% 
-  arrange(date) %&gt;% 
-  select(date, age_group, percent_deaths) 
- 
-
-
-age_65_d =
-  age %&gt;% 
-  filter(age_group == &quot;65+&quot;) %&gt;% 
-  arrange(date) %&gt;% 
-  select(date, age_group, percent_deaths) 
- 
-
-
-age_all_d = 
-    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %&gt;% 
-    arrange(desc(percent_deaths))</code></pre>
-<pre class="r"><code>age_all_1_d =
-    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %&gt;%
-    arrange(percent_deaths)
-
-
-age_all_2_d =
-    cbind(age_all_d, age_all_1_d)
-
-head(age_all_2) %&gt;%
-    knitr::kable(
-    caption = &quot;Highest &amp; Lowest Death Percent by Age&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Age&quot;, &quot;Death Percent&quot;, &quot;Date&quot;, &quot;Age&quot;, &quot;Death Percent&quot;),
-    digits = 2
-  )</code></pre>
-<table>
-<caption>Highest &amp; Lowest Death Percent by Age</caption>
-<thead>
-<tr class="header">
-<th align="left">Date</th>
-<th align="left">Age</th>
-<th align="right">Death Percent</th>
-<th align="left">Date</th>
-<th align="left">Age</th>
-<th align="right">Death Percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">2020-04-23</td>
-<td align="left">0-17</td>
-<td align="right">8.65</td>
-<td align="left">2021-06-29</td>
-<td align="left">65+</td>
-<td align="right">-0.17</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-24</td>
-<td align="left">0-17</td>
-<td align="right">7.42</td>
-<td align="left">2021-06-29</td>
-<td align="left">50-64</td>
-<td align="right">-0.13</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-04-25</td>
-<td align="left">0-17</td>
-<td align="right">2.69</td>
-<td align="left">2021-06-29</td>
-<td align="left">18-49</td>
-<td align="right">-0.11</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-26</td>
-<td align="left">0-17</td>
-<td align="right">4.24</td>
-<td align="left">2021-06-29</td>
-<td align="left">0-17</td>
-<td align="right">-0.10</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-04-27</td>
-<td align="left">0-17</td>
-<td align="right">8.82</td>
-<td align="left">2021-04-23</td>
-<td align="left">65+</td>
-<td align="right">-0.01</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-28</td>
-<td align="left">0-17</td>
-<td align="right">5.78</td>
-<td align="left">2020-12-30</td>
-<td align="left">0-17</td>
-<td align="right">0.00</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="b.-daily-death-rate-by-gender" class="section level2">
-<h2>2b. Daily death rate by gender</h2>
-<pre class="r"><code>gender_M_d =
-  gender %&gt;% 
-  filter(gender == &quot;Male&quot;) %&gt;% 
-  arrange(date) %&gt;% 
-  select(date, gender, percent_deaths)
-
-gender_F_d =
-  gender %&gt;% 
-  filter(gender == &quot;Female&quot;) %&gt;% 
-  arrange(date) %&gt;% 
-  select(date, gender, percent_deaths)
-
-gender_all_d =
-    rbind(gender_M_d, gender_F_d) %&gt;%
-    arrange(desc(percent_deaths)) %&gt;% 
-    select(date, gender, percent_deaths)
-gender_all_d_1 =
-    rbind(gender_M_d, gender_F_d) %&gt;%
-    arrange(percent_deaths) %&gt;% 
-    select(date, gender, percent_deaths)
-
-gender_all_2_d = 
-    cbind(gender_all_d, gender_all_d_1)
-head(gender_all_2_d) %&gt;% 
-    knitr::kable(
-    caption = &quot;Highest &amp; Lowest Death Percent by Gender&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Gender&quot;, &quot;Death Percent&quot;, &quot;Date&quot;, &quot;Gender&quot;, &quot;Death Percent&quot;),
-    digits = 2
-  )</code></pre>
-<table>
-<caption>Highest &amp; Lowest Death Percent by Gender</caption>
-<thead>
-<tr class="header">
-<th align="left">Date</th>
-<th align="left">Gender</th>
-<th align="right">Death Percent</th>
-<th align="left">Date</th>
-<th align="left">Gender</th>
-<th align="right">Death Percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">2020-04-22</td>
-<td align="left">Male</td>
-<td align="right">60.1</td>
-<td align="left">2020-04-22</td>
-<td align="left">Female</td>
-<td align="right">39.5</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-26</td>
-<td align="left">Male</td>
-<td align="right">60.1</td>
-<td align="left">2020-04-26</td>
-<td align="left">Female</td>
-<td align="right">39.6</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-04-24</td>
-<td align="left">Male</td>
-<td align="right">60.0</td>
-<td align="left">2020-04-24</td>
-<td align="left">Female</td>
-<td align="right">39.7</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-25</td>
-<td align="left">Male</td>
-<td align="right">59.9</td>
-<td align="left">2020-04-23</td>
-<td align="left">Female</td>
-<td align="right">39.8</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-04-23</td>
-<td align="left">Male</td>
-<td align="right">59.8</td>
-<td align="left">2020-04-25</td>
-<td align="left">Female</td>
-<td align="right">39.9</td>
-</tr>
-<tr class="even">
-<td align="left">2020-04-27</td>
-<td align="left">Male</td>
-<td align="right">59.7</td>
-<td align="left">2020-04-27</td>
-<td align="left">Female</td>
-<td align="right">40.0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="c.-daily-death-rate-by-race" class="section level2">
-<h2>2c. Daily death rate by race</h2>
-<pre class="r"><code>race_ia_d = 
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;Indian/Alaska&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)
-race_asian_d =
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;Asian&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)
-race_black_d =
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;Black&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)
-race_latino_d =
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;Latino&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)
-race_multi_d =
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;Multi-Race&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)  
-race_hi_d =
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;Hawaiian/Islander&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)
-race_white_d =
-    race %&gt;% 
-    mutate(race_group = fct_reorder(race_group, total_cases)) %&gt;% 
-    mutate(race_group = recode(race_group, &quot;American Indian or Alaska Native&quot; = &quot;Indian/Alaska&quot;,
-           &quot;Native Hawaiian and other Pacific Islander&quot; = &quot;Hawaiian/Islander&quot;)) %&gt;%
-    filter(race_group == &quot;White&quot;) %&gt;% 
-    arrange(date) %&gt;% 
-    select(date, race_group, percent_deaths)
-
-race_all_d =
-    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %&gt;%
-    arrange(desc(percent_deaths)) 
-
-race_all_1_d =
-    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %&gt;% 
-    arrange(percent_deaths)
-
-race_all_2_d =
-    cbind(race_all_d, race_all_1_d) 
-head(race_all_2_d) %&gt;% 
-    knitr::kable(
-    caption = &quot;Highest &amp; Lowest Death Percent by Race&quot;,
-    col.names = c(&quot;Date&quot;, &quot;Race&quot;, &quot;Death Percent&quot;, &quot;Date&quot;, &quot;Race&quot;, &quot;Death Percent&quot;),
-    digits = 2
-  )</code></pre>
-<table style="width:100%;">
-<caption>Highest &amp; Lowest Death Percent by Race</caption>
-<colgroup>
-<col width="15%" />
-<col width="9%" />
-<col width="19%" />
-<col width="15%" />
-<col width="19%" />
-<col width="19%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">Date</th>
-<th align="left">Race</th>
-<th align="right">Death Percent</th>
-<th align="left">Date</th>
-<th align="left">Race</th>
-<th align="right">Death Percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">2020-10-27</td>
-<td align="left">Latino</td>
-<td align="right">48.7</td>
-<td align="left">2020-04-22</td>
-<td align="left">Multi-Race</td>
-<td align="right">0.2</td>
-</tr>
-<tr class="even">
-<td align="left">2020-09-11</td>
-<td align="left">Latino</td>
-<td align="right">48.6</td>
-<td align="left">2020-04-23</td>
-<td align="left">Multi-Race</td>
-<td align="right">0.2</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-09-12</td>
-<td align="left">Latino</td>
-<td align="right">48.6</td>
-<td align="left">2020-04-27</td>
-<td align="left">Multi-Race</td>
-<td align="right">0.2</td>
-</tr>
-<tr class="even">
-<td align="left">2020-09-13</td>
-<td align="left">Latino</td>
-<td align="right">48.6</td>
-<td align="left">2020-04-21</td>
-<td align="left">Indian/Alaska</td>
-<td align="right">0.3</td>
-</tr>
-<tr class="odd">
-<td align="left">2020-09-14</td>
-<td align="left">Latino</td>
-<td align="right">48.6</td>
-<td align="left">2020-05-02</td>
-<td align="left">Indian/Alaska</td>
-<td align="right">0.3</td>
-</tr>
-<tr class="even">
-<td align="left">2020-09-15</td>
-<td align="left">Latino</td>
-<td align="right">48.6</td>
-<td align="left">2020-05-03</td>
-<td align="left">Indian/Alaska</td>
-<td align="right">0.3</td>
-</tr>
-</tbody>
-</table>
-</div>
 </div>
 
 

@@ -358,7 +358,8 @@ From the above tables and bar charts, Kings County responses to COVID with highe
               death_rates = total_deaths/total_cases) %>%
     ungroup() %>% 
     dplyr::select(prevalence, death_rates) %>%
-    GGally::ggpairs()
+    GGally::ggpairs() %>% 
+    ggplotly(width = 650, height = 400)
 ```
 
 The points fall quite randomly on the plot, which indicates that there is no obvious or strong relationship between the outcome variables. Moreover, the correlation coefficient can range in value from −1 to +1. The larger the absolute value of the coefficient, the stronger the relationship between the variables. In our case, the correlation coefficient of -0.086 means that the relationship between outcomes are very weak and it is not statistically significant at all. 
