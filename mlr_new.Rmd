@@ -50,15 +50,7 @@ population_data = read_csv("./data/CA_Land_Area.csv") %>%
     mutate(
         location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
 
-geo_data = read_csv("./data/ca_boundaries.csv") %>%
-    janitor::clean_names() %>%
-    dplyr::select(name, intptlat, intptlon) %>%
-    rename(county=name)
-
-ca_joining_data = left_join(population_data, labor_data, by = c("county"))
-ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c("county"))
-
-ca_nonmedical_data = ca_nonmedical_data %>%
+ca_nonmedical_data = left_join(population_data, labor_data, by = c("county")) %>%
     mutate(labor_rate = labor_force/population*100) %>%
     dplyr::select(-labor_force)
 
@@ -95,7 +87,18 @@ ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county
 skimr::skim(ca_premodel_data)
 ```
 
-* The data includes `r nrow(ca_premodel_data)` observations and `r ncol(ca_premodel_data)` variables. Now we are interested on whether the death cases are associated with `area`, `population` and `testing_cases`.
+### Background
+
+* We were curious about what medical and non-medical factors were associated with infection rates, so we collected labor force data, population data as non-medical data for each county in California, using the percentage value of the largest labor force to population over a three-year range as an important indicator of local economic conditions, in addition to unemployment rate data, which is the ratio of the unemployed population divided by the labor force. Also, we collected COVID infection death data, vaccination data from each county, and defined the mortality rate as $\frac{number\ of\ deaths}{maximum\ total\ population}$ over 2020-2022, the infection rate (prevalence) as $\frac{total\ cases}{maximum\ total\ population}$ over 2020-2022, and the vaccination rate as $\frac{fully\ vaccinated\ population}{maximum\ total\ population}$ over the three-year period.
+
+### Data processing
+
+* Labor force data: Because total population data are not available in this dataset, calculating the labor force rate requires demographic variables from the population dataset. Therefore, I extracted the county name, unemployment rate, and labor force variables.
+* Demographic data: We extracted county area, population, and divided the counties into coastal and inland counties based on the official definition of coastal counties as another important potential economic indicator.
+* Labor force data and total population data were combined by `left_join` and divided by labor force by population as labor force percentage
+* COVID data: daily covid infection death data for each county, I divided the total number of infections by the population as the prevalence rate and the total number of tests by the population as the nucleic acid detection rate, and finally the county was used as the county, and the largest value over three years was taken as the indicator for that county.
+* Vaccine data: Similar to COVID data, the number of full vaccination completions divided by the total population was extracted as the vaccination rate, and the largest value over three years was taken as the indicator for that county.
+* The above data were combined to obtain pre-modeling pre-modelling data, including `r names(ca_premodel_data)`. This pre-modelling data includes `r nrow(ca_premodel_data)` observations and `r ncol(ca_premodel_data)` variables, without empty cells in each variables. Now we are interested on whether the death cases are associated with these selected variables.
 
 ## Data Description
 ```{r warning = F, message = F, fig.width = 16, fig.height = 10}
@@ -136,7 +139,7 @@ ca_model_data = ca_premodel_data %>%
            ln_area = log(land_area_sq_mi),
            ln_population = log(population),
            ln_test = log(test)) %>%
-    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)
+    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-county)
 
 plot_ln_test = ca_model_data %>%
     ggplot(aes(x = ln_test)) +
@@ -163,16 +166,16 @@ ca_model_data %>%
     knitr::kable()
 ```
 
-* The cleaned data includes `r nrow(ca_model_data)` states and `ncol(ca_model_data)` including `r names(ca_model_data)`. The data is extremely right-skewed and the natural logarithms are applied to each exploretory continuous variables.
+* The cleaned data includes `r nrow(ca_model_data)` states and `ncol(ca_model_data)` including `r names(ca_model_data)`. For those variables whose data is extremely right-skewed and the natural logarithms are applied to each exploratory continuous variables. By the plots and summary table we can see all the variables are almost bell-shaped, so in the modelling dataset we deleted the original variables that need to be transformed, keep the transformed variables, and delete the county variable because the county variable itself does not play a role in the model.
 
-## Correlation
+### Correlation
 ```{r warning = F, message = F}
 ca_model_data %>% 
     dplyr::select(-location) %>%
     GGally::ggpairs()
 ```
 
-* The correlation between predictors are highly correlated, which is more than 0.95. This is because testing count may associate with population in the area empirically.
+* The overall correlation and covariance between the independent variables are not obvious, but among them we can see that there is a large trend of correlation and covariance between `vaccination` and `labor_rate`, implying that including that including both of these variables in the model could result in poor coefficient estimation and inflated standard errors (due to multicollinearity). Our model selection techniques are able to figure this out.
 
 ## Modelling Fit
 ```{r warning = F, message = F}
@@ -181,7 +184,11 @@ reg_full = lm(prevalence ~ ., data = ca_model_data)
 reg_intercept = lm(prevalence ~ 1, data = ca_model_data)
 ```
 
+* We fitted a model with all potential predictors and a model including only the intercept for proceeding automatic model selection.
+
 ## Model Selection
+
+### Automatic and Criterion Model selection Methods
 ```{r warning = F, message = F}
 #forward Selection
 step(reg_intercept, direction='forward', scope=formula(reg_full),trace=0)
@@ -196,8 +203,8 @@ step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
 # chosen using SSE/RSS (smaller is better)
 criterion_selected = regsubsets(prevalence ~ ., data = ca_model_data)
 criterion_plot = summary(criterion_selected)
-# plot of Cp and Adj-R2 as functions of parameters
 
+# plot of Cp and Adj-R2 as functions of parameters
 x_new = (2:8)
 y_new = criterion_plot$cp
 z_new = criterion_plot$adjr2
@@ -223,16 +230,13 @@ cp_fe_new_2 =
 cp_fe_new_1 + cp_fe_new_2
 ```
 
-The plots above show the $C_p$ index and Adjusted $R^2$ for various numbers of parameters.
-When choosing a model based on $C_p$ criterion, we want to choose a model for which $C_p \leq p$,
-where p is the number of parameters. From the $C_p$ plot above, we should have either 4
-parameters (3 predictors), 5 parameters (4 predictors), or 6 parameters (5 predictors). If we
-consider the principle of parsimony as well, this would suggest the 4 parameters (3 predictors)
-model. But if we choose the model with 5 parameters (4 predictors), which has the lowest
-value for $C_p$
+* By the three automatic model selection models: forward selection, backward elimination and stepwise selection, we got the same result containing six parameters (five predictors):
 
-Use the LASSO method to perform variable selection. Make sure you choose the
-“best lambda” to use and show how you determined this
+$\hat{prevalence}=-71.4474+1.9559*I(location=inland)+8.0663*ln(unemployment)+1.3412*ln(area)+0.8201*ln(population)+9.8152*ln(test)$
+
+* The plots above show the $C_p$ index and Adjusted $R^2$ for various numbers of parameters. When choosing a model based on $C_p$ criterion, we want to choose a model for which $C_p \leq p$, where p is the number of parameters. From the $C_p$ plot above, we should have either 6 parameters (5 predictors), 7 parameters (6 predictors), or 8 parameters (7 predictors). If we consider the principle of parsimony as well, i.e. the model should be as simple as possible while keeping the same descriptive and prediction ability, this would suggest the 6 parameters (5 predictors) model. Also, it has the lowest value for $C_p$ compared with the number of parameters and the highest $R^2$.
+
+### Penalized Model Selection Method: LASSO
 ```{r warning = F, message = F}
 ca_lasso_data = ca_model_data %>% mutate(
     location=ifelse(location =="costal", 1,0))
@@ -267,11 +271,11 @@ fit_bestcv %>%
   knitr::kable(digits = 3)
 ```
 
-Since the stepwise selection techniques and the criterion techniques all chose the same model
-with 4 predictors, we recommend this as our final model. (The LASSO gave a very similar
-suggested model, with the addition of log area.)
-Our final model:
+* To make it easier for LASSO to proceed, I converted the `position` variables to 0 and 1. Using the LASSO method to perform variable selection, the key step is to make sure choosing the optimal $\lambda$ to efficiently reduce the complexity of the model while some descriptive prediction ability maintained. Thus a five-fold cross validation was performed.
 
+* Since the stepwise selection techniques and the criterion techniques all chose the same model with 5 predictors, we recommend this as our final model. Also, the LASSO gave a very similar suggested model.
+
+### Fitting the seleted final model
 ```{r warning = F, message = F}
 mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
 mlr_model %>% 
@@ -280,43 +284,43 @@ mlr_model %>%
   knitr::kable(digits = 3)
 ```
 
-* As the interaction term has p-value < 0.05, we can conclude that ln(population) and ln(total_tests) have significant interaction at 0.05 significance level, hence the two variables will be included in the model with the interaction term.
+* As almost all the terms has p-value < 0.05, with the `location` variable < 0.1, we can conclude that all the predictor coefficients are statistical significant at 0.1 significance level for `location` and 0.05 significance level for others, hence all the five variables will be included in the model. All these methods agree on the same suggested model or predictors. This might give good evidence that we should explore this model further.
 
-All three of these methods agree on the same suggested model. This might give good evidence
-that we should explore this model further.
+* From the outputs above, we see that location had a p-value close to 0.05. This might mean that the relationship between prevalence and location is weak. Also, the highly correlated variables `vaccination` and `labor_rate` neither was included in the final models.
 
-From the outputs above, we see that frost had a p-value close to 0.05. This might mean that
-the relationship between life expectancy and frost is weak.
-To determine if there is an association between illiteracy and HS graduation rate, we can refer
-to our matrix of plots in part a. The correlation between these two variables is quite strong
-(approx. 0.7), implying that including that including both of these variables in the model could
-result in poor coefficient estimation and inflated standard errors (due to multicollinearity).
-Our model selection techniques were able to “figure this out” and only HS gradation rate was
-included in the final models.
-
-## Modelling Diagnosis & Weighted Least Squares Regression
+## Modelling Diagnosis
 ```{r warning = F, message = F, fig.height = 10, fig.width = 10}
-sd_function <- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
+```
+
+* Overall, these plots look like this model is fitting the data well. No influential point detected. However the residual points showed some kinds trend and the horizontal line is not such stable on the edge area, it may be worth investigating further by weighted least squares regression.
+
+## Weighted Least Squares Regression
+```{r warning = F, message = F, fig.height = 10, fig.width = 10}
+# define sd function
+sd_function <- lm(abs(reg_full$residuals) ~ reg_full$fitted.values)
 
 var_fitted <- sd_function$fitted.values^2
 
+#define weight
 wt <- 1/var_fitted
 
-wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+wls_full = lm(prevalence~.,data = ca_model_data, weights = wt)
 
-wls_incidence %>% 
+wls_prevalence = step(wls_full, direction='backward', scope=formula(wls_full),trace=0)
+
+wls_prevalence %>% 
   broom::tidy() %>% 
   mutate(term = str_replace(term, "^location", "Location: ")) %>% 
   knitr::kable(digits = 3)
 
-check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 check_model(wls_prevalence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
 ```
 
-* Ordinary Least Squares violates normal assumption
-* The coefficient estimate for the `ln_population` predictor variable changed somewhat and the model fit improved.
-* The residual standard error changed from 9.224 (in the simple linear regression model) to 1.199 in the weighted LS model. This shows that the predictions from the WLS model are much closer to the actual observations than those from the ordinary LS model.
-* $R^2$ improved in the WLS model. WLS model is able to explain more of the variation in exam scores compared to the OLS model.
+* The coefficient estimate for the predictors variable changed somewhat and the model fit improved.
+* The residual standard error per coefficient slightly changed in the weighted LS model. This shows that the predictions from the WLS model are much closer to the actual observations than those from the ordinary LS model.
+* $R^2$ improved in the WLS model. WLS model is able to explain more of the variation in prevalence compared to the OLS model.
+* Therefore, I regard both MLR's mod and WLS's mod as good models. Because the data are collected from the overall California county-level big data, each observation may contain some special information rather than typo or anything else. This modeling mainly focuses on exploring the predictors used to explain the prevalence, therefore, the MLR model is used here as the final model, while WLS can be used for potential prediction.
 
 ## Cross Validation
 ```{r warning = F, message = F}
@@ -330,13 +334,14 @@ model_caret
 model_caret$resample
 ```
 
-* From the output above, the overall RMSE (root mean squared error) is 3.115, which would mean our MSE is 9.701. Our MAE (mean absolute error) is 2.594. These measures show that this model is doing a good job at predicting responses for “new” data points. Additionally, the variance for these measures is relatively small, showing that these estimates are probably pretty close to the true predictive ability.
+* From the output above, the overall RMSE (root mean squared error) is 3.079, which would mean our MSE is 9.483. Our MAE (mean absolute error) is 2.559. These measures show that this model is doing a good job at predicting responses for “new” data points. Additionally, the variance for these measures is relatively small, showing that these estimates are probably pretty close to the true predictive ability. This means that the MLR model can still be used to predict the COVID prevalence.
 
 ## Conclusion
 
 * We employed automatic search procedures, criterion based approaches, and the LASSO technique to select a final model:
 
-$\widehat{Prevalence}=-69.049+9.251 \cdot ln(unemployment)+1.495 \cdot ln(area)+0.642 \cdot ln(population)+9.389 \cdot ln(test)$
+$\hat{prevalence}=-71.4474+1.9559*I(location=inland)+8.0663*ln(unemployment)+1.3412*ln(area)+0.8201*ln(population)+9.8152*ln(test)$
 
-* From this model, we can see that as the murder rate and average number of freezing days (frost) increase, the predicted life expectancy decreases, while increases in high school graduations and (log) population were associated with an increase in expected life expectancy.
-Overall, from our 10-fold cross validation, we see that our model has pretty good predictive ability for new points. However, this model was only built on data from the US, so it should not be used to predict life expectancy in other locations. Additionally, we noticed that Hawaii was a potential influential point – by exploring Hawaii’s role in our model, we may have slightly different conclusions.
+* From this model, we can see that as the while the location is inland, unemployment, land area, population and test participation increases, the predicted prevalence increases. This is probably because inland counties, counties with high unemployment generally have poor economy so that poor medical conditions, which may finally lead to increased prevalence; while the large size of the county and the high population of the county may lead to increased prevalence due to dense population, but still needs further investigation. In addition, the high prevalence is from increased test participation is somewhat surprising, but it may be because more potential positive patients are able to be detected.
+
+* Overall, from our 10-fold cross validation, we see that our model has pretty good predictive ability for new points. However, this model was only built on data on the county level, so there may be some special information missing, but the overall model reflects the correlation and relationship between the prevalence and some predictors in California.

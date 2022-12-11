@@ -5,9 +5,9 @@ account: zhengweisong
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7851928
-bundleId: 6621176
+bundleId: 6621425
 url: https://zhengweisong.shinyapps.io/shiny_dashboard/
-when: 1670707527.52364
-lastSyncTime: 1670707527.52366
+when: 1670713886.25249
+lastSyncTime: 1670713886.25251
 asMultiple: FALSE
 asStatic: FALSE

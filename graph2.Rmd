@@ -52,6 +52,7 @@ The three most commonly described host characteristics are age, gender, and race
 
 In this project, we found it interesting to discuss the different COVID responses under different host characteristics (age, gender, and race) of the population at risk in California. 
 
+<<<<<<< HEAD
 
 
 ## Prevalence vs Age 
@@ -580,6 +581,13 @@ layout_matrix = rbind(c(1, 1, 1, 2, 2, 2, 2),
 
 
 ## 3
+=======
+# 1. Total cases
+
+In the first section, we would like to discuss the daily growth rate in the number of infection cases among different demographic subgroups.
+
+## 1a. Daily growth rate of total cases by age
+>>>>>>> ebe5d68739ca08689a61299dbb30b7da5f2b6a3c
 
 ```{r}
 
@@ -644,6 +652,7 @@ head(age_all_2) %>%
   )
 ```
 
+Generally, we find that the young people aged of 0-17 experiences the top 6 daily increase in the infection cases of above 5 times the prior day volumn in April. However, the elder people aged from 50 to 65+ have the lowest and negative growth rate in number of daily cases. Put it specifically, the number of daily new cases among people from age group of 50-64 and 65+ even decreases slightly by 17% at the end of June. Based on this preliminary observation, younger people tend to have higher daily increase in the infection case number, which suggests that the young are more vulnerable in the face of COVID attack. This finding looks reasonable to us as it may be attributed to the more active in-person interactions, weaker immune system, wider physical activity range, and etc. among the teenagers.
 
 ## 1b. Daily growth rate of total cases by gender
 
@@ -683,7 +692,7 @@ head(gender_all_2) %>%
   )
 ```
 
-
+Among the highest and lowest case growth rate by gender, both male and female subgroups show almost equal appearances with very closed rate values in our summary tables. This observation suggests that the daily growth rate of infection cases at the extreme ends does not differentiate much by gender.
 
 ## 1c. Daily growth rate of total cases by race
 
@@ -773,6 +782,187 @@ head(race_all_2) %>%
 
 ```
 
+<<<<<<< HEAD
+=======
+The subgroup of Multi-race shows extremely high (~60 x in growth) and abnormally low (~ - 360x drop) growth rates in daily detective cases.  The Indian/Alaska subgroup faces the similar problem as Multi-race group. This finding raises our attention to the disparities existed in pandemic responses across racial and ethnical subgroups. In other words, there is a great possibility that Multi-race and Indian/Alaska people may experience more vulnerable and unstable COVID protections.
+
+# 2. Death Rate
+
+In the second section, we would like to discuss the daily death rate among different demographic subgroups.
+
+## 2a. Daily death rate by age
+
+```{r}
+
+age_17_d = 
+  age %>% 
+  filter(age_group == "0-17") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+
+
+
+age_49_d =
+  age %>% 
+  filter(age_group == "18-49") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_64_d = 
+  age %>% 
+  filter(age_group == "50-64") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_65_d =
+  age %>% 
+  filter(age_group == "65+") %>% 
+  arrange(date) %>% 
+  select(date, age_group, percent_deaths) 
+ 
+
+
+age_all_d = 
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %>% 
+    arrange(desc(percent_deaths))
+
+```
+
+```{r}
+age_all_1_d =
+    rbind(age_17_d, age_49_d, age_64_d, age_65_d) %>%
+    arrange(percent_deaths)
+
+
+age_all_2_d =
+    cbind(age_all_d, age_all_1_d)
+
+head(age_all_2) %>%
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Age",
+    col.names = c("Date", "Age", "Death Percent", "Date", "Age", "Death Percent"),
+    digits = 2
+  )
+```
+
+
+
+## 2b. Daily death rate by gender
+
+```{r}
+gender_M_d =
+  gender %>% 
+  filter(gender == "Male") %>% 
+  arrange(date) %>% 
+  select(date, gender, percent_deaths)
+
+gender_F_d =
+  gender %>% 
+  filter(gender == "Female") %>% 
+  arrange(date) %>% 
+  select(date, gender, percent_deaths)
+
+gender_all_d =
+    rbind(gender_M_d, gender_F_d) %>%
+    arrange(desc(percent_deaths)) %>% 
+    select(date, gender, percent_deaths)
+gender_all_d_1 =
+    rbind(gender_M_d, gender_F_d) %>%
+    arrange(percent_deaths) %>% 
+    select(date, gender, percent_deaths)
+
+gender_all_2_d = 
+    cbind(gender_all_d, gender_all_d_1)
+head(gender_all_2_d) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Gender",
+    col.names = c("Date", "Gender", "Death Percent", "Date", "Gender", "Death Percent"),
+    digits = 2
+  )
+```
+
+## 2c. Daily death rate by race
+
+```{r}
+race_ia_d = 
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Indian/Alaska") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_asian_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Asian") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_black_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Black") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_latino_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Latino") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_multi_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Multi-Race") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)  
+race_hi_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "Hawaiian/Islander") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+race_white_d =
+    race %>% 
+    mutate(race_group = fct_reorder(race_group, total_cases)) %>% 
+    mutate(race_group = recode(race_group, "American Indian or Alaska Native" = "Indian/Alaska",
+           "Native Hawaiian and other Pacific Islander" = "Hawaiian/Islander")) %>%
+    filter(race_group == "White") %>% 
+    arrange(date) %>% 
+    select(date, race_group, percent_deaths)
+
+race_all_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %>%
+    arrange(desc(percent_deaths)) 
+
+race_all_1_d =
+    rbind(race_ia_d, race_asian_d, race_black_d, race_latino_d, race_multi_d, race_hi_d) %>% 
+    arrange(percent_deaths)
+
+race_all_2_d =
+    cbind(race_all_d, race_all_1_d) 
+head(race_all_2_d) %>% 
+    knitr::kable(
+    caption = "Highest & Lowest Death Percent by Race",
+    col.names = c("Date", "Race", "Death Percent", "Date", "Race", "Death Percent"),
+    digits = 2
+  )
+```
+>>>>>>> ebe5d68739ca08689a61299dbb30b7da5f2b6a3c
 
 
 
