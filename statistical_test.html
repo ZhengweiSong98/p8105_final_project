@@ -329,7 +329,7 @@ div.tocify {
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Exploratory analyses
+    Exploratory Analysis
      
     <span class="caret"></span>
   </a>
@@ -347,24 +347,30 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Inference analyses
+    Inference Analysis
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="mlr_fatality.html">Weighted Least Model for Fatality</a>
+      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
     </li>
     <li>
-      <a href="mlr_new.html">Weighted Least Model for Prevalence</a>
+      <a href="mlr_fatality.html">Multiple Linear Model for Fatality</a>
     </li>
   </ul>
 </li>
-<li>
-  <a href="statistical_test.html">Statistical Test</a>
-</li>
-<li>
-  <a href="shiny_app.html">Additional Prediction</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Statistical Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="statistical_test.html">ANOVA Test on MLR Prevalence and Death Cases</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="project_report.html">Project Report</a>
@@ -403,27 +409,29 @@ div.tocify {
 </div>
 
 
-<p>We apply ANOVA test to our linear regression, uses the F-test to
-determine whether the variables fits the data as well as our model. If
-that F-statics are sufficiently large, or P-values are significantly
-small，then we can conclude that your model fits the data better than
-the intercept-only model.</p>
-<p>ANOVA test for model <span class="math display">\[ln(reported \
-death) = ln(population)\beta_{ln(population)} \times total \
-cost\beta_{totol \ test} + \epsilon_i\]</span></p>
-<p>Then, we conduct a hypothesis test.</p>
-<p><span class="math display">\[H_0 = \beta_{ln(population)} =
-\beta_{totol \ test}\]</span> <span class="math display">\[H_1 = At\
-least\ one\ \beta\: is\ not\ zero \]</span></p>
-<pre class="r"><code>reg_full = lm(ln_reported_deaths ~ ln_population*ln_total_tests, data = demo_death)
-aov(reg_full) %&gt;% summary()</code></pre>
-<pre><code>##                              Df Sum Sq Mean Sq F value   Pr(&gt;F)    
-## ln_population                 1 303.31  303.31 641.217  &lt; 2e-16 ***
-## ln_total_tests                1   0.38    0.38   0.795 0.376560    
-## ln_population:ln_total_tests  1   7.48    7.48  15.816 0.000206 ***
-## Residuals                    55  26.02    0.47                     
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Analysis of Variance (ANOVA) is a statistical test used to determine
+if there is a statistically significant difference between categorical
+groups. In general, we expect that there are one or more group might be
+influential on the dependent variable, while the other group treated as
+control group.</p>
+<p>Before conducting the test, we need to check the test assumption:
+<span class="math inline">\(\bullet\)</span> no relationship between the
+subjects. <span class="math inline">\(\bullet\)</span> different groups
+must have equal sample sizes. <span
+class="math inline">\(\bullet\)</span> dependent variable is normally
+distributed. <span class="math inline">\(\bullet\)</span> Population
+variances must be equal(Homogeneity of variance)</p>
+<div id="anova-test-on-mlr-prevelance" class="section level1">
+<h1>ANOVA Test on MLR Prevelance</h1>
+<p>These assumptions were <a href="mlr_new.html">checked</a>, and our
+model for prevelance meet these requirement. Then, we conduct ANOVA test
+to our model, and uses the F-test to determine whether the variables
+fits the data as well as our model. If that F-statics are sufficiently
+large, or P-values are significantly small，then we can conclude that
+our model fits the data better than the intercept-only model，and there
+are coefficients not equal to zero. But, if we fail to reject the null
+hypothesis, it means that all the coefficients are simultaneously zero,
+and the intercept-only model is better than our model.</p>
 <p>ANOVA test for model <span class="math display">\[Prevalence =
 location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+
 \epsilon_i\]</span></p>
@@ -432,17 +440,82 @@ location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unem
 \beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}\]</span>
 <span class="math display">\[H_1 = At\ least\ one\ \beta\: is\ not\ zero
 \]</span></p>
+<p>For model for prevalence, we decided to use weighted least square
+regression. And fit the model by weighted least square is better than
+unweighted. Since our error variance is unknown, we need to estimate the
+standard deviation function and the weight. In a weighted fit, less
+weight is given to the less precise measurements and more weight to more
+precise measurements.</p>
 <pre class="r"><code>mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
-aov(mlr_model) %&gt;% summary()</code></pre>
+sd_function &lt;- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+
+var_fitted &lt;- sd_function$fitted.values^2
+
+wt &lt;- 1/var_fitted
+
+wls_prevalence &lt;- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+aov(wls_prevalence) %&gt;% summary()</code></pre>
 <pre><code>##                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    
-## location         1    4.7     4.7   0.492 0.486063    
-## ln_test          1  889.0   889.0  92.886 3.66e-13 ***
-## ln_unemployment  1  291.3   291.3  30.437 1.10e-06 ***
-## ln_area          1  128.9   128.9  13.469 0.000572 ***
-## ln_population    1   88.3    88.3   9.228 0.003723 ** 
-## Residuals       52  497.7     9.6                     
+## location         1   6.15    6.15    3.45 0.068913 .  
+## ln_test          1 191.51  191.51  107.45 2.96e-14 ***
+## ln_unemployment  1  47.63   47.63   26.72 3.80e-06 ***
+## ln_area          1  24.60   24.60   13.80 0.000497 ***
+## ln_population    1  19.91   19.91   11.17 0.001544 ** 
+## Residuals       52  92.68    1.78                     
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>From the table above, we can see that the Variables,such as <span
+class="math inline">\(ln(test)\)</span>,<span
+class="math inline">\(ln(unemployment)\)</span>,<span
+class="math inline">\(ln(area)\)</span>,<span
+class="math inline">\(ln(population)\)</span> are statistically
+significant, which means their p-value smaller than 0.05. Only variable
+<span class="math inline">\(location\)</span> has p-value greater than
+0.05. But its p-value=0.068913 still can considered as small. So we
+decide to keep it in our model.</p>
+</div>
+<div id="anova-test-on-mlr-fatality" class="section level1">
+<h1>ANOVA Test on MLR Fatality</h1>
+<p>For our fatality model, the test assumptions are <a
+href="mlr_fatality.html">checked</a> ANOVA test for model <span
+class="math display">\[death\ rate =
+location\beta_{location}+vaccinated\beta_{vaccinated}+labor\
+rate\beta_{labor\
+rate}+ln(tests)\beta_{ln(test)}+ln(area)\beta_{ln(area)}+ln(unemployment)\beta){ln(unemployment)}+ln(bed)\beta_{ln(bed)}+\epsilon_i\]</span></p>
+<p>Then, we conduct a hypothesis test for fatality.</p>
+<p><span class="math display">\[H_0 =
+\beta_{location}=\beta_{vaccinated}=\beta_{labor\
+rate}=\beta_{ln(test)}=\beta_{ln(area)}=\beta_{ln(unemployment)}=\beta_{ln(bed)}\]</span>
+<span class="math display">\[H_1 = At\ least\ one\ \beta\: is\ not\ zero
+\]</span></p>
+<pre class="r"><code>mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data_death)
+anova(mlr_model) %&gt;% broom::tidy()</code></pre>
+<pre><code>## # A tibble: 8 × 6
+##   term               df   sumsq  meansq statistic    p.value
+##   &lt;chr&gt;           &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 location            1 0.0915  0.0915     20.7    0.0000365
+## 2 vaccinated          1 0.00149 0.00149     0.337  0.564    
+## 3 labor_rate          1 0.0535  0.0535     12.1    0.00108  
+## 4 ln_tests            1 0.0180  0.0180      4.07   0.0493   
+## 5 ln_area             1 0.0478  0.0478     10.8    0.00189  
+## 6 ln_unemployment     1 0.0168  0.0168      3.80   0.0571   
+## 7 ln_bed              1 0.0272  0.0272      6.14   0.0167   
+## 8 Residuals          48 0.212   0.00442    NA     NA</code></pre>
+<p>From the table above, we can see that the variables, such as <span
+class="math inline">\(location\)</span>,<span
+class="math inline">\(labor\ rate\)</span>,<span
+class="math inline">\(ln(tests)\)</span>,<span
+class="math inline">\(ln(area)\)</span>,<span
+class="math inline">\(ln(unemployment)\)</span>,<span
+class="math inline">\(ln(bed)\)</span> are statistically significant,
+which means their p-value smaller than 0.05. Only variable <span
+class="math inline">\(vaccinated\)</span> has p-value greater than 0.05.
+This is because of the effect of Collinearity. Since <span
+class="math inline">\(vaccinated\)</span> is closely related to the
+<span class="math inline">\(death\ rate\)</span>. Thus, we decide to
+keep variable <span class="math inline">\(vaccinated\)</span> in our
+model.</p>
+</div>
 
 
 

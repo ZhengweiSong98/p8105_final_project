@@ -1,0 +1,200 @@
+---
+title: "Statistical test"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+library(readr)
+library(tidyr)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+Analysis of Variance (ANOVA) is a statistical test used to determine if there is a statistically significant difference between categorical groups. In general, we expect that there are one or more group might be influential on the dependent variable, while the other group treated as control group. 
+
+Before conducting the test, we need to check the test assumption:
+$\bullet$ no relationship between the subjects.
+$\bullet$ different groups must have equal sample sizes.
+$\bullet$ dependent variable is normally distributed.
+$\bullet$ Population variances must be equal(Homogeneity of variance)
+
+# ANOVA Test on MLR Prevelance
+
+These assumptions were [checked](mlr_new.html), and our model for prevelance meet these requirement.
+Then, we conduct ANOVA test to our model, and uses the F-test to determine whether the variables fits the data as well as our model. If that F-statics are sufficiently large, or P-values are significantly small，then we can conclude that our model fits the data better than the intercept-only model，and there are coefficients not equal to zero. But, if we fail to reject the null hypothesis, it means that all the coefficients are simultaneously zero, and the intercept-only model is better than our model.
+
+ANOVA test for model $$Prevalence = location\beta_{location}+ln(test)\beta_{ln(test)}+ln(unemployment)\beta_{ln(unemployment)}+ln(area)\beta_{ln(area)}+ln(population)\beta_{ln(population)}+ \epsilon_i$$
+
+Then, we conduct a hypothesis test.
+
+$$H_0 = \beta_{location}+\beta_{ln(test)}+\beta_{ln(unemployment)}+\beta_{ln(area)}+\beta_{ln(population)}$$
+$$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
+
+```{r,include=FALSE}
+source("data_preprocessing_backbone.R")
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+population_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-rank, -state) %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
+
+geo_data = read_csv("./data/ca_boundaries.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(name, intptlat, intptlon) %>%
+    rename(county=name)
+
+ca_joining_data = left_join(population_data, labor_data, by = c("county"))
+ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c("county"))
+
+ca_nonmedical_data = ca_nonmedical_data %>%
+    mutate(labor_rate = labor_force/population*100) %>%
+    dplyr::select(-labor_force)
+
+demo_covid = demo %>%
+    mutate(cumulative_deaths= as.numeric(population),
+           cumulative_cases = as.numeric(cumulative_cases),
+        prevalence=cumulative_cases/population*100,
+        test = cumulative_total_tests/population*100,
+        ) %>%
+    dplyr::select(county_name, prevalence, test, population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(prevalence=max(prevalence),
+              test = max(test)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties"))
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county")) %>%
+    mutate(
+        vaccination=fully_vaccinated/population*100) %>%
+    dplyr::select(-fully_vaccinated)
+ca_model_data = ca_premodel_data %>% 
+    mutate(ln_unemployment = log(unemployment),
+           ln_area = log(land_area_sq_mi),
+           ln_population = log(population),
+           ln_test = log(test)) %>%
+    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)
+```
+For model for prevalence, we decided to use weighted least square regression. And fit the model by weighted least square is better than unweighted. Since our error variance is unknown, we need to estimate the standard deviation function and the weight. In a weighted fit, less weight is given to the less precise measurements and more weight
+to more precise measurements.
+```{r}
+mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+sd_function <- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+
+var_fitted <- sd_function$fitted.values^2
+
+wt <- 1/var_fitted
+
+wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+aov(wls_prevalence) %>% summary()
+```
+
+From the table above, we can see that the Variables,such as $ln(test)$,$ln(unemployment)$,$ln(area)$,$ln(population)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $location$ has p-value greater than 0.05. But its p-value=0.068913 still can considered as small. So we decide to keep it in our model. 
+
+# ANOVA Test on MLR Fatality
+
+For our fatality model, the test assumptions are [checked](mlr_fatality.html)
+ANOVA test for model $$death\ rate = location\beta_{location}+vaccinated\beta_{vaccinated}+labor\ rate\beta_{labor\ rate}+ln(tests)\beta_{ln(test)}+ln(area)\beta_{ln(area)}+ln(unemployment)\beta){ln(unemployment)}+ln(bed)\beta_{ln(bed)}+\epsilon_i$$
+
+Then, we conduct a hypothesis test for fatality.
+
+$$H_0 = \beta_{location}=\beta_{vaccinated}=\beta_{labor\ rate}=\beta_{ln(test)}=\beta_{ln(area)}=\beta_{ln(unemployment)}=\beta_{ln(bed)}$$
+$$H_1 = At\ least\ one\ \beta\: is\ not\ zero $$
+
+```{r, include=FALSE}
+source("data_preprocessing_backbone.R")
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+land_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) %>%
+    dplyr::select(-rank, -state, -population)
+
+ca_nonmedical_data = left_join(land_data, labor_data, by = c("county"))
+
+demo_covid = demo %>%
+     mutate(cumulative_reported_deaths= as.numeric(cumulative_reported_deaths),
+            cumulative_cases = as.numeric(cumulative_cases),
+        death_rate = 0.01+cumulative_reported_deaths/population*100,
+        test = cumulative_total_tests/population*100) %>%
+    dplyr::select(county_name, death_rate, test,population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(death_rate=max(death_rate,na.rm = T),
+              test = max(test),
+              population = max(population)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties","Outside California"))
+
+hospital = read_csv("./data/CA_Covid19_Hospital.csv") %>%
+    group_by(county) %>%
+    summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
+              icu_available_beds = max(icu_available_beds,na.rm = T)) %>%
+    dplyr::select(county, all_hospital_beds, icu_available_beds)
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_medical_data2 = left_join(ca_medical_data, hospital, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data2, ca_nonmedical_data, by = c("county")) %>%
+    relocate(death_rate) %>%
+    mutate(
+        vaccinated=fully_vaccinated/population*100,
+        labor_rate = labor_force/population*100,
+        hospital_bed = all_hospital_beds/population*100,
+        icu_bed = icu_available_beds/population*100
+    )%>%
+    dplyr::select(-fully_vaccinated, -population, -labor_force,-all_hospital_beds,-icu_available_beds)
+
+ca_model_data_death = ca_premodel_data %>% 
+    mutate(ln_tests = log(test),
+           ln_area = log(land_area_sq_mi),
+           ln_unemployment = log(unemployment),
+           ln_hospital = log(hospital_bed+0.01),
+           ln_bed = log(icu_bed+0.01)
+           ) %>%
+    dplyr::select(-test,-land_area_sq_mi,-unemployment,-county,-hospital_bed,-icu_bed) %>%
+    filter(!ln_hospital %in% NA,
+           !ln_bed %in% NA)
+
+```
+
+```{r}
+mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data_death)
+anova(mlr_model) %>% broom::tidy()
+```
+From the table above, we can see that the variables, such as $location$,$labor\ rate$,$ln(tests)$,$ln(area)$,$ln(unemployment)$,$ln(bed)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $vaccinated$ has p-value greater than 0.05. This is because of the effect of Collinearity. Since $vaccinated$ is closely related to the $death\ rate$. Thus, we decide to keep variable $vaccinated$ in our model.

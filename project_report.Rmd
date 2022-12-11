@@ -26,7 +26,11 @@ library(maps)
 library(lattice)
 library(corrplot)
 library(latticeExtra)
-
+library(performance)
+library(see)
+library(leaps)
+library(glmnet)
+library(caret)
 
 knitr::opts_chunk$set(
  echo = TRUE,
@@ -1269,7 +1273,7 @@ One of the most insightful graph we obtained is the graph of Death Rate vs. Age.
 ### Inference Analysis: Regression
 #### Multiple linear Regression for prevalence
 
-For model building purpose of this investigation, a multiple linear regression model is considered to investigate on hospitalization rate. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, location and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
+For model building purpose of this investigation, a multiple linear regression model is considered to investigate on disease prevalence. The underlying logic for this model is relatively simple, analysts extract data that includes disease prevalence, area, population, location and tests. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
 
 $$\widehat{Prevalence}=-69.049+9.251 \cdot ln(unemployment)+1.495 \cdot ln(area)+0.642 \cdot ln(population)+9.389 \cdot ln(test)$$
 
@@ -1281,13 +1285,457 @@ Another thing to look at was the correlation between the predictors to avoid the
 
 The three criterion based model selection method are Cp criterion, adjusted R squared criterion, and LASSO. The results of these model selection method all gave similar predictor size, so in the end the analysts chose four predictors to construct the final model as shown in the equation above. After the construction of this model, a corss validation process is performed to further assess the prediction ability of this model.
 
+#### Multiple linear Regression for fatality
+
+Using similar logic as for the MLR model for prevalence, investigate on a MLR model for fatality. The hypothetical multiple linear regression function for this particular inference analysis is shown as below:
+
+$$\widehat{DR} = -0.572 + 0.079\cdot lnI(location = inland)+0.002 \cdot vacci-0.004 \cdot labor + 0.066 \cdot ln(test)+ 0.034 \cdot ln(area) + 0.073 \cdot ln(unemploy)$$
+
 ### Statistical test
 
 The Statistical test used in this investigation is Analysis of Variance(ANOVA), which is used to determine if there is a statistically significant difference between categorical groups. After checking that there are no relationship between the subjects, groups of interest have equal sample size, dependent variable is normally distributed, population variances are equal, the ANOVA test can be conducted to our linear regression together with an F-test to determine whether the variable fits the data as well as the model. 
 
 In total, two ANOVA tests are performed, one on the MLR model for disease Prevalence and one on the MLR model for death cases.
 
+### Result
+```{r, include=FALSE}
+source("data_preprocessing_backbone.R")
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+land_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) %>%
+    dplyr::select(-rank, -state, -population)
+
+ca_nonmedical_data = left_join(land_data, labor_data, by = c("county"))
+
+demo_covid = demo %>%
+     mutate(cumulative_reported_deaths= as.numeric(cumulative_reported_deaths),
+            cumulative_cases = as.numeric(cumulative_cases),
+        death_rate = 0.01+cumulative_reported_deaths/population*100,
+        test = cumulative_total_tests/population*100) %>%
+    dplyr::select(county_name, death_rate, test,population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(death_rate=max(death_rate,na.rm = T),
+              test = max(test),
+              population = max(population)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties","Outside California"))
+
+hospital = read_csv("./data/CA_Covid19_Hospital.csv") %>%
+    group_by(county) %>%
+    summarize(all_hospital_beds = max(all_hospital_beds,na.rm = T),
+              icu_available_beds = max(icu_available_beds,na.rm = T)) %>%
+    dplyr::select(county, all_hospital_beds, icu_available_beds)
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_medical_data2 = left_join(ca_medical_data, hospital, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data2, ca_nonmedical_data, by = c("county")) %>%
+    relocate(death_rate) %>%
+    mutate(
+        vaccinated=fully_vaccinated/population*100,
+        labor_rate = labor_force/population*100,
+        hospital_bed = all_hospital_beds/population*100,
+        icu_bed = icu_available_beds/population*100
+    )%>%
+    dplyr::select(-fully_vaccinated, -population, -labor_force,-all_hospital_beds,-icu_available_beds)
+
+ca_model_data = ca_premodel_data %>% 
+    mutate(ln_tests = log(test),
+           ln_area = log(land_area_sq_mi),
+           ln_unemployment = log(unemployment),
+           ln_hospital = log(hospital_bed+0.01),
+           ln_bed = log(icu_bed+0.01)
+           ) %>%
+    dplyr::select(-test,-land_area_sq_mi,-unemployment,-county,-hospital_bed,-icu_bed) %>%
+    filter(!ln_hospital %in% NA,
+           !ln_bed %in% NA)
+
+```
+ANOVA result for the model on fatality:
+```{r}
+mlr_model = lm(death_rate~location+vaccinated+labor_rate+ln_tests+ln_area+ln_unemployment+ln_bed,data = ca_model_data)
+anova(mlr_model) %>% broom::tidy()
+```
+From the table above, we can see that the Variables,such as $location$,$labor\ rate$,$ln(tests)$,$ln(area)$,$ln(unemployment)$,$ln(bed)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $vaccinated$ has p-value greater than 0.05. 
+```{r,include=FALSE}
+source("data_preprocessing_backbone.R")
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+population_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-rank, -state) %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
+
+geo_data = read_csv("./data/ca_boundaries.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(name, intptlat, intptlon) %>%
+    rename(county=name)
+
+ca_joining_data = left_join(population_data, labor_data, by = c("county"))
+ca_nonmedical_data = left_join(ca_joining_data, geo_data, by = c("county"))
+
+ca_nonmedical_data = ca_nonmedical_data %>%
+    mutate(labor_rate = labor_force/population*100) %>%
+    dplyr::select(-labor_force)
+
+demo_covid = demo %>%
+    mutate(cumulative_deaths= as.numeric(population),
+           cumulative_cases = as.numeric(cumulative_cases),
+        prevalence=cumulative_cases/population*100,
+        test = cumulative_total_tests/population*100,
+        ) %>%
+    dplyr::select(county_name, prevalence, test, population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(prevalence=max(prevalence),
+              test = max(test)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties"))
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county")) %>%
+    mutate(
+        vaccination=fully_vaccinated/population*100) %>%
+    dplyr::select(-fully_vaccinated)
+ca_model_data = ca_premodel_data %>% 
+    mutate(ln_unemployment = log(unemployment),
+           ln_area = log(land_area_sq_mi),
+           ln_population = log(population),
+           ln_test = log(test)) %>%
+    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-intptlat,-intptlon,-county)
+```
+ANOVA result for the model on disease prevalence:
+```{r}
+mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+sd_function <- lm(abs(mlr_model$residuals) ~ mlr_model$fitted.values)
+
+var_fitted <- sd_function$fitted.values^2
+
+wt <- 1/var_fitted
+
+wls_prevalence <- lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data, weights = wt)
+aov(wls_prevalence) %>% summary()
+```
+
+From the table above, we can see that the Variables,such as $ln(test)$,$ln(unemployment)$,$ln(area)$,$ln(population)$ are statistically significant, which means their p-value smaller than 0.05. Only variable $location$ has p-value greater than 0.05.
+```{r warning = F, message = F}
+source("data_preprocessing_backbone.R")
+labor_data = read_csv("./data/CA_Labor.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-employment,-unemployment,-rank) %>%
+    rename(unemployment=unemployment_rate_per_cent)
+
+population_data = read_csv("./data/CA_Land_Area.csv") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-rank, -state) %>%
+    mutate(
+        location = ifelse(county %in% c("Los Angeles", "Orange", "San Diego", "Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura", "Alameda", "Contra Costa", "Marin", "Napa", "San Francisco", "San Mateo", "Santa Clara", "Solano", "Sonoma", "Del Norte", "Humboldt", "Mendocino"), "costal", "inland")) 
+
+ca_nonmedical_data = left_join(population_data, labor_data, by = c("county")) %>%
+    mutate(labor_rate = labor_force/population*100) %>%
+    dplyr::select(-labor_force)
+
+demo_covid = demo %>%
+    mutate(cumulative_deaths= as.numeric(population),
+           cumulative_cases = as.numeric(cumulative_cases),
+        prevalence=cumulative_cases/population*100,
+        test = cumulative_total_tests/population*100,
+        ) %>%
+    dplyr::select(county_name, prevalence, test, population) %>%
+    rename(county=county_name) %>%
+    group_by(county) %>%
+    summarize(prevalence=max(prevalence),
+              test = max(test)) %>%
+    filter(!county %in% c("Out of state","Unknown"))
+
+vaccine = read_csv("./data/CA_covid19vaccines.csv") %>%
+    janitor::clean_names() %>%
+    group_by(county) %>%
+    summarise(
+        fully_vaccinated = sum(fully_vaccinated)
+        # total number of fully vaccinated people
+            ) %>%
+    arrange(county) %>%
+    drop_na() %>%
+    filter(!county %in% c("Unknown", "All CA Counties", "All CA and Non-CA Counties"))
+
+ca_medical_data = left_join(demo_covid, vaccine, by =c("county"))
+ca_premodel_data = left_join(ca_medical_data, ca_nonmedical_data, by = c("county")) %>%
+    mutate(
+        vaccination=fully_vaccinated/population*100) %>%
+    dplyr::select(-fully_vaccinated)
+
+skimr::skim(ca_premodel_data)
+```
+
+```{r warning = F, message = F, fig.width = 16, fig.height = 10}
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE)
+rawplot_prevalence = ca_premodel_data %>%
+    ggplot(aes(x = prevalence)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
+    scale_y_continuous(labels = point)
+
+rawplot_unemployment = ca_premodel_data %>%
+    ggplot(aes(x = unemployment)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+rawplot_labor = ca_premodel_data %>%
+    ggplot(aes(x = labor_rate)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+rawplot_population = ca_premodel_data %>%
+    ggplot(aes(x = population)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8) +
+    scale_y_continuous(labels = point) +
+    scale_x_continuous(labels = point)
+
+plot_area = ca_premodel_data %>%
+    ggplot(aes(x = land_area_sq_mi)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+plot_test = ca_premodel_data %>%
+    ggplot(aes(x = test)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+ca_model_data = ca_premodel_data %>% 
+    mutate(ln_unemployment = log(unemployment),
+           ln_area = log(land_area_sq_mi),
+           ln_population = log(population),
+           ln_test = log(test)) %>%
+    dplyr::select(-unemployment,-land_area_sq_mi,-population,-test,-county)
+
+plot_ln_test = ca_model_data %>%
+    ggplot(aes(x = ln_test)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+plot_ln_unemployment = ca_model_data %>%
+    ggplot(aes(x = ln_unemployment)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+plot_ln_area = ca_model_data %>%
+    ggplot(aes(x = ln_area)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+plot_ln_population = ca_model_data %>%
+    ggplot(aes(x = ln_population)) +
+    geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = .8)
+
+(rawplot_prevalence + rawplot_unemployment + plot_area + rawplot_population+plot_test)/(rawplot_labor + plot_ln_unemployment + plot_ln_area+plot_ln_population+plot_ln_test)
+
+ca_model_data %>%
+    gtsummary::tbl_summary() %>%
+    gtsummary::bold_labels() %>%
+    as.tibble() %>% 
+    knitr::kable()
+```
+##### Correlation
+```{r warning = F, message = F}
+ca_model_data %>% 
+    dplyr::select(-location) %>%
+    GGally::ggpairs()
+```
+
+* The overall correlation and covariance between the independent variables are not obvious, but among them we can see that there is a large trend of correlation and covariance between `vaccination` and `labor_rate`, implying that both of these variables in the model could result in poor coefficient estimation and inflated standard errors (due to multicollinearity). Our model selection techniques are able to figure this out.
+
+##### Modelling Fit
+```{r warning = F, message = F}
+reg_full = lm(prevalence ~ ., data = ca_model_data)
+
+reg_intercept = lm(prevalence ~ 1, data = ca_model_data)
+```
+
+* We fitted a model with all potential predictors and a model including only the intercept for proceeding automatic model selection.
+
+#### Model Selection
+
+##### Automatic and Criterion Model selection Methods
+```{r warning = F, message = F}
+#forward Selection
+step(reg_intercept, direction='forward', scope=formula(reg_full),trace=0)
+
+#backwards elimination
+step(reg_full, direction='backward', scope=formula(reg_full),trace=0)
+
+#stepwise Selection
+step(reg_full, direction = "both", scope=formula(reg_full),trace=0)
+
+# Use criterion-based procedures to guide your selection of the ‘best subset’
+# chosen using SSE/RSS (smaller is better)
+criterion_selected = regsubsets(prevalence ~ ., data = ca_model_data)
+criterion_plot = summary(criterion_selected)
+
+# plot of Cp and Adj-R2 as functions of parameters
+x_new = (2:8)
+y_new = criterion_plot$cp
+z_new = criterion_plot$adjr2
+cp_new_p = 
+cbind(x_new, y_new, z_new) %>%
+    as.tibble() %>% 
+    rename(`Number of parameter` = x_new,
+           `Cp value` = y_new,
+           `Adj R-square` = z_new) %>% 
+    mutate(p = `Number of parameter`)
+cp_fe_new_1 =
+    cp_new_p %>%
+    ggplot() +
+    geom_point(aes(x = `Number of parameter`, y = `Cp value`, color = `Cp value`)) +
+    theme(legend.position = "none") +
+    geom_abline(intercept = 0, slope = 1, color = "red")
+cp_fe_new_2 =
+    cp_new_p %>%
+    ggplot() +
+    geom_point(aes(x = `Number of parameter`, y = `Adj R-square`, color = `Adj R-square`)) +
+    theme(legend.position = "none")
+
+cp_fe_new_1 + cp_fe_new_2
+```
+
+* By the three automatic model selection models: forward selection, backward elimination and stepwise selection, we got the same result containing six parameters (five predictors):
+
+$\hat{prevalence}=-71.4474+1.9559*I(location=inland)+8.0663*ln(unemployment)+1.3412*ln(area)+0.8201*ln(population)+9.8152*ln(test)$
+
+##### Penalized Model Selection Method: LASSO
+```{r warning = F, message = F}
+ca_lasso_data = ca_model_data %>% mutate(
+    location=ifelse(location =="costal", 1,0))
+# using cross validation to choose lambda
+lambda_seq = 10^seq(-5, 0, by = .01)
+set.seed(2022)
+cv_object <- cv.glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence,
+lambda = lambda_seq, nfolds = 5)
+cv_object
+
+# plot the CV results
+tibble(lambda = cv_object$lambda,
+mean_cv_error = cv_object$cvm) %>%
+    mutate(text_label = str_c("Lambda: ", lambda,
+                              "\n Mean CV error: ", mean_cv_error)) %>%
+    plotly::plot_ly(y = ~mean_cv_error, x = ~lambda,
+                    color = ~lambda,
+                    width = 900,
+                    height = 500,
+                    type = "scatter",
+                    mode = "markers",
+                    marker = list(size = 6),
+                    colors = "magma",
+                    text = ~ text_label)
+
+
+# refit the lasso model with the "best" lambda
+fit_bestcv <- glmnet(as.matrix(ca_lasso_data[2:8]), ca_lasso_data$prevalence, lambda = cv_object$lambda.min)
+fit_bestcv %>%
+         broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
+```
+##### Fitting the seleted final model
+```{r warning = F, message = F}
+mlr_model = lm(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population,data = ca_model_data)
+mlr_model %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
+```
+
+* As almost all the terms has p-value < 0.05, with the `location` variable < 0.1, we can conclude that all the predictor coefficients are statistical significant at 0.1 significance level for `location` and 0.05 significance level for others, hence all the five variables will be included in the model. All these methods agree on the same suggested model or predictors. This might give good evidence that we should explore this model further.
+
+* From the outputs above, we see that location had a p-value close to 0.05. This might mean that the relationship between prevalence and location is weak. Also, the highly correlated variables `vaccination` and `labor_rate` neither was included in the final models.
+
+#### Prevalence Model Diagnosis
+
+```{r warning = F, message = F, fig.height = 10, fig.width = 10}
+check_model(mlr_model, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
+```
+
+* Overall, these plots look like this model is fitting the data well. No influential point detected. However the residual points showed some kinds trend and the horizontal line is not such stable on the edge area, it may be worth investigating further by weighted least squares regression.
+
+#### Weighted Least Squares Regression
+```{r warning = F, message = F, fig.height = 10, fig.width = 10}
+# define sd function
+sd_function <- lm(abs(reg_full$residuals) ~ reg_full$fitted.values)
+
+var_fitted <- sd_function$fitted.values^2
+
+#define weight
+wt <- 1/var_fitted
+
+wls_full = lm(prevalence~.,data = ca_model_data, weights = wt)
+
+wls_prevalence = step(wls_full, direction='backward', scope=formula(wls_full),trace=0)
+
+wls_prevalence %>% 
+  broom::tidy() %>% 
+  mutate(term = str_replace(term, "^location", "Location: ")) %>% 
+  knitr::kable(digits = 3)
+
+check_model(wls_prevalence, check = c("linearity", "qq", "normality", "outliers", "homogeneity", "vif"))
+```
+
+* The coefficient estimate for the predictors variable changed somewhat and the model fit improved.
+* The residual standard error per coefficient slightly changed in the weighted LS model. This shows that the predictions from the WLS model are much closer to the actual observations than those from the ordinary LS model.
+* $R^2$ improved in the WLS model. WLS model is able to explain more of the variation in prevalence compared to the OLS model.
+* Therefore, I regard both MLR's mod and WLS's mod as good models. Because the data are collected from the overall California county-level big data, each observation may contain some special information rather than typo or anything else. This modeling mainly focuses on exploring the predictors used to explain the prevalence, therefore, the MLR model is used here as the final model, while WLS can be used for potential prediction.
+
+#### Cross Validation
+```{r warning = F, message = F}
+set.seed(2022)
+# use 10-fold validation and create the training sets
+train = trainControl(method = "cv", number = 10)
+# fit the 4-variables model that we selected as our final model
+model_caret = train(prevalence~location+ln_test+ln_unemployment+ln_area+ln_population, data = ca_model_data, trControl = train, method = 'lm', na.action = na.pass)
+model_caret
+
+model_caret$resample
+```
+
+* From the output above, the overall RMSE (root mean squared error) is 3.079, which would mean our MSE is 9.483. Our MAE (mean absolute error) is 2.559. These measures show that this model is doing a good job at predicting responses for “new” data points. Additionally, the variance for these measures is relatively small, showing that these estimates are probably pretty close to the true predictive ability. This means that the MLR model can still be used to predict the COVID prevalence.
+
+#### Conclusion
+
+* We employed automatic search procedures, criterion based approaches, and the LASSO technique to select a final model:
+
+$\hat{prevalence}=-71.4474+1.9559*I(location=inland)+8.0663*ln(unemployment)+1.3412*ln(area)+0.8201*ln(population)+9.8152*ln(test)$
+
+* From this model, we can see that as the while the location is inland, unemployment, land area, population and test participation increases, the predicted prevalence increases. This is probably because inland counties, counties with high unemployment generally have poor economy so that poor medical conditions, which may finally lead to increased prevalence; while the large size of the county and the high population of the county may lead to increased prevalence due to dense population, but still needs further investigation. In addition, the high prevalence is from increased test participation is somewhat surprising, but it may be because more potential positive patients are able to be detected.
+
+* Overall, from our 10-fold cross validation, we see that our model has pretty good predictive ability for new points. However, this model was only built on data on the county level, so there may be some special information missing, but the overall model reflects the correlation and relationship between the prevalence and some predictors in California.
+
 ### Discussion
+
 #### Project Obstacle
 
 One of the first obstacles this project met was related with data scraping and cleaning. It was the groups' intention to perform similar investigations about COVID, but on a much more broader scale such as across the whole country. The reason that analysts didn't follow this starting plan is because data sets from different parts of the country simply are organized quite differently. So it would take analysts a lot of time to do the necessary bindings to forge a complete data set to work on. Also it is questioned whether the equipment that analysts use can efficiently process such large amount of data in reasonable time during later analysis process.
