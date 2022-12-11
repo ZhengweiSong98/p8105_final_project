@@ -19,10 +19,8 @@ navbar:
         href: mlr_fatality.html
     - text: 'Statistical Analysis'
       menu:
-      - text: "ANOVA Test on MLR Prevalence"
-        href: statistical_test_prevelance.html
-      - text: "ANOVA Test on MLR Death Cases"
-        href: statistical_test_fatality.html
+      - text: "ANOVA Test on MLR Prevalence and Death Cases"
+        href: statistical_test.html
     - text: 'Project Report'
       href: project_report.html
     - text: 'Shiny'
